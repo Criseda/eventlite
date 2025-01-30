@@ -1,0 +1,12 @@
+[
+    {
+        "id" : 1,
+        "name" : "Kilburn Building",
+        "capacity" : 120
+    },
+    {
+    	"id" : 2,
+    	"name" : "Online",
+    	"capacity" : 100000
+    }
+]
