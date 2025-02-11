@@ -21,7 +21,9 @@
       <tbody>
         <tr th:each="e : ${events}">
           <td th:text="${e.name}">My Event</td>
+          
           <td th:text="${venues[e.venue - 1].name}">Event venue</td>
+          
           <td th:text="${{e.date}}">Event date</td>
           <td th:text="${{e.time}}">Event time</td>
         </tr>

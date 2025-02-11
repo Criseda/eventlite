@@ -56,5 +56,9 @@ public class VenueServiceImpl implements VenueService {
 //		return venues;
 		return venueRepository.findAll();
 	}
+	
+	public Venue save(Venue venue) {
+		return venueRepository.save(venue);
+	}
 
 }
