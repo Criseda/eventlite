@@ -7,8 +7,18 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-public class Event {
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
+
+
+
+@Entity
+@Table(name = "events")
+public class Event {
+	
+	@Id()
 	private long id;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
