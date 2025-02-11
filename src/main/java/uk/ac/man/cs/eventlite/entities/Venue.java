@@ -1,5 +1,10 @@
 package uk.ac.man.cs.eventlite.entities;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name="venues")
 public class Venue {
 
 	private long id;
