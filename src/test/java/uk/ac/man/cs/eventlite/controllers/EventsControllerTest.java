@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,8 +66,9 @@ public class EventsControllerTest {
 	public void getIndexWithEvents() throws Exception {
 		when(venue.getName()).thenReturn("Kilburn Building");
 		when(venueService.findAll()).thenReturn(Collections.<Venue>singletonList(venue));
-
-		when(event.getVenue()).thenReturn(1L);
+		
+		Optional<Venue> venue = venueService.findById(1);
+		when(event.getVenue()).thenReturn(venue.get());
 		when(eventService.findAll()).thenReturn(Collections.<Event>singletonList(event));
 
 		mvc.perform(get("/events").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())

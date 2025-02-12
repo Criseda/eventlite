@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,5 +61,8 @@ public class VenueServiceImpl implements VenueService {
 	public Venue save(Venue venue) {
 		return venueRepository.save(venue);
 	}
-
+	
+	public Optional<Venue> findById(long id) {
+		return venueRepository.findById(id);
+	}
 }

@@ -1,7 +1,11 @@
 package uk.ac.man.cs.eventlite.entities;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -14,6 +18,8 @@ public class Venue {
 	private String name;
 
 	private int capacity;
+	@OneToMany(mappedBy = "venue", cascade = CascadeType.ALL)
+	private List<Event> events;
 
 	public Venue() {
 	}
@@ -40,5 +46,13 @@ public class Venue {
 
 	public void setCapacity(int capacity) {
 		this.capacity = capacity;
+	}
+	
+	public List<Event> getEvents() {
+		return events;
+	}
+
+	public void setEvents(List<Event> events) {
+		this.events = events;
 	}
 }

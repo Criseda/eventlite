@@ -2,6 +2,7 @@ package uk.ac.man.cs.eventlite.config.data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Profile;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.entities.Venue;
 
 @Configuration
 @Profile("default")
@@ -40,9 +42,11 @@ public class InitialDataLoader {
 				log.info("Database already populated with events. Skipping event initialization.");
 			} else {
 				// Build and save initial events here.
+				// I have replaced id with the first venue object
+				Optional<Venue> venue = venueService.findById(1);
 				Event event = new Event();
 				event.setId(0);
-				event.setVenue(1);
+				event.setVenue(venue.get());
 				event.setDate(LocalDate.of(2025,05,06));
 				event.setTime(LocalTime.of(13, 0));
 				event.setName("Showcase 1");

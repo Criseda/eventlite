@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 
@@ -30,8 +32,10 @@ public class Event {
 	private LocalTime time;
 
 	private String name;
-
-	private long venue;
+	
+	@ManyToOne
+	@JoinColumn(name = "venue_id", referencedColumnName = "id")
+	private Venue venue;
 
 	public Event() {
 	}
@@ -68,11 +72,11 @@ public class Event {
 		this.name = name;
 	}
 
-	public long getVenue() {
+	public Venue getVenue() {
 		return venue;
 	}
 
-	public void setVenue(long venue) {
+	public void setVenue(Venue venue) {
 		this.venue = venue;
 	}
 }
