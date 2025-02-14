@@ -29,18 +29,15 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public long count() {
 		return eventRepository.count();
-
-		
 	}
 
 	@Override
 	public Iterable<Event> findAll() {
-		return eventRepository.findAll();
+		return eventRepository.findAllByOrderByDateAscTimeAsc(); //findAll Also sorts by date first then time
 	}
 	
 	@Override
 	public void save(Event event) {
 		eventRepository.save(event);
 	}
-	
 }

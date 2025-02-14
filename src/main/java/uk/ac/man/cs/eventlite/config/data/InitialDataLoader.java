@@ -43,7 +43,7 @@ public class InitialDataLoader {
 				venueService.save(venue);
 			}
 
-			if (eventService.count() > 0) {
+			if (eventService.count() > 2) {
 				log.info("Database already populated with events. Skipping event initialization.");
 			} else {
 				// Build and save initial events here.
@@ -58,13 +58,23 @@ public class InitialDataLoader {
 					event.setTime(LocalTime.of(13, 0));
 					event.setName("Showcase 1");
 					eventService.save(event);
+					
+					Event event1 = new Event();
+					event1.setId(1);
+					event1.setVenue(venue.get());
+					event1.setDate(LocalDate.of(2025,05,06));
+					event1.setTime(LocalTime.of(13, 8));
+					event1.setName("Same Day as Showcase 1 but later time");
+					eventService.save(event1);
+					
+					Event event2 = new Event();
+					event2.setId(2);
+					event2.setVenue(venue.get());
+					event2.setDate(LocalDate.of(2025,05,05));
+					event2.setTime(LocalTime.of(17, 0));
+					event2.setName("Earliest Event");
+					eventService.save(event2);
 				}
-//				Event event = new Event();
-//				event.setId(0);
-//				event.setVenue(venue.get());
-//				event.setDate(LocalDate.of(2025,05,06));
-//				event.setTime(LocalTime.of(13, 0));
-//				event.setName("Showcase 1");
 			}
 		};
 	}
