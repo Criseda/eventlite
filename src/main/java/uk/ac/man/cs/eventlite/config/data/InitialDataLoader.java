@@ -36,6 +36,11 @@ public class InitialDataLoader {
 				log.info("Database already populated with venues. Skipping venue initialization.");
 			} else {
 				// Build and save initial venues here.
+				Venue venue = new Venue();
+				venue.setId(0);
+				venue.setName("Venue 1");
+				venue.setCapacity(100);
+				venueService.save(venue);
 			}
 
 			if (eventService.count() > 0) {
@@ -43,14 +48,23 @@ public class InitialDataLoader {
 			} else {
 				// Build and save initial events here.
 				// I have replaced id with the first venue object
-				Optional<Venue> venue = venueService.findById(1);
-				Event event = new Event();
-				event.setId(0);
-				event.setVenue(venue.get());
-				event.setDate(LocalDate.of(2025,05,06));
-				event.setTime(LocalTime.of(13, 0));
-				event.setName("Showcase 1");
-				eventService.save(event);
+				
+				Optional<Venue> venue = venueService.findById(0);
+				if (venue.isPresent()) {
+					Event event = new Event();
+					event.setId(0);
+					event.setVenue(venue.get());
+					event.setDate(LocalDate.of(2025,05,06));
+					event.setTime(LocalTime.of(13, 0));
+					event.setName("Showcase 1");
+					eventService.save(event);
+				}
+//				Event event = new Event();
+//				event.setId(0);
+//				event.setVenue(venue.get());
+//				event.setDate(LocalDate.of(2025,05,06));
+//				event.setTime(LocalTime.of(13, 0));
+//				event.setName("Showcase 1");
 			}
 		};
 	}
