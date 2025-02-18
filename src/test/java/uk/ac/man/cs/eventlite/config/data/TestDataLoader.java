@@ -1,5 +1,9 @@
 package uk.ac.man.cs.eventlite.config.data;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +14,8 @@ import org.springframework.context.annotation.Profile;
 
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
+import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.entities.Venue;
 
 @Configuration
 @Profile("test")
@@ -29,6 +35,38 @@ public class TestDataLoader {
 			// Build and save test events and venues here.
 			// The test database is configured to reside in memory, so must be initialized
 			// every time.
-		};
+			Venue venue1 = new Venue();
+			venue1.setId(0);
+			venue1.setName("Venue 1");
+			venue1.setCapacity(100);
+			venueService.save(venue1);
+			
+			Optional<Venue> venue = venueService.findById(0);
+			if (venue.isPresent()) {
+				Event event = new Event();
+				event.setId(0);
+				event.setVenue(venue.get());
+				event.setDate(LocalDate.of(2025,05,06));
+				event.setTime(LocalTime.of(13, 0));
+				event.setName("Showcase 1");
+				eventService.save(event);
+				
+				Event event1 = new Event();
+				event1.setId(1);
+				event1.setVenue(venue.get());
+				event1.setDate(LocalDate.of(2025,05,06));
+				event1.setTime(LocalTime.of(13, 8));
+				event1.setName("Same Day as Showcase 1 but later time");
+				eventService.save(event1);
+				
+				Event event2 = new Event();
+				event2.setId(2);
+				event2.setVenue(venue.get());
+				event2.setDate(LocalDate.of(2025,05,05));
+				event2.setTime(LocalTime.of(17, 0));
+				event2.setName("Earliest Event");
+				eventService.save(event2);
+			}
+			};
 	}
 }

@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,11 +40,14 @@ public class EventsControllerApiTest {
 
 	@Autowired
 	private MockMvc mvc;
+	
+	@Mock
+	private Venue venue;
 
 	@MockBean
 	private EventService eventService;
 	
-	@Autowired
+	@MockBean
 	private VenueService venueService;
 
 	@Test
@@ -64,7 +68,9 @@ public class EventsControllerApiTest {
 		e.setName("Event");
 		e.setDate(LocalDate.now());
 		e.setTime(LocalTime.now());
+		when(venueService.findById(0)).thenReturn(Optional.of(venue));
 		Optional<Venue> venue = venueService.findById(0);
+		when(e.getVenue()).thenReturn(venue.get());
 		e.setVenue(venue.get());
 		when(eventService.findAll()).thenReturn(Collections.<Event>singletonList(e));
 

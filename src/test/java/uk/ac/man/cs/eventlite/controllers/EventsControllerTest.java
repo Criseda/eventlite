@@ -66,7 +66,7 @@ public class EventsControllerTest {
 	public void getIndexWithEvents() throws Exception {
 		when(venue.getName()).thenReturn("Kilburn Building");
 		when(venueService.findAll()).thenReturn(Collections.<Venue>singletonList(venue));
-		
+		when(venueService.findById(1)).thenReturn(Optional.of(venue));
 		Optional<Venue> venue = venueService.findById(1);
 		when(event.getVenue()).thenReturn(venue.get());
 		when(eventService.findAll()).thenReturn(Collections.<Event>singletonList(event));
