@@ -70,7 +70,6 @@ public class EventsControllerApiTest {
 		e.setTime(LocalTime.now());
 		when(venueService.findById(0)).thenReturn(Optional.of(venue));
 		Optional<Venue> venue = venueService.findById(0);
-		when(e.getVenue()).thenReturn(venue.get());
 		e.setVenue(venue.get());
 		when(eventService.findAll()).thenReturn(Collections.<Event>singletonList(e));
 
