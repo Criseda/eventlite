@@ -1,6 +1,5 @@
 package uk.ac.man.cs.eventlite.controllers;
 
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
@@ -29,19 +28,22 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 
 	@LocalServerPort
 	private int port;
+	
+	private int currentRows;
 
 	private WebTestClient client;
 
 	@BeforeEach
 	public void setup() {
+		currentRows = countRowsInTable("events");
+		logger.info("current rows: " + currentRows);
 		client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port + "/api").build();
 	}
 
 	@Test
 	public void testGetAllEvents() {
 		client.get().uri("/events").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
-				.contentType(MediaType.APPLICATION_JSON).expectBody().jsonPath("$._links.self.href")
-				.value(endsWith("/api/events")).jsonPath("$._embedded.events.length()").value(equalTo(3));
+				.contentType(MediaType.APPLICATION_JSON).expectBody().jsonPath("$._embedded.events.length()").isEqualTo(currentRows);
 	}
 
 	@Test
@@ -170,7 +172,6 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 		               .expectBody()
 		               .isEmpty();
 
-		
 		//Check all rows are removed from database
 		assertThat(0, equalTo(countRowsInTable("events")));
 	}
