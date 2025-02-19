@@ -36,15 +36,13 @@ public class TestDataLoader {
 			// The test database is configured to reside in memory, so must be initialized
 			// every time.
 			Venue venue1 = new Venue();
-			venue1.setId(0);
 			venue1.setName("Venue 1");
 			venue1.setCapacity(100);
 			venueService.save(venue1);
 			
-			Optional<Venue> venue = venueService.findById(0);
+			Optional<Venue> venue = venueService.findById(1);
 			if (venue.isPresent()) {
 				Event event = new Event();
-				event.setId(0);
 				event.setVenue(venue.get());
 				event.setDate(LocalDate.of(2025,05,06));
 				event.setTime(LocalTime.of(13, 0));
@@ -52,7 +50,6 @@ public class TestDataLoader {
 				eventService.save(event);
 				
 				Event event1 = new Event();
-				event1.setId(1);
 				event1.setVenue(venue.get());
 				event1.setDate(LocalDate.of(2025,05,06));
 				event1.setTime(LocalTime.of(13, 8));
@@ -60,7 +57,6 @@ public class TestDataLoader {
 				eventService.save(event1);
 				
 				Event event2 = new Event();
-				event2.setId(2);
 				event2.setVenue(venue.get());
 				event2.setDate(LocalDate.of(2025,05,05));
 				event2.setTime(LocalTime.of(17, 0));

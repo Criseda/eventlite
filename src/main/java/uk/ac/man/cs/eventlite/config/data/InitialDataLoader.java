@@ -37,7 +37,6 @@ public class InitialDataLoader {
 			} else {
 				// Build and save initial venues here.
 				Venue venue = new Venue();
-				venue.setId(0);
 				venue.setName("Venue 1");
 				venue.setCapacity(100);
 				venueService.save(venue);
@@ -49,10 +48,9 @@ public class InitialDataLoader {
 				// Build and save initial events here.
 				// I have replaced id with the first venue object
 				
-				Optional<Venue> venue = venueService.findById(0);
+				Optional<Venue> venue = venueService.findById(1);
 				if (venue.isPresent()) {
 					Event event = new Event();
-					event.setId(0);
 					event.setVenue(venue.get());
 					event.setDate(LocalDate.of(2025,05,06));
 					event.setTime(LocalTime.of(13, 0));
@@ -60,7 +58,6 @@ public class InitialDataLoader {
 					eventService.save(event);
 					
 					Event event1 = new Event();
-					event1.setId(1);
 					event1.setVenue(venue.get());
 					event1.setDate(LocalDate.of(2025,05,06));
 					event1.setTime(LocalTime.of(13, 8));
@@ -68,7 +65,6 @@ public class InitialDataLoader {
 					eventService.save(event1);
 					
 					Event event2 = new Event();
-					event2.setId(2);
 					event2.setVenue(venue.get());
 					event2.setDate(LocalDate.of(2025,05,05));
 					event2.setTime(LocalTime.of(17, 0));

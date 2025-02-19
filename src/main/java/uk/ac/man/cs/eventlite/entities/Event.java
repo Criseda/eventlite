@@ -8,9 +8,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 
@@ -20,7 +23,9 @@ import jakarta.persistence.Table;
 @Table(name = "events")
 public class Event {
 	
-	@Id()
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "events_seq")
+	@SequenceGenerator(name = "events_seq", sequenceName = "events_SEQ", allocationSize = 1)
 	private long id;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
