@@ -35,7 +35,11 @@ public class EventsController {
 
 	@GetMapping("/{id}")
 	public String getEvent(@PathVariable("id") long id, Model model) {
-		throw new EventNotFoundException(id);
+		if(!eventService.existsById(id)) {
+			throw new EventNotFoundException(id);
+		}
+		model.addAttribute("e", eventService.findById(id).get());
+		return "events/details";
 	}
 
 	@GetMapping
