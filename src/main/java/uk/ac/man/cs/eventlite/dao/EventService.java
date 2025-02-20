@@ -8,6 +8,8 @@ public interface EventService {
 
 	public Iterable<Event> findAll();
 	
+	public Iterable<Event> findByNameContainingIgnoreCase(String name);
+	
 	public void save(Event event);
 	
 	public boolean existsById(long id);

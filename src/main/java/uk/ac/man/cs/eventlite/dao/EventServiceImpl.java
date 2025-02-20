@@ -32,6 +32,11 @@ public class EventServiceImpl implements EventService {
 	}
 	
 	@Override
+	public Iterable<Event> findByNameContainingIgnoreCase(String name) {
+	    return eventRepository.findByNameContainingIgnoreCase(name);
+	}
+
+	@Override
 	public void save(Event event) {
 		eventRepository.save(event);
 	}
