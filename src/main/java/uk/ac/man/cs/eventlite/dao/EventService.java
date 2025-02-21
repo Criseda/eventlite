@@ -21,4 +21,6 @@ public interface EventService {
 	public void deleteAll(Iterable<Event> events);
 	
 	public void deleteAllById(Iterable<Long> ids);
+	
+	public Event update(long id, Event event);
 }
