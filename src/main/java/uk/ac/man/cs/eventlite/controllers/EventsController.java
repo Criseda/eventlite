@@ -1,5 +1,6 @@
 package uk.ac.man.cs.eventlite.controllers;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -9,10 +10,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 @Controller
@@ -42,13 +45,19 @@ public class EventsController {
 		return "events/details";
 	}
 
+
 	@GetMapping
-	public String getAllEvents(Model model) {
-
-		model.addAttribute("events", eventService.findAll());
-		model.addAttribute("venues", venueService.findAll());
-
-		return "events/index";
-	}
+    public String getAllEvents(@RequestParam(value = "search", required = false) String search, Model model) {
+        Iterable<Event> events;
+        if (search != null && !search.isEmpty()) {
+            events = eventService.findByNameContainingIgnoreCase(search);
+        } else {
+            events = eventService.findAll();
+        }
+        model.addAttribute("events", events);
+        model.addAttribute("search", search);
+        
+        return "events/index";
+    }
 
 }
