@@ -21,6 +21,7 @@
           <th><i class="fa-solid fa-map-marker-alt"></i> Venue</th>
           <th><i class="fa-solid fa-calendar"></i> Date</th>
           <th><i class="fa-solid fa-clock"></i> Time</th>
+		  <th><th>
         </tr>
       </thead>
       <tbody>
@@ -31,6 +32,7 @@
           
           <td th:text="${{e.date}}">Event date</td>
           <td th:text="${{e.time}}">Event time</td>
+		  <td><a class="btn btn-primary" role="button" th:href="@{/events/{id}(id=${e.id})}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Details</a></td>
         </tr>
       </tbody>
     </table>
