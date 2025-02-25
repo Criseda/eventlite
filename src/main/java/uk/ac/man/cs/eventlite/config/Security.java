@@ -64,7 +64,7 @@ public class Security {
 	public UserDetailsService userDetailsService() {
 		PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-		UserDetails rob = User.withUsername("Rob").password(encoder.encode("Haines")).roles(ORGANIZER, ADMIN_ROLE).build();
+		UserDetails rob = User.withUsername("Rob").password(encoder.encode("Haines")).roles(ORGANIZER).build();
 		UserDetails caroline = User.withUsername("Caroline").password(encoder.encode("Jay")).roles(ADMIN_ROLE).build();
 		UserDetails markel = User.withUsername("Markel").password(encoder.encode("Vigo")).roles(ADMIN_ROLE).build();
 		UserDetails mustafa = User.withUsername("Mustafa").password(encoder.encode("Mustafa")).roles(ADMIN_ROLE).build();
