@@ -84,12 +84,6 @@ public class EventsController {
     @PutMapping("/update/{id}")
     public String updateEvent(@PathVariable("id") long id, @ModelAttribute("e") Event event, 
                              @RequestParam("_method") String method) {
-    	System.out.println("Sent");
-        System.out.println("Updating Event ID: " + id);
-        System.out.println("New Event Name: " + event.getName());
-        System.out.println("New Date: " + event.getDate());
-        System.out.println("New Time: " + event.getTime());
-        System.out.println("New Venue ID: " + (event.getVenue() != null ? event.getVenue().getId() : "null"));
         eventService.update(id, event);
         return "redirect:/events";
     }

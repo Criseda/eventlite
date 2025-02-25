@@ -10,7 +10,6 @@
 	
 	
     <h1>All events</h1>
-	
 	<form th:action="@{/events}" method="get" class="mb-3">
 	      <input type="text" name="search" th:value="${search}" placeholder="Enter event name to search" class="form-control"/>
 	      <button type="submit" class="btn btn-primary mt-2">Search</button>
@@ -42,7 +41,7 @@
           <td th:text="${{e.time}}">Event time</td>
 		  <td><a class="btn btn-primary" role="button" th:href="@{/events/{id}(id=${e.id})}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Details</a></td>
 		  <td><a class="btn btn-primary" sec:authorize="hasRole('ATTENDEE')" role="button"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Register</a></td>
-		  <td><a class="btn btn-primary" sec:authorize="hasRole('ORGANIZER')" role="button" th:href="@{/events/update/{id}(id=${e.id})}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Update</a></td>  
+		  <td><a class="btn btn-primary" sec:authorize="hasAnyRole('ORGANIZER', 'ADMINISTRATOR')" role="button" th:href="@{/events/update/{id}(id=${e.id})}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Update</a></td>  
 		  <td><form th:action="@{/events/{id}(id=${e.id})}" th:method="delete" sec:authorize="hasRole('ORGANIZER')">
 		        <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash" aria-hidden="true"></i> Delete</button>
 		      </form></td>
@@ -70,7 +69,7 @@
 	            <td th:text="${{e.time}}">Event time</td>
 	  		  <td><a class="btn btn-primary" role="button" th:href="@{/events/{id}(id=${e.id})}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Details</a></td>
 	  		  <td><a class="btn btn-primary" sec:authorize="hasRole('ATTENDEE')" role="button" th:href="@{/events/{id}(id=${e.id})}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Register</a></td>
-	  		  <td><a class="btn btn-primary" sec:authorize="hasRole('ORGANIZER')" role="button" th:href="@{/events/{id}(id=${e.id})}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Update</a></td>  
+	  		  <td><a class="btn btn-primary" sec:authorize="hasAnyRole('ORGANIZER', 'ADMINISTRATOR')" role="button" th:href="@{/events/{id}(id=${e.id})}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Update</a></td>  
 	  		  <td><form th:action="@{/events/{id}(id=${e.id})}" th:method="delete" sec:authorize="hasRole('ORGANIZER')">
 	  		        <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash" aria-hidden="true"></i> Delete</button>
 	  		      </form></td>
