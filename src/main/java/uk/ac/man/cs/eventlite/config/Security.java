@@ -6,6 +6,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -19,9 +20,10 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class Security {
 
-	public static final String ADMIN_ROLE = "ADMINISTRATOR";
+	public static final String ADMIN = "ADMIN";
 	public static final String ATTENDEE = "ATTENDEE";
 	public static final String ORGANIZER = "ORGANIZER";
 	public static final RequestMatcher H2_CONSOLE = antMatcher("/h2-console/**");
@@ -35,27 +37,26 @@ public class Security {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 				// By default, all requests are authenticated except our specific list.
-				.authorizeHttpRequests(
-						auth -> auth
-		                	// Allow static resources and H2 console without authentication.
-		                	.requestMatchers(NO_AUTH).permitAll()
-		                	// Allow anyone to view events.
-		                    .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
-		                    // Allow registration only for signed-in attendees.
-		                    // TODO CHANGE THIS WHEN REGISTER FUNCTIONALITY IS CREATED
-//		                    .requestMatchers(HttpMethod.POST, "/events/*/register")
-//		                        .hasRole(ATTENDEE)
-		                    // Restrict creating events to ADMIN and ORGANIZER.
-		                    .requestMatchers(HttpMethod.POST, "/events")
-		                        .hasAnyRole(ADMIN_ROLE, ORGANIZER)
-		                    // Restrict updating events to ADMIN and ORGANIZER
-		                    .requestMatchers(HttpMethod.PUT, "/events/**")
-		                    	.hasAnyRole(ADMIN_ROLE, ORGANIZER)
-		                    // Restrict delete events to ADMIN and ORGANIZER
-		                    .requestMatchers(HttpMethod.DELETE, "/events/**", "/events")
-		                    	.hasAnyRole(ADMIN_ROLE, ORGANIZER)
-		                	// All other users require authentication
-		                    .anyRequest().authenticated()
+		        .authorizeHttpRequests(auth -> auth
+		                // Allow static resources and H2 console without authentication
+		                .requestMatchers(NO_AUTH).permitAll()
+		
+		                // Web-based endpoints (/events)
+		                .requestMatchers(HttpMethod.GET, "/events/**").permitAll() // Allow anyone to view events
+		                .requestMatchers(HttpMethod.POST, "/events").hasAnyRole(ADMIN, ORGANIZER) // Restrict creating events
+		                .requestMatchers(HttpMethod.PUT, "/events/**").hasAnyRole(ADMIN, ORGANIZER) // Restrict updating events
+		                .requestMatchers(HttpMethod.DELETE, "/events/**").hasAnyRole(ADMIN, ORGANIZER) // Restrict deleting events
+		                .requestMatchers(HttpMethod.DELETE, "/events").hasAnyRole(ADMIN, ORGANIZER) // Restrict deleting events
+		
+		                // API-based endpoints (/api/events)
+		                .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll() // Allow anyone to view events via API
+		                .requestMatchers(HttpMethod.POST, "/api/events").hasRole(ADMIN) // Restrict creating events via API
+		                .requestMatchers(HttpMethod.PUT, "/api/events/**").hasRole(ADMIN) // Restrict updating events via API
+		                .requestMatchers(HttpMethod.DELETE, "/api/events/**").hasRole(ADMIN) // Restrict deleting events via API
+		                .requestMatchers(HttpMethod.DELETE, "/events").hasAnyRole(ADMIN) // Restrict deleting events
+		
+		                // All other requests require authentication
+		                .anyRequest().authenticated()
 				)
 						
 
@@ -65,20 +66,8 @@ public class Security {
 				// Use form login/logout for the Web.
 				.formLogin(login -> login.loginPage("/sign-in").permitAll())
 				.logout(logout -> logout.logoutUrl("/sign-out").logoutSuccessUrl("/").permitAll())
-
-				// Use HTTP basic for the API.
-				// TODO: check if this change is suitable
-//				.httpBasic(withDefaults()).securityMatcher(antMatcher("/api/**"))
-//
-//				// Only use CSRF for Web requests.
-//				// Disable CSRF for the API and H2 console.
-//				.csrf(csrf -> csrf.ignoringRequestMatchers(antMatcher("/api/**"), H2_CONSOLE))
-//				.securityMatcher(antMatcher("/**"))
-//
-//				// Disable X-Frame-Options for the H2 console.
-//				.headers(headers -> headers.frameOptions(frameOpts -> frameOpts.disable()));
-				// NEW CHANGE
-	            .httpBasic(withDefaults())
+				// Use HTTP basic for API
+				.httpBasic(withDefaults()) 
 	            // Disable CSRF for API endpoints and the H2 console.
 	            .csrf(csrf -> csrf.ignoringRequestMatchers(antMatcher("/api/**"), H2_CONSOLE))
 	            // Disable frame options to allow the H2 console to display.
@@ -91,14 +80,14 @@ public class Security {
 	public UserDetailsService userDetailsService() {
 		PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 		
-		UserDetails admin = User.withUsername("admin").password(encoder.encode("admin")).roles(ADMIN_ROLE).build();
+		UserDetails admin     = User.withUsername("admin").password(encoder.encode("admin")).roles(ADMIN).build();
 		UserDetails organizer = User.withUsername("organizer").password(encoder.encode("organizer")).roles(ORGANIZER).build();
-		UserDetails attendee = User.withUsername("attendee").password(encoder.encode("attendee")).roles(ATTENDEE).build();
-		UserDetails rob = User.withUsername("Rob").password(encoder.encode("Haines")).roles(ORGANIZER, ADMIN_ROLE).build();
-		UserDetails caroline = User.withUsername("Caroline").password(encoder.encode("Jay")).roles(ADMIN_ROLE).build();
-		UserDetails markel = User.withUsername("Markel").password(encoder.encode("Vigo")).roles(ADMIN_ROLE).build();
-		UserDetails mustafa = User.withUsername("Mustafa").password(encoder.encode("Mustafa")).roles(ADMIN_ROLE).build();
-		UserDetails tom = User.withUsername("Tom").password(encoder.encode("Carroll")).roles(ATTENDEE).build();
+		UserDetails attendee  = User.withUsername("attendee").password(encoder.encode("attendee")).roles(ATTENDEE).build();
+		UserDetails rob       = User.withUsername("Rob").password(encoder.encode("Haines")).roles(ADMIN, ORGANIZER).build();
+		UserDetails caroline  = User.withUsername("Caroline").password(encoder.encode("Jay")).roles(ADMIN).build();
+		UserDetails markel    = User.withUsername("Markel").password(encoder.encode("Vigo")).roles(ADMIN).build();
+		UserDetails mustafa   = User.withUsername("Mustafa").password(encoder.encode("Mustafa")).roles(ADMIN).build();
+		UserDetails tom       = User.withUsername("Tom").password(encoder.encode("Carroll")).roles(ATTENDEE).build();
 
 		return new InMemoryUserDetailsManager(admin, organizer, attendee, rob, caroline, markel, mustafa, tom);
 	}

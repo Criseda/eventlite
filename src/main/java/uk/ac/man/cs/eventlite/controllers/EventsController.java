@@ -1,9 +1,9 @@
 package uk.ac.man.cs.eventlite.controllers;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import jakarta.validation.Valid;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
@@ -49,64 +47,70 @@ public class EventsController {
 
 	@GetMapping("/{id}")
 	public String getEvent(@PathVariable("id") long id, Model model) {
-		if(!eventService.existsById(id)) {
+		if (!eventService.existsById(id)) {
 			throw new EventNotFoundException(id);
 		}
 		model.addAttribute("e", eventService.findById(id).get());
 		return "events/details";
 	}
 
-
 	@GetMapping
-    public String getAllEvents(@RequestParam(value = "search", required = false) String search, Model model) {
-        Iterable<Event> events;
-        if (search != null && !search.isEmpty()) {
-            events = eventService.findByNameContainingIgnoreCase(search);
-        } else {
-            events = eventService.findAll();
-        }
-        model.addAttribute("events", events);
-        model.addAttribute("search", search);
-        
-        return "events/index";
-    }
-	
+	public String getAllEvents(@RequestParam(value = "search", required = false) String search, Model model) {
+		Iterable<Event> events;
+		if (search != null && !search.isEmpty()) {
+			events = eventService.findByNameContainingIgnoreCase(search);
+		} else {
+			events = eventService.findAll();
+		}
+		model.addAttribute("events", events);
+		model.addAttribute("search", search);
+
+		return "events/index";
+	}
+
 	@GetMapping("/update/{id}")
 	public String updateEventForm(@PathVariable("id") long id, Model model) {
-		if(!eventService.existsById(id)) {
+		if (!eventService.existsById(id)) {
 			throw new EventNotFoundException(id);
 		}
 		model.addAttribute("e", eventService.findById(id).get());
 		model.addAttribute("v", venueService.findAll());
 		return "events/update";
 	}
-	
-    @PutMapping("/update/{id}")
-    public String updateEvent(@PathVariable("id") long id, @ModelAttribute("e") Event event, 
-                             @RequestParam("_method") String method) {
-        eventService.update(id, event);
-        return "redirect:/events";
-    }
-	
-    @GetMapping("/new")
-    public String showCreateEventForm(Model model) {
-        model.addAttribute("event", new Event());
-        model.addAttribute("venues", venueService.findAll()); // Populate venue dropdown
-        return "events/new";
-    }
-    
-    @PostMapping
-    public String createEvent(@Valid @ModelAttribute("event") Event event, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute("venues", venueService.findAll());
-            return "events/new"; // Return form with validation errors
-        }
 
-        eventService.save(event);
-        return "redirect:/events"; // Redirect to event list
-    }
+	@PutMapping("/update/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
+	public String updateEvent(@PathVariable("id") long id, @ModelAttribute("e") Event event,
+			@RequestParam("_method") String method) {
+		if (!eventService.existsById(id)) {
+			throw new EventNotFoundException(id);
+		}
+		eventService.update(id, event);
+		return "redirect:/events";
+	}
+
+	@GetMapping("/new")
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
+	public String showCreateEventForm(Model model) {
+		model.addAttribute("event", new Event());
+		model.addAttribute("venues", venueService.findAll()); // Populate venue dropdown
+		return "events/new";
+	}
+
+	@PostMapping
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
+	public String createEvent(@Valid @ModelAttribute("event") Event event, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			model.addAttribute("venues", venueService.findAll());
+			return "events/new"; // Return form with validation errors
+		}
+
+		eventService.save(event);
+		return "redirect:/events"; // Redirect to event list
+	}
 
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
 	public String deleteEvent(@PathVariable("id") long id, RedirectAttributes redirectAttrs) {
 		if (!eventService.existsById(id)) {
 			throw new EventNotFoundException(id);
@@ -119,6 +123,7 @@ public class EventsController {
 	}
 
 	@DeleteMapping
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
 	public String deleteAllEvents(RedirectAttributes redirectAttrs) {
 		eventService.deleteAll();
 		redirectAttrs.addFlashAttribute("ok_message", "All greetings deleted.");

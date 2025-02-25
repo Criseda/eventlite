@@ -1,22 +1,41 @@
 package uk.ac.man.cs.eventlite.controllers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.StringContains.containsString;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import uk.ac.man.cs.eventlite.EventLite;
+import uk.ac.man.cs.eventlite.dao.EventService;
+import uk.ac.man.cs.eventlite.dao.VenueService;
+import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.entities.Venue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = EventLite.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -24,26 +43,98 @@ import uk.ac.man.cs.eventlite.EventLite;
 @ActiveProfiles("test")
 public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
 
-	@LocalServerPort
-	private int port;
+    @Autowired
+    private WebApplicationContext context;
 
-	private WebTestClient client;
+    private MockMvc mvc;
 
-	@BeforeEach
-	public void setup() {
-		client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
-	}
+    @Autowired
+    private EventService eventService;
 
-	@Test
-	public void testGetAllEvents() {
-		client.get().uri("/events").accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk();
-	}
+    @Autowired
+    private VenueService venueService;
 
-	@Test
-	public void getEventNotFound() {
-		client.get().uri("/events/99").accept(MediaType.TEXT_HTML).exchange().expectStatus().isNotFound().expectHeader()
-				.contentTypeCompatibleWith(MediaType.TEXT_HTML).expectBody(String.class).consumeWith(result -> {
-					assertThat(result.getResponseBody(), containsString("99"));
-				});
-	}
+    @BeforeEach
+    public void setup() {
+        mvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+    }
+
+    @Test
+    public void testGetAllEvents() throws Exception {
+        mvc.perform(get("/events")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getEventNotFound() throws Exception {
+        MvcResult result = mvc.perform(get("/events/99")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isNotFound())
+                .andExpect(header().string("Content-Type", containsString(MediaType.TEXT_HTML_VALUE)))
+                .andReturn();
+        
+        assertThat(result.getResponse().getContentAsString(), containsString("99"));
+    }
+
+    @Test
+    @DirtiesContext
+    public void testCreateEvent() throws Exception {
+        // Create a venue using VenueService
+        Venue venue = new Venue();
+        venue.setName("Test Venue");
+        venue.setCapacity(100);
+        venueService.save(venue);
+
+        long currentCount = eventService.count();
+
+        mvc.perform(post("/events")
+                .with(user("Rob").password("Haines").roles("ADMIN"))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("name", "NewEvent")
+                .param("date", "2025-05-06")
+                .param("time", "13:00")
+                .param("venue.id", String.valueOf(venue.getId())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", "/events"));
+
+        assertThat(eventService.count(), equalTo(currentCount + 1));
+    }
+
+    @Test
+    @DirtiesContext
+    public void updateEventNotFound() throws Exception {
+        // Create a venue using VenueService
+        Venue venue = new Venue();
+        venue.setName("Test Venue");
+        venue.setCapacity(100);
+        venueService.save(venue);
+
+        // Create an event using EventService
+        Event event = new Event();
+        event.setName("Old Event");
+        event.setDate(LocalDate.of(2025, 5, 6));
+        event.setTime(LocalTime.of(13, 0));
+        event.setVenue(venue);
+        eventService.save(event);
+
+        long currentCount = eventService.count();
+
+        mvc.perform(put("/events/update/99")
+                .with(user("admin").password("admin").roles("ADMIN"))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("name", "UpdatedEvent")
+                .param("date", "2025-05-07")
+                .param("time", "14:00")
+                .param("venue.id", String.valueOf(venue.getId()))
+                .param("_method", "PUT"))  // Add the _method parameter
+                .andExpect(status().isNotFound());
+
+        assertThat(eventService.count(), equalTo(currentCount));
+    }
 }
