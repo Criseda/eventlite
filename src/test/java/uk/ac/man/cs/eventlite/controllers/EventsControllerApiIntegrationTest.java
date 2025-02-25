@@ -201,4 +201,76 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 		//Check nothing is removed or added from the database
 		assertThat(currentRows, equalTo(countRowsInTable("events")));
 	}
+	
+	@Test
+	public void updateEventNotFound() {
+		String eventJson = """
+				{
+			      "date" : "2025-05-05",
+			      "time" : "17:00:00",
+			      "name" : "Updated Earliest Event"
+			    }
+			""";
+		client.mutate().filter(basicAuthentication("Rob", "Haines"))
+		.build()
+		.put()
+		.uri("/events/99")
+		.accept(MediaType.APPLICATION_JSON)
+		.contentType(MediaType.APPLICATION_JSON)
+		.bodyValue(eventJson)
+		.exchange()
+		.expectStatus()
+		.isNotFound();
+		
+		//Check nothing is removed from the database
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+	
+	@Test
+	public void updateEventNoUser() {
+		String eventJson = """
+				{
+			      "date" : "2025-05-05",
+			      "time" : "17:00:00",
+			      "name" : "Updated Earliest Event"
+			    }
+			""";
+		client.mutate()
+		.build()
+		.put()
+		.uri("/events/1")
+		.accept(MediaType.APPLICATION_JSON)
+		.contentType(MediaType.APPLICATION_JSON)
+		.bodyValue(eventJson)
+		.exchange()
+		.expectStatus()
+		.isUnauthorized();
+		
+		//Check nothing is removed from the database
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+	
+	@Test
+	public void updateEventBadUser() {
+		String eventJson = """
+				{
+			      "date" : "2025-05-05",
+			      "time" : "17:00:00",
+			      "name" : "Updated Earliest Event"
+			    }
+			""";
+		client.mutate().filter(basicAuthentication("Bad", "User"))
+		.build()
+		.put()
+		.uri("/events/1")
+		.accept(MediaType.APPLICATION_JSON)
+		.contentType(MediaType.APPLICATION_JSON)
+		.bodyValue(eventJson)
+		.exchange()
+		.expectStatus()
+		.isUnauthorized();
+		
+		//Check nothing is removed from the database
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
 }
