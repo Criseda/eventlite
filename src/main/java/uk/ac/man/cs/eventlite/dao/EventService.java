@@ -7,6 +7,8 @@ import uk.ac.man.cs.eventlite.entities.Event;
 public interface EventService {
 
 	public long count();
+	
+	public Optional<Event> findById(long id);
 
 	public Iterable<Event> findAll();
 	

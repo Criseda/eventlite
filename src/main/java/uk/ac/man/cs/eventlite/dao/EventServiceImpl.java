@@ -28,6 +28,11 @@ public class EventServiceImpl implements EventService {
 	public long count() {
 		return eventRepository.count();
 	}
+	
+	@Override
+	public Optional<Event> findById(long id) {
+		return eventRepository.findById(id);
+	}
 
 	@Override
 	public Iterable<Event> findAll() {
@@ -84,4 +89,6 @@ public class EventServiceImpl implements EventService {
 		
 		return eventRepository.save(oldEvent);
 	}
+	
+	
 }
