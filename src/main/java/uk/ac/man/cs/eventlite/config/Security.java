@@ -22,6 +22,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 public class Security {
 
 	public static final String ADMIN_ROLE = "ADMINISTRATOR";
+	public static final String ATTENDEE = "ATTENDEE";
+	public static final String ORGANIZER = "ORGANIZER";
 	public static final RequestMatcher H2_CONSOLE = antMatcher("/h2-console/**");
 
 	// List the mappings/methods for which no authorisation is required.
@@ -35,6 +37,7 @@ public class Security {
 				// By default, all requests are authenticated except our specific list.
 				.authorizeHttpRequests(
 						auth -> auth.requestMatchers(NO_AUTH).permitAll().anyRequest().hasRole(ADMIN_ROLE))
+						
 
 				// This makes testing easier. Given we're not going into production, that's OK.
 				.sessionManagement(session -> session.requireExplicitAuthenticationStrategy(false))
@@ -61,12 +64,11 @@ public class Security {
 	public UserDetailsService userDetailsService() {
 		PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-		UserDetails rob = User.withUsername("Rob").password(encoder.encode("Haines")).roles(ADMIN_ROLE).build();
+		UserDetails rob = User.withUsername("Rob").password(encoder.encode("Haines")).roles(ORGANIZER).build();
 		UserDetails caroline = User.withUsername("Caroline").password(encoder.encode("Jay")).roles(ADMIN_ROLE).build();
 		UserDetails markel = User.withUsername("Markel").password(encoder.encode("Vigo")).roles(ADMIN_ROLE).build();
-		UserDetails mustafa = User.withUsername("Mustafa").password(encoder.encode("Mustafa")).roles(ADMIN_ROLE)
-				.build();
-		UserDetails tom = User.withUsername("Tom").password(encoder.encode("Carroll")).roles(ADMIN_ROLE).build();
+		UserDetails mustafa = User.withUsername("Mustafa").password(encoder.encode("Mustafa")).roles(ADMIN_ROLE).build();
+		UserDetails tom = User.withUsername("Tom").password(encoder.encode("Carroll")).roles(ATTENDEE).build();
 
 		return new InMemoryUserDetailsManager(rob, caroline, markel, mustafa, tom);
 	}

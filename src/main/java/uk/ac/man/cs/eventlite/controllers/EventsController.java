@@ -7,16 +7,23 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.DeleteMapping;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.validation.Valid;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
@@ -74,16 +81,37 @@ public class EventsController {
 		return "events/update";
 	}
 	
-    @PostMapping("/events")
-    public String updateEvent(@ModelAttribute("event") Event event, 
+    @PutMapping("/update/{id}")
+    public String updateEvent(@PathVariable("id") long id, @ModelAttribute("e") Event event, 
                              @RequestParam("_method") String method) {
-        if ("put".equals(method)) {
-            eventService.save(event);
-        }
-        
+    	System.out.println("Sent");
+        System.out.println("Updating Event ID: " + id);
+        System.out.println("New Event Name: " + event.getName());
+        System.out.println("New Date: " + event.getDate());
+        System.out.println("New Time: " + event.getTime());
+        System.out.println("New Venue ID: " + (event.getVenue() != null ? event.getVenue().getId() : "null"));
+        eventService.update(id, event);
         return "redirect:/events";
     }
 	
+    @GetMapping("/new")
+    public String showCreateEventForm(Model model) {
+        model.addAttribute("event", new Event());
+        model.addAttribute("venues", venueService.findAll()); // Populate venue dropdown
+        return "events/new";
+    }
+    
+    @PostMapping
+    public String createEvent(@Valid @ModelAttribute("event") Event event, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("venues", venueService.findAll());
+            return "events/new"; // Return form with validation errors
+        }
+
+        eventService.save(event);
+        return "redirect:/events"; // Redirect to event list
+    }
+
 	@DeleteMapping("/{id}")
 	public String deleteEvent(@PathVariable("id") long id, RedirectAttributes redirectAttrs) {
 		if (!eventService.existsById(id)) {

@@ -8,14 +8,15 @@
   <div layout:fragment="content">
     <h1>Update Event</h1>		
 	
-	<form action="#" th:action="@{/events}" th:object="${e}" method="post">
+	<form action="#" th:action="@{/events/update/{id}(id=${e.id})}" th:object="${e}" method="post">
+	  <input type="hidden" name="_method" value="put"/>
 	  <div class="mb-3">
 	    <label for="name" class="form-label">Name</label>
-	    <input type="text" class="form-control" id="name" th:value="*{name}">
+	    <input type="text" class="form-control" id="name" th:field="*{name}">
 	  </div>
 	  <div class="mb-3">
 	    <label for="date" class="form-label">Date</label>
-	    <input type="date" class="form-control" th:value="*{date}">
+	    <input type="date" class="form-control" th:field="*{date}">
 	  </div>
 	  <div class="mb-3">
 	  	    <label for="time" class="form-label">Time</label>
