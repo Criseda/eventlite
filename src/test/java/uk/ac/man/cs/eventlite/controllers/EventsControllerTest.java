@@ -1,9 +1,14 @@
 package uk.ac.man.cs.eventlite.controllers;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -82,5 +87,26 @@ public class EventsControllerTest {
 	public void getEventNotFound() throws Exception {
 		mvc.perform(get("/events/99").accept(MediaType.TEXT_HTML)).andExpect(status().isNotFound())
 				.andExpect(view().name("events/not_found")).andExpect(handler().methodName("getEvent"));
+	}
+	
+	
+	@Test
+	public void deleteGreetingNotFound() throws Exception {
+		when(eventService.existsById(1)).thenReturn(false);
+
+		mvc.perform(delete("/events/1").with(user("Rob").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML)
+				.with(csrf())).andExpect(status().isNotFound()).andExpect(view().name("events/not_found"))
+				.andExpect(handler().methodName("deleteEvent"));
+
+		verify(eventService, never()).deleteById(1);
+	}
+
+	@Test
+	public void deleteAllGreetings() throws Exception {
+		mvc.perform(delete("/events").with(user("Rob").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML)
+				.with(csrf())).andExpect(status().isFound()).andExpect(view().name("redirect:/events"))
+				.andExpect(handler().methodName("deleteAllEvents")).andExpect(flash().attributeExists("ok_message"));
+
+		verify(eventService).deleteAll();
 	}
 }
