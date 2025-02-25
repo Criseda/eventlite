@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -73,8 +74,14 @@ public class EventServiceImpl implements EventService {
 		eventRepository.deleteAllById(ids);
 	}
 	
-	@Override
-	public Optional<Event> findById(long id) {
-		return eventRepository.findById(id);
+	public Event update(long id, Event newEvent) {
+	    Event oldEvent = eventRepository.findById(id)
+	    		.orElseThrow(() -> new EventNotFoundException(id));
+		oldEvent.setName(newEvent.getName());
+		oldEvent.setDate(newEvent.getDate());
+		oldEvent.setTime(newEvent.getTime());
+		oldEvent.setVenue(newEvent.getVenue());
+		
+		return eventRepository.save(oldEvent);
 	}
 }

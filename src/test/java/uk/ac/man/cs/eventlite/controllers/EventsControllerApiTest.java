@@ -1,14 +1,20 @@
 package uk.ac.man.cs.eventlite.controllers;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -21,6 +27,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -122,5 +129,30 @@ public class EventsControllerApiTest {
 				.andExpect(handler().methodName("deleteAllEvents"));
 
 		verify(eventService).deleteAll();
+	}
+	
+	@Test
+	public void updateEvent() throws Exception {
+		ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+	    when(eventService.existsById(1L)).thenReturn(true);	
+		when(eventService.update(eq(1L), any(Event.class))).thenAnswer(invocation -> invocation.getArgument(1));
+		
+		String eventJson = """
+			{
+		      "date" : "2025-05-05",
+		      "time" : "17:00:00",
+		      "name" : "Updated Earliest Event"
+		    }
+		""";
+		
+		mvc.perform(put("/api/events/1").with(user("Rob").roles(Security.ADMIN_ROLE))
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(eventJson)
+			.accept(MediaType.APPLICATION_JSON))
+			.andExpect(handler().methodName("updateEvent"));
+		
+		verify(eventService).update(eq(1L), eventCaptor.capture());
+		Event capturedEvent = eventCaptor.getValue();
+		assertThat(capturedEvent.getName(), equalTo("Updated Earliest Event"));
 	}
 }
