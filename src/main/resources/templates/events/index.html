@@ -33,9 +33,17 @@
           <td th:text="${{e.date}}">Event date</td>
           <td th:text="${{e.time}}">Event time</td>
 		  <td><a class="btn btn-primary" role="button" th:href="@{/events/{id}(id=${e.id})}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Details</a></td>
+		  <td>
+            <form th:action="${(#mvc.url('EC#deleteEvent').arg(0, e.id)).build()}" th:method="delete" >
+              <button type="submit" class="btn btn-danger" sec:authorize="isAuthenticated()"><i class="fa-solid fa-trash"></i> Delete</button>
+            </form>
+          </td>
         </tr>
       </tbody>
     </table>
+    <form th:action="${(#mvc.url('EC#deleteAllEvents')).build()}" th:method="delete">
+      <button type="submit" class="btn btn-danger" sec:authorize="isAuthenticated()"><i class="fa-solid fa-trash" aria-hidden="true"></i> Delete All</button>
+    </form>
 
   </div>
 

@@ -6,12 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
@@ -59,5 +61,25 @@ public class EventsController {
         
         return "events/index";
     }
+	
+	@DeleteMapping("/{id}")
+	public String deleteEvent(@PathVariable("id") long id, RedirectAttributes redirectAttrs) {
+		if (!eventService.existsById(id)) {
+			throw new EventNotFoundException(id);
+		}
+
+		eventService.deleteById(id);
+		redirectAttrs.addFlashAttribute("ok_message", "Greeting deleted.");
+
+		return "redirect:/events";
+	}
+
+	@DeleteMapping
+	public String deleteAllEvents(RedirectAttributes redirectAttrs) {
+		eventService.deleteAll();
+		redirectAttrs.addFlashAttribute("ok_message", "All greetings deleted.");
+
+		return "redirect:/events";
+	}
 
 }
