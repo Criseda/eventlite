@@ -9,8 +9,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -60,6 +62,26 @@ public class EventsController {
         model.addAttribute("search", search);
         
         return "events/index";
+    }
+	
+	@GetMapping("/update/{id}")
+	public String updateEventForm(@PathVariable("id") long id, Model model) {
+		if(!eventService.existsById(id)) {
+			throw new EventNotFoundException(id);
+		}
+		model.addAttribute("e", eventService.findById(id).get());
+		model.addAttribute("v", venueService.findAll());
+		return "events/update";
+	}
+	
+    @PostMapping("/events")
+    public String updateEvent(@ModelAttribute("event") Event event, 
+                             @RequestParam("_method") String method) {
+        if ("put".equals(method)) {
+            eventService.save(event);
+        }
+        
+        return "redirect:/events";
     }
 	
 	@DeleteMapping("/{id}")
