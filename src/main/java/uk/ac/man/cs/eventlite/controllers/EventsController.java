@@ -6,13 +6,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import jakarta.validation.Valid;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
@@ -58,6 +62,24 @@ public class EventsController {
         model.addAttribute("search", search);
         
         return "events/index";
+    }
+	
+    @GetMapping("/new")
+    public String showCreateEventForm(Model model) {
+        model.addAttribute("event", new Event());
+        model.addAttribute("venues", venueService.findAll()); // Populate venue dropdown
+        return "events/new";
+    }
+    
+    @PostMapping
+    public String createEvent(@Valid @ModelAttribute("event") Event event, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("venues", venueService.findAll());
+            return "events/new"; // Return form with validation errors
+        }
+
+        eventService.save(event);
+        return "redirect:/events"; // Redirect to event list
     }
 
 }

@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/default}">
+<head>
+  <title>New</title>
+</head>
+<body>
+  <div layout:fragment="content">
+    <h1>Add a new greeting</h1>
+    
+    <form action="#" th:action="@{/events}" th:object="${event}" method="post">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" autofocus="autofocus" />
+		<label for="date">Date</label>
+		<input type="date" name="date" id="date" autofocus="autofocus" />
+		<label for="time">Time</label>
+		<input type="time" name="time" id="time" autofocus="autofocus" />
+		
+		<label>Venue:</label>
+		<select name="venue" id="venue"  required>
+		    <option th:each="v : ${venues}" th:value="${v.id}" th:text="${v.name}"></option>
+		</select>
+
+      </div>
+    
+      <button class="btn btn-primary" type="submit"><i class="fa-solid fa-bookmark" aria-hidden="true"></i> Save</button>
+      <a class="btn btn-warning" role="button" href="/events"><i class="fa-solid fa-ban" aria-hidden="true"></i> Cancel</a>
+    </form>
+	
+	<a href="/events" class="btn btn-secondary">
+	  <i class="fa-solid fa-arrow-left"></i> Back to Events
+	</a>
+	
+	
+  </div>
+</body>
+</html>

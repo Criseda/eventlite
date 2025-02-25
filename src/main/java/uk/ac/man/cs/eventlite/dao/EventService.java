@@ -12,7 +12,7 @@ public interface EventService {
 	
 	public Iterable<Event> findByNameContainingIgnoreCase(String name);
 	
-	public void save(Event event);
+	public Event save(Event event);
 	
 	public boolean existsById(long id);
 	

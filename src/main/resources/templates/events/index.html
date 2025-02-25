@@ -7,6 +7,11 @@
 </head>
 <body>
   <div layout:fragment="content">
+	
+	<a href="/events/new" class="btn btn-secondary">
+	  <i class="fa-solid fa-arrow-right"></i> Create New Event
+	</a>
+	
     <h1>All events</h1>
 	
 	<form th:action="@{/events}" method="get" class="mb-3">
