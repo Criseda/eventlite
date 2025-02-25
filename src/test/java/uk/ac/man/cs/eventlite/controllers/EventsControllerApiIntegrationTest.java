@@ -85,6 +85,24 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 	}
 	
 	@Test
+	public void deleteEventAsForbiddenRole() {
+	    int currentRows = countRowsInTable("events");
+
+	    // Simulate an ATTENDEE attempting to delete an event
+	    client.mutate().filter(basicAuthentication("Tom", "Carroll")) // Tom is an ATTENDEE
+	                   .build()
+	                   .delete()
+	                   .uri("/events/1")
+	                   .accept(MediaType.APPLICATION_JSON)
+	                   .exchange()
+	                   .expectStatus()
+	                   .isForbidden(); // Expect a 403 Forbidden status
+
+	    // Check that nothing is removed from the database
+	    assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+	
+	@Test
 	@DirtiesContext
 	public void deleteEventWithUser() {
 		int currentRows = countRowsInTable("events");
@@ -153,6 +171,23 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 					   .exchange()
 					   .expectStatus()
 					   .isUnauthorized();
+		
+		//Check nothing is removed from the database
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+	
+	@Test
+	public void deleteAllEventsAsForbiddenRole() {
+		int currentRows = countRowsInTable("events");
+		
+		client.mutate().filter(basicAuthentication("Tom", "Carroll"))
+					   .build()
+					   .delete()
+					   .uri("/events")
+					   .accept(MediaType.APPLICATION_JSON)
+					   .exchange()
+					   .expectStatus()
+					   .isForbidden(); // Expect a 403 Forbidden status
 		
 		//Check nothing is removed from the database
 		assertThat(currentRows, equalTo(countRowsInTable("events")));
@@ -269,6 +304,30 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 		.exchange()
 		.expectStatus()
 		.isUnauthorized();
+		
+		//Check nothing is removed from the database
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+	
+	@Test
+	public void updateEventAsForbiddenRole() {
+		String eventJson = """
+				{
+			      "date" : "2025-05-05",
+			      "time" : "17:00:00",
+			      "name" : "Updated Earliest Event"
+			    }
+			""";
+		client.mutate().filter(basicAuthentication("Tom", "Carroll"))
+		.build()
+		.put()
+		.uri("/events/1")
+		.accept(MediaType.APPLICATION_JSON)
+		.contentType(MediaType.APPLICATION_JSON)
+		.bodyValue(eventJson)
+		.exchange()
+		.expectStatus()
+		.isForbidden(); // Expect a 403 Forbidden status
 		
 		//Check nothing is removed from the database
 		assertThat(currentRows, equalTo(countRowsInTable("events")));
