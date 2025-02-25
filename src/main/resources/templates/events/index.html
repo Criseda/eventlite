@@ -8,9 +8,6 @@
 <body>
   <div layout:fragment="content">
 	
-	<a href="/events/new" class="btn btn-secondary">
-	  <i class="fa-solid fa-arrow-right"></i> Create New Event
-	</a>
 	
     <h1>All events</h1>
 	
@@ -39,7 +36,7 @@
           <td th:text="${{e.date}}">Event date</td>
           <td th:text="${{e.time}}">Event time</td>
 		  <td><a class="btn btn-primary" role="button" th:href="@{/events/{id}(id=${e.id})}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Details</a></td>
-		  <td><a class="btn btn-primary" sec:authorize="hasRole('ATTENDEE')" role="button" th:href="@{/events/{id}(id=${e.id})}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Register</a></td>
+		  <td><a class="btn btn-primary" sec:authorize="hasRole('ATTENDEE')" role="button"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Register</a></td>
 		  <td><a class="btn btn-primary" sec:authorize="hasRole('ORGANIZER')" role="button" th:href="@{/events/{id}(id=${e.id})}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Update</a></td>  
 		  <td><form th:action="@{/events/{id}(id=${e.id})}" th:method="delete" sec:authorize="hasRole('ORGANIZER')">
 		        <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash" aria-hidden="true"></i> Delete</button>
@@ -49,7 +46,10 @@
 	  </div>
 	  <div sec:authorize="hasRole('ORGANIZER')">
 	  		   <a class="btn btn-primary"  role="button"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Add Event</a>
-	  </div>   
+			   <a href="/events/new" class="btn btn-secondary">
+			   	  <i class="fa-solid fa-arrow-right"></i> Create New Event
+			   	</a>
+		   </div>   
   </tbody>
     </table>
 
