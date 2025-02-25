@@ -1,5 +1,7 @@
 package uk.ac.man.cs.eventlite.dao;
 
+import java.util.Optional;
+
 import uk.ac.man.cs.eventlite.entities.Event;
 
 public interface EventService {
@@ -8,7 +10,9 @@ public interface EventService {
 
 	public Iterable<Event> findAll();
 	
-	public void save(Event event);
+	public Iterable<Event> findByNameContainingIgnoreCase(String name);
+	
+	public Event save(Event event);
 	
 	public boolean existsById(long id);
 	
