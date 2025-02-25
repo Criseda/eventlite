@@ -1,5 +1,6 @@
 package uk.ac.man.cs.eventlite.controllers;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -8,10 +9,13 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -94,7 +98,7 @@ public class EventsControllerTest {
 	public void deleteGreetingNotFound() throws Exception {
 		when(eventService.existsById(1)).thenReturn(false);
 
-		mvc.perform(delete("/events/1").with(user("Rob").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML)
+		mvc.perform(delete("/events/1").with(user("Rob").roles(Security.ADMIN)).accept(MediaType.TEXT_HTML)
 				.with(csrf())).andExpect(status().isNotFound()).andExpect(view().name("events/not_found"))
 				.andExpect(handler().methodName("deleteEvent"));
 
@@ -103,10 +107,76 @@ public class EventsControllerTest {
 
 	@Test
 	public void deleteAllGreetings() throws Exception {
-		mvc.perform(delete("/events").with(user("Rob").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML)
+		mvc.perform(delete("/events").with(user("Rob").roles(Security.ADMIN)).accept(MediaType.TEXT_HTML)
 				.with(csrf())).andExpect(status().isFound()).andExpect(view().name("redirect:/events"))
 				.andExpect(handler().methodName("deleteAllEvents")).andExpect(flash().attributeExists("ok_message"));
 
 		verify(eventService).deleteAll();
+	}
+	
+	@Test
+	public void createEventFormForbiddenForAttendee() throws Exception {
+	    mvc.perform(get("/events/new").with(user("Tom").roles(Security.ATTENDEE)))
+	        .andExpect(status().isForbidden());
+	}
+	
+	@Test
+	public void createEventFormAccessibleForAdmin() throws Exception {
+	    mvc.perform(get("/events/new").with(user("Rob").roles(Security.ADMIN)))
+	        .andExpect(status().isOk())
+	        .andExpect(view().name("events/new"));
+	}
+	
+	@Test
+	public void createEventWithValidationErrors() throws Exception {
+	    mvc.perform(post("/events")
+	        .with(user("Rob").roles(Security.ADMIN))
+	        .with(csrf())
+	        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	        .param("name", "") // Empty name triggers validation error
+	        .param("date", "2025-05-06")
+	        .param("time", "13:00")
+	        .param("venue.id", "1"))
+	        .andExpect(status().isOk())
+	        .andExpect(view().name("events/new"))
+	        .andExpect(model().attributeHasErrors("event"));
+	}
+	
+	@Test
+	public void createEventSuccess() throws Exception {
+	    mvc.perform(post("/events")
+	        .with(user("Rob").roles(Security.ADMIN))
+	        .with(csrf())
+	        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	        .param("name", "New Event")
+	        .param("date", "2023-12-31")
+	        .param("time", "13:00") 
+	        .param("venue.id", "1"))
+	        .andExpect(status().is3xxRedirection())
+	        .andExpect(view().name("redirect:/events"))
+	        .andExpect(flash().attributeExists("ok_message"));
+
+	    verify(eventService).save(any(Event.class));
+	}
+	
+	@Test
+	public void updateEventForbiddenForAttendee() throws Exception {
+	    when(eventService.existsById(1)).thenReturn(true);
+	    mvc.perform(put("/events/update/1")
+	        .with(user("Tom").roles(Security.ATTENDEE))
+	        .with(csrf())
+	        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	        .param("name", "Updated Event"))
+	        .andExpect(status().isForbidden());
+	}
+	
+	@Test
+	public void deleteEventForbiddenForAttendee() throws Exception {
+	    when(eventService.existsById(1)).thenReturn(true);
+	    mvc.perform(delete("/events/1")
+	        .with(user("Tom").roles(Security.ATTENDEE))
+	        .with(csrf()))
+	        .andExpect(status().isForbidden());
+	    verify(eventService, never()).deleteById(1);
 	}
 }
