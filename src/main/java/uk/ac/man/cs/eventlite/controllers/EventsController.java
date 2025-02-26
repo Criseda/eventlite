@@ -99,13 +99,14 @@ public class EventsController {
 
 	@PostMapping
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
-	public String createEvent(@Valid @ModelAttribute("event") Event event, BindingResult result, Model model) {
+	public String createEvent(@Valid @ModelAttribute("event") Event event, BindingResult result, Model model, RedirectAttributes redirectAttrs) {
 		if (result.hasErrors()) {
 			model.addAttribute("venues", venueService.findAll());
 			return "events/new"; // Return form with validation errors
 		}
 
 		eventService.save(event);
+		redirectAttrs.addFlashAttribute("ok_message", "Event created successfully.");
 		return "redirect:/events"; // Redirect to event list
 	}
 

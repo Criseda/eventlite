@@ -15,6 +15,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;  // Add this import
+
 
 
 
@@ -36,6 +38,7 @@ public class Event {
 	@DateTimeFormat(pattern = "HH:mm")
 	private LocalTime time;
 
+	@NotBlank(message = "Name cannot be empty")  // Add this annotation
 	private String name;
 	
 	@ManyToOne
