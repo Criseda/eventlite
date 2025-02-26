@@ -217,7 +217,8 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 				{
 			      "date" : "2025-05-05",
 			      "time" : "17:00:00",
-			      "name" : "Updated Earliest Event"
+			      "name" : "Updated Earliest Event",
+				  "description" : "Updated description"
 			    }
 			""";
 		client.mutate().filter(basicAuthentication("Rob", "Haines"))

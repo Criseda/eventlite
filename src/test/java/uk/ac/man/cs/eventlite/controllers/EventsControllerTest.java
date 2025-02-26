@@ -136,7 +136,8 @@ public class EventsControllerTest {
 	        .param("name", "") // Empty name triggers validation error
 	        .param("date", "2025-05-06")
 	        .param("time", "13:00")
-	        .param("venue.id", "1"))
+	        .param("venue.id", "1")
+			.param("description", "Description example"))
 	        .andExpect(status().isOk())
 	        .andExpect(view().name("events/new"))
 	        .andExpect(model().attributeHasErrors("event"));
@@ -151,7 +152,8 @@ public class EventsControllerTest {
 	        .param("name", "New Event")
 	        .param("date", "2023-12-31")
 	        .param("time", "13:00") 
-	        .param("venue.id", "1"))
+	        .param("venue.id", "1")
+			.param("description", "Description example"))
 	        .andExpect(status().is3xxRedirection())
 	        .andExpect(view().name("redirect:/events"))
 	        .andExpect(flash().attributeExists("ok_message"));

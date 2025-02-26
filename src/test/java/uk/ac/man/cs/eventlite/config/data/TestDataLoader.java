@@ -54,6 +54,7 @@ public class TestDataLoader {
 				event1.setDate(LocalDate.of(2025,05,06));
 				event1.setTime(LocalTime.of(13, 8));
 				event1.setName("Same Day as Showcase 1 but later time");
+				event1.setDescription("Description example");
 				eventService.save(event1);
 				
 				Event event2 = new Event();

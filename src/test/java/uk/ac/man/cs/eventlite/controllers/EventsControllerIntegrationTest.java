@@ -98,7 +98,8 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
                 .param("name", "NewEvent")
                 .param("date", "2025-05-06")
                 .param("time", "13:00")
-                .param("venue.id", String.valueOf(venue.getId())))
+                .param("venue.id", String.valueOf(venue.getId()))
+                .param("description", "Description example"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/events"));
 
@@ -132,6 +133,7 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
                 .param("date", "2025-05-07")
                 .param("time", "14:00")
                 .param("venue.id", String.valueOf(venue.getId()))
+                .param("description", "Description example")
                 .param("_method", "PUT"))  // Add the _method parameter
                 .andExpect(status().isNotFound());
 

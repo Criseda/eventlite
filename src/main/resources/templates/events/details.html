@@ -16,7 +16,7 @@
 		</tr>
 		<tr>
 			<th><i class="fa-solid fa-calendar"></i> Start date</th>
-	        <td th:text="${e.date.getDayOfMonth()} + '/' + ${e.date.getMonth().toString().toLowerCase()} + '/' + ${e.date.getYear()}"></td>
+	        <td th:text="${e.date.getDayOfMonth()} + '/' + ${e.date.getMonthValue()} + '/' + ${e.date.getYear()}"></td>
 	    </tr>
 		<tr>
 			<th><i class="fa-solid fa-clock"></i> Start time</th>
@@ -30,11 +30,15 @@
 			<th><i class="fa-solid fa-person"></i> Venue capacity</th>
 			<td th:text="${e.venue.capacity}"></td>
 		</tr>
+		<tr>
+			<th><i class="fa-solid fa-circle-info"></i> Description</th>
+			<td th:text="${e.description}"></td>
+		</tr>
 	  </tbody>
 	</table>
 	
 	<p>
-	  <a class="btn btn-primary" role="button" th:href="@{/events}"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Events list</a>
+	  <a class="btn btn-secondary" role="button" th:href="@{/events}"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Events</a>
 	</p>
   </div>
 </body>
