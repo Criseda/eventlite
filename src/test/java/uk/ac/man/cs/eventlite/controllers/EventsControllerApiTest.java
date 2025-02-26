@@ -139,7 +139,8 @@ public class EventsControllerApiTest {
 			{
 		      "date" : "2025-05-05",
 		      "time" : "17:00:00",
-		      "name" : "Updated Earliest Event"
+		      "name" : "Updated Earliest Event",
+			  "description" : "Description example"
 		    }
 		""";
 		
