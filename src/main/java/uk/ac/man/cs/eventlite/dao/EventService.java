@@ -1,6 +1,7 @@
 package uk.ac.man.cs.eventlite.dao;
 
 import java.util.Optional;
+import java.time.LocalDate;
 
 import uk.ac.man.cs.eventlite.entities.Event;
 
@@ -13,6 +14,10 @@ public interface EventService {
 	public Iterable<Event> findAll();
 	
 	public Iterable<Event> findByNameContainingIgnoreCase(String name);
+	
+	public Iterable<Event> findByDateAfterOrderByDateAscNameAsc(LocalDate afterDate);
+	
+	public Iterable<Event> findByDateBeforeOrderByDateDescNameAsc(LocalDate beforeDate);
 	
 	public Event save(Event event);
 	

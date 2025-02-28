@@ -1,5 +1,6 @@
 package uk.ac.man.cs.eventlite.dao;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -91,5 +92,13 @@ public class EventServiceImpl implements EventService {
 		return eventRepository.save(oldEvent);
 	}
 	
+	@Override 
+	public Iterable<Event> findByDateAfterOrderByDateAscNameAsc(LocalDate afterDate){
+		return eventRepository.findByDateAfterOrderByDateAscNameAsc(afterDate);
+	}
 	
+	@Override 
+	public Iterable<Event> findByDateBeforeOrderByDateDescNameAsc(LocalDate beforeDate){
+		return eventRepository.findByDateBeforeOrderByDateDescNameAsc(beforeDate);
+	}
 }

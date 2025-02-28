@@ -1,5 +1,7 @@
 package uk.ac.man.cs.eventlite.controllers;
 
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -56,13 +58,18 @@ public class EventsController {
 
 	@GetMapping
 	public String getAllEvents(@RequestParam(value = "search", required = false) String search, Model model) {
-		Iterable<Event> events;
+		Iterable<Event> previousEvents;
+		Iterable<Event> upcomingEvents;
 		if (search != null && !search.isEmpty()) {
-			events = eventService.findByNameContainingIgnoreCase(search);
+			//events = eventService.findByNameContainingIgnoreCase(search);
+			previousEvents = null;
+			upcomingEvents = null;
 		} else {
-			events = eventService.findAll();
+			previousEvents = eventService.findByDateBeforeOrderByDateDescNameAsc(LocalDate.now());
+			upcomingEvents = eventService.findByDateAfterOrderByDateAscNameAsc(LocalDate.now());
 		}
-		model.addAttribute("events", events);
+		model.addAttribute("previousEvents", previousEvents);
+		model.addAttribute("upcomingEvents", upcomingEvents);
 		model.addAttribute("search", search);
 
 		return "events/index";

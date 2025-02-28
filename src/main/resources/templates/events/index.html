@@ -43,10 +43,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            th:each="e : ${events}"
-            th:if="${(search == null or (e.name != null and e.name.toLowerCase().contains(search.toLowerCase()))) and (e.date != null and e.date.isAfter(#temporals.createNow().toLocalDate()))}"
-          >
+          <tr th:each="e : ${upcomingEvents}">
             <td th:text="${e.name}">My Event</td>
             <td th:text="${e.venue.name}">Event Venue</td>
             <td th:text="${{e.date}}">Event Date</td>
@@ -104,10 +101,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            th:each="e : ${events}"
-            th:if="${(search == null or (e.name != null and e.name.toLowerCase().contains(search.toLowerCase()))) and (e.date != null and e.date.isBefore(#temporals.createNow().toLocalDate()))}"
-          >
+          <tr th:each="e : ${previousEvents}">
             <td th:text="${e.name}">My Event</td>
             <td th:text="${e.venue.name}">Event Venue</td>
             <td th:text="${{e.date}}">Event Date</td>
