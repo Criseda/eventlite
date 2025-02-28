@@ -47,19 +47,15 @@
             th:each="e : ${events}"
             th:if="${(search == null or (e.name != null and e.name.toLowerCase().contains(search.toLowerCase()))) and (e.date != null and e.date.isAfter(#temporals.createNow().toLocalDate()))}"
           >
-            <td th:text="${e.name}">My Event</td>
+            <td>
+              <a th:href="@{/events/{id}(id=${e.id})}" th:text="${e.name}"
+                >My Event</a
+              >
+            </td>
             <td th:text="${e.venue.name}">Event Venue</td>
             <td th:text="${{e.date}}">Event Date</td>
             <td th:text="${{e.time}}">Event Time</td>
             <td>
-              <a
-                class="btn btn-primary"
-                role="button"
-                th:href="@{/events/{id}(id=${e.id})}"
-              >
-                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-                Details
-              </a>
               <a
                 class="btn btn-primary"
                 sec:authorize="hasRole('ATTENDEE')"
@@ -77,7 +73,6 @@
                 <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
                 Update
               </a>
-              
             </td>
           </tr>
         </tbody>
@@ -131,8 +126,6 @@
                 <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
                 Update
               </a>
-              
-              </form>
             </td>
           </tr>
         </tbody>
