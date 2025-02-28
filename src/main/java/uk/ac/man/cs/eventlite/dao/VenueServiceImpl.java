@@ -4,9 +4,11 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -21,34 +23,46 @@ public class VenueServiceImpl implements VenueService {
 
 	private final static String DATA = "data/venues.json";
 
+	@Autowired
+	private VenueRepository venueRepository;
+	
 	@Override
 	public long count() {
-		long count = 0;
-		Iterator<Venue> i = findAll().iterator();
-
-		for (; i.hasNext(); count++) {
-			i.next();
-		}
-
-		return count;
+//		long count = 0;
+//		Iterator<Venue> i = findAll().iterator();
+//
+//		for (; i.hasNext(); count++) {
+//			i.next();
+//		}
+//
+//		return count;
+		return venueRepository.count();
 	}
 
 	@Override
 	public Iterable<Venue> findAll() {
-		Iterable<Venue> venues;
-
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			InputStream in = new ClassPathResource(DATA).getInputStream();
-
-			venues = mapper.readValue(in, mapper.getTypeFactory().constructCollectionType(List.class, Venue.class));
-		} catch (Exception e) {
-			// If we can't read the file, then the event list is empty...
-			log.error("Exception while reading file '" + DATA + "': " + e);
-			venues = Collections.emptyList();
-		}
-
-		return venues;
+//		Iterable<Venue> venues;
+//
+//		try {
+//			ObjectMapper mapper = new ObjectMapper();
+//			InputStream in = new ClassPathResource(DATA).getInputStream();
+//
+//			venues = mapper.readValue(in, mapper.getTypeFactory().constructCollectionType(List.class, Venue.class));
+//		} catch (Exception e) {
+//			// If we can't read the file, then the event list is empty...
+//			log.error("Exception while reading file '" + DATA + "': " + e);
+//			venues = Collections.emptyList();
+//		}
+//
+//		return venues;
+		return venueRepository.findAll();
 	}
-
+	
+	public Venue save(Venue venue) {
+		return venueRepository.save(venue);
+	}
+	
+	public Optional<Venue> findById(long id) {
+		return venueRepository.findById(id);
+	}
 }

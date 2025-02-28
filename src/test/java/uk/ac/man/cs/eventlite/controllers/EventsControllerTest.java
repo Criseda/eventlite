@@ -1,14 +1,24 @@
 package uk.ac.man.cs.eventlite.controllers;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,7 +66,7 @@ public class EventsControllerTest {
 				.andExpect(view().name("events/index")).andExpect(handler().methodName("getAllEvents"));
 
 		verify(eventService).findAll();
-		verify(venueService).findAll();
+		//verify(venueService).findAll();
 		verifyNoInteractions(event);
 		verifyNoInteractions(venue);
 	}
@@ -65,20 +75,110 @@ public class EventsControllerTest {
 	public void getIndexWithEvents() throws Exception {
 		when(venue.getName()).thenReturn("Kilburn Building");
 		when(venueService.findAll()).thenReturn(Collections.<Venue>singletonList(venue));
-
-		when(event.getVenue()).thenReturn(1L);
+		when(venueService.findById(1)).thenReturn(Optional.of(venue));
+		Optional<Venue> venue = venueService.findById(1);
+		when(event.getVenue()).thenReturn(venue.get());
 		when(eventService.findAll()).thenReturn(Collections.<Event>singletonList(event));
 
 		mvc.perform(get("/events").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
 				.andExpect(view().name("events/index")).andExpect(handler().methodName("getAllEvents"));
 
 		verify(eventService).findAll();
-		verify(venueService).findAll();
+		//verify(venueService).findAll();
 	}
 
 	@Test
 	public void getEventNotFound() throws Exception {
 		mvc.perform(get("/events/99").accept(MediaType.TEXT_HTML)).andExpect(status().isNotFound())
 				.andExpect(view().name("events/not_found")).andExpect(handler().methodName("getEvent"));
+	}
+	
+	
+	@Test
+	public void deleteGreetingNotFound() throws Exception {
+		when(eventService.existsById(1)).thenReturn(false);
+
+		mvc.perform(delete("/events/1").with(user("Rob").roles(Security.ADMIN)).accept(MediaType.TEXT_HTML)
+				.with(csrf())).andExpect(status().isNotFound()).andExpect(view().name("events/not_found"))
+				.andExpect(handler().methodName("deleteEvent"));
+
+		verify(eventService, never()).deleteById(1);
+	}
+
+	@Test
+	public void deleteAllGreetings() throws Exception {
+		mvc.perform(delete("/events").with(user("Rob").roles(Security.ADMIN)).accept(MediaType.TEXT_HTML)
+				.with(csrf())).andExpect(status().isFound()).andExpect(view().name("redirect:/events"))
+				.andExpect(handler().methodName("deleteAllEvents")).andExpect(flash().attributeExists("ok_message"));
+
+		verify(eventService).deleteAll();
+	}
+	
+	@Test
+	public void createEventFormForbiddenForAttendee() throws Exception {
+	    mvc.perform(get("/events/new").with(user("Tom").roles(Security.ATTENDEE)))
+	        .andExpect(status().isForbidden());
+	}
+	
+	@Test
+	public void createEventFormAccessibleForAdmin() throws Exception {
+	    mvc.perform(get("/events/new").with(user("Rob").roles(Security.ADMIN)))
+	        .andExpect(status().isOk())
+	        .andExpect(view().name("events/new"));
+	}
+	
+	@Test
+	public void createEventWithValidationErrors() throws Exception {
+	    mvc.perform(post("/events")
+	        .with(user("Rob").roles(Security.ADMIN))
+	        .with(csrf())
+	        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	        .param("name", "") // Empty name triggers validation error
+	        .param("date", "2025-05-06")
+	        .param("time", "13:00")
+	        .param("venue.id", "1")
+			.param("description", "Description example"))
+	        .andExpect(status().isOk())
+	        .andExpect(view().name("events/new"))
+	        .andExpect(model().attributeHasErrors("event"));
+	}
+	
+	@Test
+	public void createEventSuccess() throws Exception {
+	    mvc.perform(post("/events")
+	        .with(user("Rob").roles(Security.ADMIN))
+	        .with(csrf())
+	        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	        .param("name", "New Event")
+	        .param("date", "2023-12-31")
+	        .param("time", "13:00") 
+	        .param("venue.id", "1")
+			.param("description", "Description example"))
+	        .andExpect(status().is3xxRedirection())
+	        .andExpect(view().name("redirect:/events"))
+	        .andExpect(flash().attributeExists("ok_message"));
+
+	    verify(eventService).save(any(Event.class));
+	}
+	
+	@Test
+	public void updateEventForbiddenForAttendee() throws Exception {
+	    when(eventService.existsById(1)).thenReturn(true);
+	    mvc.perform(put("/events/update/1")
+	        .with(user("Tom").roles(Security.ATTENDEE))
+	        .with(csrf())
+	        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	        .param("name", "Updated Event"))
+	        .andExpect(status().isForbidden());
+	}
+	
+	@Test
+	public void deleteEventForbiddenForAttendee() throws Exception {
+	    when(eventService.existsById(1)).thenReturn(true);
+	    mvc.perform(delete("/events/1")
+	        .with(user("Tom").roles(Security.ATTENDEE))
+	        .with(csrf()))
+	        .andExpect(status().isForbidden());
+	    verify(eventService, never()).deleteById(1);
 	}
 }

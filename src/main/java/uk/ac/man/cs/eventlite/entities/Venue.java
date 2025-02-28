@@ -1,12 +1,30 @@
 package uk.ac.man.cs.eventlite.entities;
 
-public class Venue {
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name="venues")
+public class Venue {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "venues_seq")
+	@SequenceGenerator(name = "venues_seq", sequenceName = "venues_SEQ", allocationSize = 1)
 	private long id;
 
 	private String name;
 
 	private int capacity;
+	@OneToMany(mappedBy = "venue", cascade = CascadeType.ALL)
+	private List<Event> events;
 
 	public Venue() {
 	}
@@ -33,5 +51,13 @@ public class Venue {
 
 	public void setCapacity(int capacity) {
 		this.capacity = capacity;
+	}
+	
+	public List<Event> getEvents() {
+		return events;
+	}
+
+	public void setEvents(List<Event> events) {
+		this.events = events;
 	}
 }
