@@ -3,6 +3,12 @@ package uk.ac.man.cs.eventlite.dao;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,5 +106,60 @@ public class EventServiceImpl implements EventService {
 	@Override 
 	public Iterable<Event> findByDateBeforeOrderByDateDescNameAsc(LocalDate beforeDate){
 		return eventRepository.findByDateBeforeOrderByDateDescNameAsc(beforeDate);
+	}
+	
+	@Override
+	public Iterable<Event> findByWholeWordDateAlphabetically(String name, String mode){
+		
+		// get all events where name appears anywhere in the event name for upcoming (u) and previous (p) events
+		List<Event> events = new ArrayList<Event>();
+		
+		if (mode == "u") {
+			List<Event> upcoming = (List<Event>) eventRepository.findByDateAfterAndNameContainingIgnoreCaseOrderByDateAscNameAsc(LocalDate.now(), name);
+			events = upcoming;
+		}
+		else if(mode == "p") {
+			List<Event> previous = (List<Event>) eventRepository.findByDateBeforeAndNameContainingIgnoreCaseOrderByDateDescNameAsc(LocalDate.now(), name);
+			events = previous;
+		}
+		
+		// a map where the key is the event and the value is the count of occurrences of the name
+	    Map<Event, Integer> occurrenceMap = new HashMap<>();
+	    
+	    // populating the map
+	    for (Event event : events) {
+	    	// case-insensitive
+	        String eventName = event.getName().toLowerCase();
+	        String searchTerm = name.toLowerCase();
+	        
+	        int count = 0;
+	        int index = eventName.indexOf(searchTerm);
+
+	        while (index != -1) {
+	            count++;
+	            index = eventName.indexOf(searchTerm, index + searchTerm.length());
+	        }
+
+	        occurrenceMap.put(event, count);
+	    }
+
+	    // Sort by the count (descending), then the date (ascending for upcoming, descending for previous), then by the event name (alphabetically)
+	    Comparator<Event> eventComparator = Comparator
+	            .comparing((Event e) -> occurrenceMap.get(e)).reversed();
+	    
+	    if (mode == "u") {
+	    	eventComparator.thenComparing(Event::getDate)
+	    		.thenComparing(Event::getName, String.CASE_INSENSITIVE_ORDER);
+	    }
+	    else if (mode == "p") {
+	    	eventComparator.thenComparing(Event::getDate).reversed()
+    		.thenComparing(Event::getName, String.CASE_INSENSITIVE_ORDER);
+	    }
+
+	    List<Event> sortedEvents = new ArrayList<>(events);
+	    sortedEvents.sort(eventComparator);
+
+	    return sortedEvents;
+		
 	}
 }

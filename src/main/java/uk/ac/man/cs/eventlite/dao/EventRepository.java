@@ -10,7 +10,9 @@ public interface EventRepository extends CrudRepository<Event, Long>{
 	public Iterable<Event> findAllByOrderByDateAscTimeAsc();
 	public Iterable<Event> findByNameContainingIgnoreCase(String name);
 	public Iterable<Event> findByDateAfterOrderByDateAscNameAsc(LocalDate afterDate);
-	public Iterable<Event> findByDateBeforeOrderByDateDescNameAsc(LocalDate beforeDate); 
+	public Iterable<Event> findByDateBeforeOrderByDateDescNameAsc(LocalDate beforeDate);
+	public Iterable<Event> findByDateAfterAndNameContainingIgnoreCaseOrderByDateAscNameAsc(LocalDate afterDate, String name);
+	public Iterable<Event> findByDateBeforeAndNameContainingIgnoreCaseOrderByDateDescNameAsc(LocalDate beforeDate, String name);
 };
 
 	

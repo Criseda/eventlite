@@ -19,6 +19,8 @@ public interface EventService {
 	
 	public Iterable<Event> findByDateBeforeOrderByDateDescNameAsc(LocalDate beforeDate);
 	
+	public Iterable<Event> findByWholeWordDateAlphabetically(String name, String mode);
+	
 	public Event save(Event event);
 	
 	public boolean existsById(long id);

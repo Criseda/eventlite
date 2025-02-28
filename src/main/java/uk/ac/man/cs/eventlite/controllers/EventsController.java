@@ -62,8 +62,8 @@ public class EventsController {
 		Iterable<Event> upcomingEvents;
 		if (search != null && !search.isEmpty()) {
 			//events = eventService.findByNameContainingIgnoreCase(search);
-			previousEvents = null;
-			upcomingEvents = null;
+			previousEvents = eventService.findByWholeWordDateAlphabetically(search, "p");
+			upcomingEvents = eventService.findByWholeWordDateAlphabetically(search, "u");
 		} else {
 			previousEvents = eventService.findByDateBeforeOrderByDateDescNameAsc(LocalDate.now());
 			upcomingEvents = eventService.findByDateAfterOrderByDateAscNameAsc(LocalDate.now());
