@@ -26,6 +26,7 @@ import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
+import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
 @Controller
 @RequestMapping(value = "/venues", produces = { MediaType.TEXT_HTML_VALUE })
@@ -37,5 +38,11 @@ public class VenuesController {
 	@Autowired
 	private VenueService venueService;
 	
-	
+	@ExceptionHandler(VenueNotFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public String venueNotFoundHandler(VenueNotFoundException ex, Model model) {
+		model.addAttribute("not_found_id", ex.getId());
+
+		return "venues/not_found";
+	}
 };
