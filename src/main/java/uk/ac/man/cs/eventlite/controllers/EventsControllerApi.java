@@ -49,7 +49,9 @@ public class EventsControllerApi {
 
 	@GetMapping("/{id}")
 	public EntityModel<Event> getEvent(@PathVariable("id") long id) {
-		throw new EventNotFoundException(id);
+	    Event event = eventService.findById(id)
+	        .orElseThrow(() -> new EventNotFoundException(id));
+	    return eventAssembler.toModel(event);
 	}
 
 	@GetMapping

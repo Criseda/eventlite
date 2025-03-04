@@ -73,12 +73,11 @@ public class EventsControllerApiTest {
 	@Test
 	public void getIndexWithEvents() throws Exception {
 		Event e = new Event();
-		e.setId(0);
 		e.setName("Event");
 		e.setDate(LocalDate.now());
 		e.setTime(LocalTime.now());
-		when(venueService.findById(0)).thenReturn(Optional.of(venue));
-		Optional<Venue> venue = venueService.findById(0);
+		when(venueService.findById(1)).thenReturn(Optional.of(venue));
+		Optional<Venue> venue = venueService.findById(1);
 		e.setVenue(venue.get());
 		when(eventService.findAll()).thenReturn(Collections.<Event>singletonList(e));
 
@@ -88,6 +87,29 @@ public class EventsControllerApiTest {
 				.andExpect(jsonPath("$._embedded.events.length()", equalTo(1)));
 
 		verify(eventService).findAll();
+	}
+	
+	@Test
+	public void getEventFound() throws Exception {
+	    Event e = new Event();
+	    e.setName("Test Event");
+	    e.setId(10L);
+	    e.setDate(LocalDate.now());
+	    e.setTime(LocalTime.now());
+	    when(venueService.findById(1)).thenReturn(Optional.of(venue));
+	    Optional<Venue> venue = venueService.findById(1);
+	    e.setVenue(venue.get());
+	    
+	    // Use a specific ID in the mock and request
+	    when(eventService.findById(10L)).thenReturn(Optional.of(e));
+
+	    mvc.perform(get("/api/events/10").accept(MediaType.APPLICATION_JSON))
+	       .andExpect(status().isOk())
+	       .andExpect(handler().methodName("getEvent"))
+	       .andExpect(jsonPath("$.name", equalTo("Test Event")))
+	       .andExpect(jsonPath("$._links.self.href", endsWith("/api/events/10")));
+
+	    verify(eventService).findById(10L);
 	}
 
 	@Test
