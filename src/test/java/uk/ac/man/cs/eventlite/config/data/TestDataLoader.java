@@ -38,6 +38,8 @@ public class TestDataLoader {
 			Venue venue1 = new Venue();
 			venue1.setName("Venue 1");
 			venue1.setCapacity(100);
+			venue1.setPostcode("M14 6FZ");
+			venue1.setStreet("13 Fake road");
 			venueService.save(venue1);
 			
 			Optional<Venue> venue = venueService.findById(1);

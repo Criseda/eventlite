@@ -87,6 +87,8 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         Venue venue = new Venue();
         venue.setName("Test Venue");
         venue.setCapacity(100);
+		venue.setPostcode("M14 6FZ");
+		venue.setStreet("13 Fake road");
         venueService.save(venue);
 
         long currentCount = eventService.count();
@@ -113,6 +115,8 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         Venue venue = new Venue();
         venue.setName("Test Venue");
         venue.setCapacity(100);
+		venue.setPostcode("M14 6FZ");
+		venue.setStreet("13 Fake road");
         venueService.save(venue);
 
         // Create an event using EventService

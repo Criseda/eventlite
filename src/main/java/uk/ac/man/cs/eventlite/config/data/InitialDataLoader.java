@@ -39,6 +39,8 @@ public class InitialDataLoader {
 				Venue venue = new Venue();
 				venue.setName("Venue 1");
 				venue.setCapacity(100);
+				venue.setPostcode("M14 6FZ");
+				venue.setStreet("13 Fake road");
 				venueService.save(venue);
 			}
 

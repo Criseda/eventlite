@@ -10,6 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name="venues")
@@ -20,12 +22,24 @@ public class Venue {
 	@SequenceGenerator(name = "venues_seq", sequenceName = "venues_SEQ", allocationSize = 1)
 	private long id;
 
+	@NotNull(message = "Venue needs a name")
 	private String name;
 
+	@NotNull(message = "Must inlcude a capacity")
 	private int capacity;
+	
 	@OneToMany(mappedBy = "venue", cascade = CascadeType.ALL)
 	private List<Event> events;
 
+	@NotNull(message = "")
+	@Size(max = 300, message = "Road name must be less than 300 characters")
+	private String street;
+	
+	@NotNull(message = "Must include a postcode")
+	@Size(max = 256, message = "Name must be less than 256 characters")
+	private String postcode;
+	
+	
 	public Venue() {
 	}
 
@@ -47,10 +61,26 @@ public class Venue {
 
 	public int getCapacity() {
 		return capacity;
-	}
-
+	}	
+	
 	public void setCapacity(int capacity) {
 		this.capacity = capacity;
+	}
+	
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getStreet() {
+		return street;
+	}
+	
+	public void setPostcode(String postcode) {
+		this.postcode = postcode;
+	}
+	
+	public String getPostcode() {
+		return postcode;
 	}
 	
 	public List<Event> getEvents() {

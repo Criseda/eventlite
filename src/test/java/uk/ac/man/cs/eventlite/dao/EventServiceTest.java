@@ -50,6 +50,8 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		Venue tempVen = new Venue();
 		tempVen.setName("Venue1");
 		tempVen.setCapacity(10);
+		tempVen.setPostcode("M14 6FZ");
+		tempVen.setStreet("13 Fake road");
 		venueService.save(tempVen);
 		
 		Event A = new Event();
@@ -86,6 +88,8 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		Venue tempVen = new Venue();
 		tempVen.setName("Venue1");
 		tempVen.setCapacity(10);
+		tempVen.setPostcode("M14 6FZ");
+		tempVen.setStreet("13 Fake road");
 		venueService.save(tempVen);
 		
 		Event A = new Event();
@@ -121,6 +125,8 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		Venue tempVen = new Venue();
 		tempVen.setName("Venue1");
 		tempVen.setCapacity(10);
+		tempVen.setPostcode("M14 6FZ");
+		tempVen.setStreet("13 Fake road");
 		venueService.save(tempVen);
 		
 		Event A = new Event();
@@ -157,6 +163,8 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		Venue tempVen = new Venue();
 		tempVen.setName("Venue1");
 		tempVen.setCapacity(10);
+		tempVen.setPostcode("M14 6FZ");
+		tempVen.setStreet("13 Fake road");
 		venueService.save(tempVen);
 		
 		Event A = new Event();
@@ -195,10 +203,14 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		Venue A = new Venue();
 		A.setName("Venue A");
 		A.setCapacity(10);
+		A.setPostcode("M14 6FZ");
+		A.setStreet("13 Fake road");
 		
 		Venue B = new Venue();
 		B.setName("Venue B");
 		B.setCapacity(10);
+		B.setPostcode("M14 6FZ");
+		B.setStreet("13 Fake road");
 		
 		venueService.save(A);
 		venueService.save(B);
@@ -272,6 +284,8 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		Venue A = new Venue();
 		A.setName("Venue A");
 		A.setCapacity(10);
+		A.setPostcode("M14 6FZ");
+		A.setStreet("13 Fake road");
 
 		venueService.save(A);
 		
@@ -341,6 +355,8 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		Venue A = new Venue();
 		A.setName("Venue A");
 		A.setCapacity(10);
+		A.setPostcode("M14 6FZ");
+		A.setStreet("13 Fake road");
 
 		venueService.save(A);
 		
@@ -390,6 +406,8 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		Venue A = new Venue();
 		A.setName("Venue A");
 		A.setCapacity(10);
+		A.setPostcode("M14 6FZ");
+		A.setStreet("13 Fake road");
 
 		venueService.save(A);
 		
@@ -450,6 +468,8 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		Venue A = new Venue();
 		A.setName("Venue A");
 		A.setCapacity(10);
+		A.setPostcode("M14 6FZ");
+		A.setStreet("13 Fake road");
 
 		venueService.save(A);
 		
@@ -483,6 +503,8 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		Venue A = new Venue();
 		A.setName("Venue A");
 		A.setCapacity(10);
+		A.setPostcode("M14 6FZ");
+		A.setStreet("13 Fake road");
 
 		venueService.save(A);
 		
