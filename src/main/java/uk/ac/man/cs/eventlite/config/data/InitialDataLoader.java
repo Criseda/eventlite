@@ -42,7 +42,7 @@ public class InitialDataLoader {
 				venueService.save(venue);
 			}
 
-			if (eventService.count() > 2) {
+			if (eventService.count() > 3) {
 				log.info("Database already populated with events. Skipping event initialization.");
 			} else {
 				// Build and save initial events here.
@@ -71,6 +71,13 @@ public class InitialDataLoader {
 					event2.setTime(LocalTime.of(17, 0));
 					event2.setName("Earliest Event");
 					eventService.save(event2);
+					
+					Event event3 = new Event();
+					event3.setVenue(venue.get());
+					event3.setDate(LocalDate.of(2025,11,28));
+					event3.setTime(LocalTime.of(17, 0));
+					event3.setName("Mummy Pig's Due Date");
+					eventService.save(event3);
 				}
 			}
 		};
