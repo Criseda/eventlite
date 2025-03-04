@@ -33,12 +33,21 @@
         </div>
         <div class="mb-3">
           <label for="time" class="form-label">Time</label>
-          <input
-            type="time"
-            class="form-control"
-            id="time"
-            th:field="*{time}"
-          />
+          <div class="d-flex">
+            <input
+              type="time"
+              class="form-control me-2"
+              id="time"
+              th:field="*{time}"
+            />
+            <button
+              class="btn btn-secondary"
+              type="button"
+              onclick="document.getElementById('time').value = 'null'"
+            >
+              Reset
+            </button>
+          </div>
         </div>
         <div class="mb-3">
           <label class="form-label">Venue</label>
@@ -60,9 +69,18 @@
             rows="3"
             maxlength="500"
           ></textarea>
-          <small class="form-text text-muted"
-            >Optional. Maximum 500 characters</small
-          >
+          <small class="form-text text-muted">
+            Optional. Maximum 500 characters
+          </small>
+          <div class="d-flex justify-content-between mb-3">
+            <button
+              class="btn btn-secondary btn-sm"
+              type="button"
+              onclick="document.getElementById('description').value = 'null'"
+            >
+              Clear Description
+            </button>
+          </div>
           <div
             class="text-danger"
             th:if="${#fields.hasErrors('description')}"
@@ -73,6 +91,7 @@
           <a href="/events" class="btn btn-secondary">
             <i class="fa-solid fa-arrow-left"></i> Back to Events
           </a>
+          <button type="reset" class="btn btn-danger">Undo changes</button>
           <div>
             <button class="btn btn-primary" type="submit">
               <i class="fa-solid fa-bookmark" aria-hidden="true"></i> Save

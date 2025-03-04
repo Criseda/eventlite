@@ -1,45 +1,64 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{layouts/default}">
-<head>
-  <title>Event Details</title>
-</head>
-<body>
-  <div layout:fragment="content">
-    <h1>Event Details</h1>		
-	
-	<table class="table table-striped table-hover">
-	  <tbody>
-	    <tr>
-		  <th width="150em"><i class="fa-solid fa-bolt"></i> Event name</th>
-	      <td th:text="${e.name}"></td>
-		</tr>
-		<tr>
-			<th><i class="fa-solid fa-calendar"></i> Start date</th>
-	        <td th:text="${e.date.getDayOfMonth()} + '/' + ${e.date.getMonthValue()} + '/' + ${e.date.getYear()}"></td>
-	    </tr>
-		<tr>
-			<th><i class="fa-solid fa-clock"></i> Start time</th>
-			<td th:text="${e.time.toString()}"></td>
-		</tr>
-		<tr>
-			<th><i class="fa-solid fa-map-marker-alt"></i> Venue name</th>
-			<td th:text="${e.venue.name}">
-		</tr>
-		<tr>
-			<th><i class="fa-solid fa-person"></i> Venue capacity</th>
-			<td th:text="${e.venue.capacity}"></td>
-		</tr>
-		<tr>
-			<th><i class="fa-solid fa-circle-info"></i> Description</th>
-			<td th:text="${e.description}"></td>
-		</tr>
-	  </tbody>
-	</table>
-	
-	<p>
-	  <a class="btn btn-secondary" role="button" th:href="@{/events}"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Events</a>
-	</p>
-  </div>
-</body>
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/default}"
+>
+  <head>
+    <title>Event Details</title>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <h1>Event Details</h1>
+
+      <table class="table table-striped table-hover">
+        <tbody>
+          <tr>
+            <th width="150em"><i class="fa-solid fa-bolt"></i> Event name</th>
+            <td th:text="${e.name}"></td>
+          </tr>
+          <tr>
+            <th><i class="fa-solid fa-calendar"></i> Start date</th>
+            <td
+              th:text="${e.date.getDayOfMonth()} + '/' + ${e.date.getMonthValue()} + '/' + ${e.date.getYear()}"
+            ></td>
+          </tr>
+          <tr th:if="${e.time != null}">
+            <th><i class="fa-solid fa-clock"></i> Start time</th>
+            <td th:text="${e.time.toString()}"></td>
+          </tr>
+          <tr>
+            <th><i class="fa-solid fa-map-marker-alt"></i> Venue name</th>
+            <td th:text="${e.venue.name}"></td>
+          </tr>
+
+          <tr>
+            <th><i class="fa-solid fa-person"></i> Venue capacity</th>
+            <td th:text="${e.venue.capacity}"></td>
+          </tr>
+          <tr th:if="${e.description != null and (#strings.trim(e.description).length != 0)}">
+            <th><i class="fa-solid fa-circle-info"></i> Description</th>
+            <td th:text="${e.description}"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="d-flex justify-content-between mb-3">
+        <p>
+          <a class="btn btn-secondary" role="button" th:href="@{/events}"
+            ><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to
+            Events</a
+          >
+        </p>
+        <form
+          th:action="@{/events/{id}(id=${e.id})}"
+          th:method="delete"
+          sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
+        >
+          <button type="submit" class="btn btn-danger">
+            <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </body>
 </html>
