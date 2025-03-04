@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <title>Welcome to EventLite</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h1>Welcome to EventLite</h1>
+        <p>events!</p>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Browse Events</h5>
+                        <p class="card-text">Check out all upcoming events.</p>
+                        <a th:href="@{/events}" class="btn btn-primary">View All Events</a>
+                    </div>
+                </div>
+            </div>
+            
+
+        </div>
+    </div>
+</body>
+</html>
