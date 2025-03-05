@@ -25,6 +25,7 @@ import jakarta.validation.Valid;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 @Controller
@@ -37,5 +38,22 @@ public class VenuesController {
 	@Autowired
 	private VenueService venueService;
 	
+	@GetMapping("/new")
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
+	public String showCreateVenuePage(Model model) {
+		model.addAttribute("venue", new Venue());
+		return "venues/new_venue";
+	}
 	
+	@PostMapping("/save")
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
+	public String createVenue(@Valid @ModelAttribute("venue") Venue venue, BindingResult result, Model model, RedirectAttributes redirectAttrs) {
+		if (result.hasErrors()) {
+			return "venues/new_venue"; 
+		}
+
+		venueService.save(venue);
+		redirectAttrs.addFlashAttribute("ok_message", "Venue created successfully.");
+		return "redirect:/venues"; // Redirect to event list
+	}
 };

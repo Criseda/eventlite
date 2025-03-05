@@ -10,7 +10,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -22,23 +24,23 @@ public class Venue {
 	@SequenceGenerator(name = "venues_seq", sequenceName = "venues_SEQ", allocationSize = 1)
 	private long id;
 
-	@NotNull(message = "Venue needs a name")
+	@NotBlank(message = "Venue needs a name")
 	private String name;
 
-	@NotNull(message = "Must inlcude a capacity")
+	@NotNull(message = "Venue must inlcude a capacity")
 	private int capacity;
 	
 	@OneToMany(mappedBy = "venue", cascade = CascadeType.ALL)
 	private List<Event> events;
 
-	@NotNull(message = "")
-	@Size(max = 300, message = "Road name must be less than 300 characters")
+	@NotBlank(message = "Venue needs a street name")
+	@Size(max = 300, message = "Street name must be less than 300 characters")
 	private String street;
 	
-	@NotNull(message = "Must include a postcode")
-	@Size(max = 256, message = "Name must be less than 256 characters")
+	@NotBlank(message = "Venue must include a postcode")
+	@Size(max = 256, message = "Postcode must be less than 256 characters")
+	@Pattern(regexp="([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\\s?[0-9][A-Za-z]{2})", message = "Invalid postcode")
 	private String postcode;
-	
 	
 	public Venue() {
 	}
