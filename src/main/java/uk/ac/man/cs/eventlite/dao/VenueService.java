@@ -15,4 +15,6 @@ public interface VenueService {
 	public Optional<Venue> findById(long id);
 	
 	public Venue save(Venue venue);
+	
+	public Iterable<Venue> findTopThree();
 }

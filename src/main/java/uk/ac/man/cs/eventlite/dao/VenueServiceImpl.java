@@ -2,9 +2,12 @@ package uk.ac.man.cs.eventlite.dao;
 
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,4 +68,18 @@ public class VenueServiceImpl implements VenueService {
 	public Optional<Venue> findById(long id) {
 		return venueRepository.findById(id);
 	}
+	
+	//Finds the venues with the most events happening (top 3)
+	public Iterable<Venue> findTopThree(){
+		Iterable<Venue> allVenues = venueRepository.findAll();
+		// uses stream to split the iterator and then filters empty venues out, and only gives 3
+		List<Venue> sortedVenues = StreamSupport.stream(allVenues.spliterator(), false)
+				.filter(venue -> venue.getEvents().size() > 0)
+			    .sorted(Comparator.comparing(venue -> venue.getEvents().size(), Comparator.reverseOrder()))
+			    .limit(3)
+			    .collect(Collectors.toList());
+		return sortedVenues;
+	}
+	
+	
 }
