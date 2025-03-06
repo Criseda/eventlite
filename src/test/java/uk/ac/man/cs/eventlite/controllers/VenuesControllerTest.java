@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Collections;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,4 +52,27 @@ public class VenuesControllerTest {
 
     @MockBean
     private EventService eventService;
+    
+	@Test
+	public void getIndexWhenNoVenues() throws Exception {
+		when(venueService.findAll()).thenReturn(Collections.<Venue>emptyList());
+		
+		mvc.perform(get("/venues").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
+		.andExpect(view().name("venues/index")).andExpect(handler().methodName("getAllVenues"));
+
+		verify(venueService).findAll();
+		verifyNoInteractions(venue);
+	}
+	
+	@Test
+	public void getIndexWithVenues() throws Exception {
+	    when(venueService.findAll()).thenReturn(Collections.singletonList(venue));
+
+	    mvc.perform(get("/venues").accept(MediaType.TEXT_HTML))
+	            .andExpect(status().isOk()) // Expecting HTTP 200 OK
+	            .andExpect(view().name("venues/index")) // Expecting venues/index view
+	            .andExpect(handler().methodName("getAllVenues")); // Expecting the correct handler method
+
+	    verify(venueService).findAll(); // Verifies that venueService.findAll() was called
+	}
 }

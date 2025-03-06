@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,5 +55,12 @@ public class VenuesControllerIntegrationTest extends AbstractTransactionalJUnit4
             .webAppContextSetup(context)
             .apply(springSecurity())
             .build();
+    }
+    
+    @Test
+    public void testGetAllVenues() throws Exception {
+        mvc.perform(get("/venues")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk());
     }
 }

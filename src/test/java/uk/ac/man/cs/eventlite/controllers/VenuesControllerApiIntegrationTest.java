@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -34,8 +35,20 @@ public class VenuesControllerApiIntegrationTest extends AbstractTransactionalJUn
 
     @BeforeEach
     public void setup() {
-        currentRows = countRowsInTable("venues");
-        logger.info("current rows: " + currentRows);
+        try {
+            currentRows = countRowsInTable("venues");
+        } catch (Exception e) {
+            // Table doesn't exist yet, set default value
+            logger.warn("Could not count rows in venues table, DB hasn't initialised it");
+            currentRows = 0;
+        }
+        
         client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port + "/api").build();
     }
+    
+	@Test
+	public void testGetAllVenues() {
+		client.get().uri("/venues").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
+				.contentType(MediaType.APPLICATION_JSON).expectBody().jsonPath("$._embedded.venues.length()").isEqualTo(currentRows);
+	}
 }
