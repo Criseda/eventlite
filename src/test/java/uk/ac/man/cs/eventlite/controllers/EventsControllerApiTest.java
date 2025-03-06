@@ -32,6 +32,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -120,6 +121,7 @@ public class EventsControllerApiTest {
 	}
 	
 	@Test
+	@DirtiesContext
 	public void deleteEvent() throws Exception {
 		when(eventService.existsById(1)).thenReturn(true);
 		
@@ -143,6 +145,7 @@ public class EventsControllerApiTest {
 	}
 	
 	@Test
+	@DirtiesContext
 	public void deleteAllEvents() throws Exception {
 		mvc.perform(delete("/api/events").with(user("Rob").roles(Security.ADMIN))
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent()).andExpect(content().string(""))
@@ -152,6 +155,7 @@ public class EventsControllerApiTest {
 	}
 	
 	@Test
+	@DirtiesContext
 	public void updateEvent() throws Exception {
 		ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
 	    when(eventService.existsById(1L)).thenReturn(true);	

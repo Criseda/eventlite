@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +26,7 @@ import uk.ac.man.cs.eventlite.EventLite;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 public class VenuesControllerApiIntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
-
+	
     @LocalServerPort
     private int port;
     
@@ -35,15 +36,9 @@ public class VenuesControllerApiIntegrationTest extends AbstractTransactionalJUn
 
     @BeforeEach
     public void setup() {
-        try {
-            currentRows = countRowsInTable("venues");
-        } catch (Exception e) {
-            // Table doesn't exist yet, set default value
-            logger.warn("Could not count rows in venues table, DB hasn't initialised it");
-            currentRows = 0;
-        }
-        
-        client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port + "/api").build();
+		currentRows = countRowsInTable("venues");
+		logger.info("current rows: " + currentRows);
+		client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port + "/api").build();
     }
     
 	@Test

@@ -75,4 +75,10 @@ public class VenuesControllerTest {
 
 	    verify(venueService).findAll(); // Verifies that venueService.findAll() was called
 	}
+	
+	@Test
+	public void getVenueNotFound() throws Exception {
+		mvc.perform(get("/venues/99").accept(MediaType.TEXT_HTML)).andExpect(status().isNotFound())
+				.andExpect(view().name("venues/not_found")).andExpect(handler().methodName("getVenue"));
+	}
 }

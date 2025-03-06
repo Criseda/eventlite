@@ -81,7 +81,6 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
     }
 
     @Test
-    @DirtiesContext
     public void testCreateEvent() throws Exception {
         // Create a venue using VenueService
         Venue venue = new Venue();
@@ -109,7 +108,6 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
     }
 
     @Test
-    @DirtiesContext
     public void updateEventNotFound() throws Exception {
         // Create a venue using VenueService
         Venue venue = new Venue();
