@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -55,4 +57,22 @@ public class VenuesControllerIntegrationTest extends AbstractTransactionalJUnit4
             .apply(springSecurity())
             .build();
     }
+    
+    @Test
+    public void testGetAllVenues() throws Exception {
+        mvc.perform(get("/venues")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk());
+    }
+    
+//    @Test
+//    public void getVenueNotFound() throws Exception {
+//        MvcResult result = mvc.perform(get("/venues/99")
+//                .accept(MediaType.TEXT_HTML))
+//                .andExpect(status().isNotFound())
+//                .andExpect(header().string("Content-Type", containsString(MediaType.TEXT_HTML_VALUE)))
+//                .andReturn();
+//        
+//        assertThat(result.getResponse().getContentAsString(), containsString("99"));
+//    }
 }

@@ -42,6 +42,27 @@ public class InitialDataLoader {
 				venue.setPostcode("M14 6FZ");
 				venue.setStreet("13 Fake road");
 				venueService.save(venue);
+				
+				Venue venue2 = new Venue();
+				venue2.setName("O2 Arena");
+				venue2.setCapacity(20000);
+				venue2.setPostcode("SE10 0DX");
+				venue2.setStreet("Peninsula Square");
+				venueService.save(venue2);
+				
+				Venue venue3 = new Venue();
+				venue3.setName("Anfield Stadium");
+				venue3.setCapacity(61276);
+				venue3.setPostcode("L4 0TH");
+				venue3.setStreet("Anfield Road");
+				venueService.save(venue3);
+				
+				Venue venue4 = new Venue();
+				venue4.setName("AO Arena");
+				venue4.setCapacity(21000);
+				venue4.setPostcode("M3 1AR");
+				venue4.setStreet("Hunts Bank");
+				venueService.save(venue4);
 			}
 
 			if (eventService.count() > 3) {
