@@ -14,5 +14,9 @@ public interface VenueService {
 	
 	public Optional<Venue> findById(long id);
 	
+	public boolean existsById(long id);
+	
+	public Venue update(long id, Venue venue);
+	
 	public Venue save(Venue venue);
 }

@@ -43,6 +43,17 @@ public class VenuesControllerApi {
 	
 	@Autowired
 	private VenueModelAssembler venueAssembler;
+	
+	@PutMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> updateEvent(@PathVariable("id") long id, @RequestBody Venue newVenue) {
+		if (!venueService.existsById(id)) {
+			throw new VenueNotFoundException(id);
+		}
+		
+		venueService.update(id, newVenue);
+		return ResponseEntity.noContent().build();
+	}
 
 
 	public EntityModel<Event>getVenue(long id) {
