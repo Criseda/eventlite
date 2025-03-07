@@ -65,4 +65,100 @@ public class VenuesControllerApiIntegrationTest extends AbstractTransactionalJUn
     	
     	assertThat(currentRows, equalTo(countRowsInTable("venues")));
     }
+    
+    @Test
+    public void updateVenueNotFound() {
+    	String venueJson = """
+    			{
+    				"name" : "Venue 1",
+    				"capacity" : 100,
+    				"street" : null,
+    				"postcode" : "M13 9PL"
+    			}
+    		""";
+    	client.mutate().filter(basicAuthentication("Rob", "Haines"))
+				.build()
+				.put()
+				.uri("/venues/99")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(venueJson)
+				.exchange()
+				.expectStatus()
+				.isNotFound();
+    	
+    	assertThat(currentRows, equalTo(countRowsInTable("venues")));
+    }
+    
+    @Test
+    public void updateVenueNoUser() {
+    	String venueJson = """
+    			{
+    				"name" : "Venue 1",
+    				"capacity" : 100,
+    				"street" : null,
+    				"postcode" : "M13 9PL"
+    			}
+    		""";
+    	client.mutate()
+				.build()
+				.put()
+				.uri("/venues/1")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(venueJson)
+				.exchange()
+				.expectStatus()
+				.isUnauthorized();
+    	
+    	assertThat(currentRows, equalTo(countRowsInTable("venues")));
+    }
+    
+    @Test
+    public void updateVenueBadUser() {
+    	String venueJson = """
+    			{
+    				"name" : "Venue 1",
+    				"capacity" : 100,
+    				"street" : null,
+    				"postcode" : "M13 9PL"
+    			}
+    		""";
+    	client.mutate().filter(basicAuthentication("Bad", "User"))
+				.build()
+				.put()
+				.uri("/venues/1")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(venueJson)
+				.exchange()
+				.expectStatus()
+				.isUnauthorized();
+    	
+    	assertThat(currentRows, equalTo(countRowsInTable("venues")));
+    }
+    
+    @Test
+    public void updateVenueAsForbiddenRole() {
+    	String venueJson = """
+    			{
+    				"name" : "Venue 1",
+    				"capacity" : 100,
+    				"street" : null,
+    				"postcode" : "M13 9PL"
+    			}
+    		""";
+    	client.mutate().filter(basicAuthentication("Tom", "Carroll"))
+				.build()
+				.put()
+				.uri("/venues/1")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(venueJson)
+				.exchange()
+				.expectStatus()
+				.isForbidden();
+    	
+    	assertThat(currentRows, equalTo(countRowsInTable("venues")));
+    }
 }
