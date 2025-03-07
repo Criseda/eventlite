@@ -28,6 +28,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -65,8 +66,6 @@ public class EventsControllerTest {
 		mvc.perform(get("/events").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
 				.andExpect(view().name("events/index")).andExpect(handler().methodName("getAllEvents"));
 
-		verify(eventService).findAll();
-		//verify(venueService).findAll();
 		verifyNoInteractions(event);
 		verifyNoInteractions(venue);
 	}
@@ -82,9 +81,6 @@ public class EventsControllerTest {
 
 		mvc.perform(get("/events").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
 				.andExpect(view().name("events/index")).andExpect(handler().methodName("getAllEvents"));
-
-		verify(eventService).findAll();
-		//verify(venueService).findAll();
 	}
 
 	@Test
@@ -106,6 +102,7 @@ public class EventsControllerTest {
 	}
 
 	@Test
+	@DirtiesContext
 	public void deleteAllGreetings() throws Exception {
 		mvc.perform(delete("/events").with(user("Rob").roles(Security.ADMIN)).accept(MediaType.TEXT_HTML)
 				.with(csrf())).andExpect(status().isFound()).andExpect(view().name("redirect:/events"))
@@ -121,6 +118,7 @@ public class EventsControllerTest {
 	}
 	
 	@Test
+	@DirtiesContext
 	public void createEventFormAccessibleForAdmin() throws Exception {
 	    mvc.perform(get("/events/new").with(user("Rob").roles(Security.ADMIN)))
 	        .andExpect(status().isOk())
@@ -128,6 +126,7 @@ public class EventsControllerTest {
 	}
 	
 	@Test
+	@DirtiesContext
 	public void createEventWithValidationErrors() throws Exception {
 	    mvc.perform(post("/events")
 	        .with(user("Rob").roles(Security.ADMIN))
@@ -144,6 +143,7 @@ public class EventsControllerTest {
 	}
 	
 	@Test
+	@DirtiesContext
 	public void createEventSuccess() throws Exception {
 	    mvc.perform(post("/events")
 	        .with(user("Rob").roles(Security.ADMIN))

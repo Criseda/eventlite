@@ -2,9 +2,12 @@ package uk.ac.man.cs.eventlite.dao;
 
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,48 +25,25 @@ public class VenueServiceImpl implements VenueService {
 
 	private final static Logger log = LoggerFactory.getLogger(VenueServiceImpl.class);
 
-	private final static String DATA = "data/venues.json";
-
 	@Autowired
 	private VenueRepository venueRepository;
 	
 	@Override
 	public long count() {
-//		long count = 0;
-//		Iterator<Venue> i = findAll().iterator();
-//
-//		for (; i.hasNext(); count++) {
-//			i.next();
-//		}
-//
-//		return count;
 		return venueRepository.count();
 	}
 
 	@Override
 	public Iterable<Venue> findAll() {
-//		Iterable<Venue> venues;
-//
-//		try {
-//			ObjectMapper mapper = new ObjectMapper();
-//			InputStream in = new ClassPathResource(DATA).getInputStream();
-//
-//			venues = mapper.readValue(in, mapper.getTypeFactory().constructCollectionType(List.class, Venue.class));
-//		} catch (Exception e) {
-//			// If we can't read the file, then the event list is empty...
-//			log.error("Exception while reading file '" + DATA + "': " + e);
-//			venues = Collections.emptyList();
-//		}
-//
-//		return venues;
 		return venueRepository.findAll();
 	}
 	
-	@Override
+	
 	public boolean existsById(long id) {
 		return venueRepository.existsById(id);
 	}
-	
+
+	@Override
 	public Venue update(long id, Venue newVenue) {
 		Venue oldVenue = venueRepository.findById(id)
 				.orElseThrow(() -> new VenueNotFoundException(id));
@@ -76,11 +56,37 @@ public class VenueServiceImpl implements VenueService {
 		return venueRepository.save(oldVenue);
 	}
 	
+
+	@Override
 	public Venue save(Venue venue) {
 		return venueRepository.save(venue);
 	}
 	
+	@Override
 	public Optional<Venue> findById(long id) {
 		return venueRepository.findById(id);
 	}
+	
+	//Finds the venues with the most events happening (top 3)
+	public Iterable<Venue> findTopThree(){
+		Iterable<Venue> allVenues = venueRepository.findAll();
+		// uses stream to split the iterator and then filters empty venues out, and only gives 3
+		List<Venue> sortedVenues = StreamSupport.stream(allVenues.spliterator(), false)
+				.filter(venue -> venue.getEvents().size() > 0)
+			    .sorted(Comparator.comparing(venue -> venue.getEvents().size(), Comparator.reverseOrder()))
+			    .limit(3)
+			    .collect(Collectors.toList());
+		return sortedVenues;
+	}
+	@Override
+	public boolean existsById(long id) {
+		return venueRepository.existsById(id);
+	}
+	
+	@Override
+	public Object findByNameContainingIgnoreCase(String search) {
+		// TODO: SEARCH TEAM TO IMPLEMENT
+		return null;
+	}
 }
+

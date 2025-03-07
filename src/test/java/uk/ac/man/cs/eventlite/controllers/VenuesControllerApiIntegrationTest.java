@@ -4,6 +4,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 
+<<<<<<< src/test/java/uk/ac/man/cs/eventlite/controllers/VenuesControllerApiIntegrationTest.java
+=======
+import org.junit.jupiter.api.BeforeAll;
+>>>>>>> src/test/java/uk/ac/man/cs/eventlite/controllers/VenuesControllerApiIntegrationTest.java
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -161,4 +165,12 @@ public class VenuesControllerApiIntegrationTest extends AbstractTransactionalJUn
     	
     	assertThat(currentRows, equalTo(countRowsInTable("venues")));
     }
+
+    
+	@Test
+	public void testGetAllVenues() {
+		client.get().uri("/venues").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
+				.contentType(MediaType.APPLICATION_JSON).expectBody().jsonPath("$._embedded.venues.length()").isEqualTo(currentRows);
+	}
+
 }

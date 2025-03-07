@@ -2,6 +2,7 @@ package uk.ac.man.cs.eventlite.dao;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.List;
 import java.util.ArrayList;
@@ -111,55 +112,62 @@ public class EventServiceImpl implements EventService {
 	
 	@Override
 	public Iterable<Event> findByWholeWordDateAlphabetically(String name, String mode) {
-		// if mode is invalid, return no events
-	    if (!mode.equals("u") && !mode.equals("p")) {
-	        return new ArrayList<>();
-	    }
-	    
-	    // get either upcoming or previous events depending on the mode
-	    List<Event> events;
+		System.out.println("new search");
+		
+	    List<Event> events = new ArrayList<>();
+
+	    // Fetch events based on mode (either upcoming or past)
 	    if (mode.equals("u")) {
-	        events = (List<Event>) eventRepository.findByDateAfterAndNameContainingIgnoreCaseOrderByDateAscNameAsc(LocalDate.now(), name);
-	    } else {
-	        events = (List<Event>) eventRepository.findByDateBeforeAndNameContainingIgnoreCaseOrderByDateDescNameAsc(LocalDate.now(), name);
+	    	events = (List<Event>) eventRepository.findByDateAfterOrderByDateAscNameAsc(LocalDate.now());
+	    } else if (mode.equals("p")) {
+	    	events = (List<Event>) eventRepository.findByDateBeforeOrderByDateDescNameAsc(LocalDate.now());
 	    }
 	    
-	    
-	    // create a map to keep track of the search term occurrence in the event's name
+	    System.out.println(events);
+
+	    // Map to store occurrences of search words in the event name
 	    Map<Event, Integer> occurrenceMap = new HashMap<>();
-	    
-	    // populate the map (whole words only, no partial matches allowed: "e" is not valid for "event")
+
+	    // Split the search term into words (case-insensitive)
+	    List<String> searchWords = Arrays.asList(name.toLowerCase().split("\\s+"));
+
 	    for (Event event : events) {
-	    	// split into words
-	        String[] words = event.getName().toLowerCase().split("\\s+");
-	        // case-insensitive
-	        String searchTerm = name.toLowerCase();
-	        
-	        int count = (int) Arrays.stream(words).filter(word -> word.equals(searchTerm)).count();
-	        if (count > 0) {
-	            occurrenceMap.put(event, count);
+	        // Convert event name to lowercase and split into words
+	        List<String> eventWords = Arrays.asList(event.getName().toLowerCase().split("\\s+"));
+
+	        int matchCount = 0;
+
+	        // Loop through each word in the search term and each word in the eventWords   
+	        for (String searchWord : searchWords) {
+	        	for (String eventWord : eventWords) {
+	        		if (searchWord.equals(eventWord)){
+	        			matchCount++;
+	        		}
+	        	}
 	        }
+
+	        // Only add events that contain at least one word from the search term
+	        if (matchCount > 0) {
+	            occurrenceMap.put(event, matchCount);
+	        }
+	        
 	    }
 
 	    // Sort by the count occurrence (descending), then the date (ascending for upcoming, descending for previous), then by the event name (alphabetically)
-	    Comparator<Event> eventComparator = Comparator
-	    		.comparing((Event e) -> occurrenceMap.getOrDefault(e, 0), Comparator.reverseOrder());
+	    Comparator<Event> eventComparator = Comparator.comparing((Event e) -> occurrenceMap.getOrDefault(e, 0)).reversed();
 
-		if (mode == "u") {
-			eventComparator.thenComparing(Event::getDate)
-				.thenComparing(Event::getName, String.CASE_INSENSITIVE_ORDER);
-		}
-		else if (mode == "p") {
-			eventComparator.thenComparing(Event::getDate).reversed()
-			.thenComparing(Event::getName, String.CASE_INSENSITIVE_ORDER);
-		}
-	    
-	    
-		
-	    List<Event> sortedEvents = events.stream()
-	        .filter(event -> occurrenceMap.containsKey(event)) // exclude events with 0 occurrences
-	        .sorted(eventComparator)
-	        .collect(Collectors.toList());
+	    if (mode.equals("u")) {
+	        eventComparator = eventComparator
+	                .thenComparing(Event::getDate)
+	                .thenComparing(Event::getName, String.CASE_INSENSITIVE_ORDER);
+	    } else if (mode.equals("p")) {
+	        eventComparator = eventComparator
+	                .thenComparing(Event::getDate, Comparator.reverseOrder())
+	                .thenComparing(Event::getName, String.CASE_INSENSITIVE_ORDER);
+	    }
+
+	    List<Event> sortedEvents = new ArrayList<>(occurrenceMap.keySet());
+	    sortedEvents.sort(eventComparator);
 
 	    return sortedEvents;
 	}
