@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.ac.man.cs.eventlite.entities.Venue;
+import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
 @Service
 public class VenueServiceImpl implements VenueService {
@@ -37,6 +38,25 @@ public class VenueServiceImpl implements VenueService {
 		return venueRepository.findAll();
 	}
 	
+	
+	public boolean existsById(long id) {
+		return venueRepository.existsById(id);
+	}
+
+	@Override
+	public Venue update(long id, Venue newVenue) {
+		Venue oldVenue = venueRepository.findById(id)
+				.orElseThrow(() -> new VenueNotFoundException(id));
+		oldVenue.setName(newVenue.getName());
+		oldVenue.setCapacity(newVenue.getCapacity());
+		oldVenue.setPostcode(newVenue.getPostcode());
+		oldVenue.setStreet(newVenue.getStreet());	
+		oldVenue.setEvents(newVenue.getEvents());
+		
+		return venueRepository.save(oldVenue);
+	}
+	
+
 	@Override
 	public Venue save(Venue venue) {
 		return venueRepository.save(venue);

@@ -12,6 +12,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name="venues")
@@ -37,6 +38,7 @@ public class Venue {
 	
 	@NotNull(message = "Must include a postcode")
 	@Size(max = 256, message = "Name must be less than 256 characters")
+	@Pattern(regexp = "^([A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}|GIR ?0AA)$", message = "Invalid postcode provided")
 	private String postcode;
 	
 	
