@@ -17,6 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -181,4 +183,57 @@ public class EventsControllerTest {
 	        .andExpect(status().isForbidden());
 	    verify(eventService, never()).deleteById(1);
 	}
+	
+	@Test
+	public void getAllEventsWhenNoEvents() throws Exception {
+	    when(eventService.findByDateBeforeOrderByDateDescNameAsc(any(LocalDate.class))).thenReturn(Collections.emptyList());
+	    when(eventService.findByDateAfterOrderByDateAscNameAsc(any(LocalDate.class))).thenReturn(Collections.emptyList());
+	    
+	    mvc.perform(get("/events").accept(MediaType.TEXT_HTML))
+	            .andExpect(status().isOk())
+	            .andExpect(view().name("events/index"))
+	            .andExpect(model().attributeExists("previousEvents"))
+	            .andExpect(model().attributeExists("upcomingEvents"))
+	            .andExpect(model().attribute("previousEvents", Collections.emptyList()))
+	            .andExpect(model().attribute("upcomingEvents", Collections.emptyList()));
+	}
+	
+
+	@Test
+	public void getAllEventsWithSearchQuery() throws Exception {
+	    String searchQuery = "Showcase";
+	   
+	    Venue venue = new Venue();
+	    venue.setId(1);
+	    venue.setName("Kilburn Building");
+	    
+	    Event event1 = new Event();
+		event.setVenue(venue);
+		event.setDate(LocalDate.of(2025,05,06));
+		event.setTime(LocalTime.of(13, 0));
+		event.setName("Showcase 1");
+		eventService.save(event);
+		
+		Event event2 = new Event();
+		event1.setVenue(venue);
+		event1.setDate(LocalDate.of(2025,05,06));
+		event1.setTime(LocalTime.of(13, 8));
+		event1.setName("Display");
+		event1.setDescription("Description example");
+		
+	    when(eventService.findByWholeWordDateAlphabetically(searchQuery, "p"))
+	            .thenReturn(Collections.singletonList(event1));
+	    when(eventService.findByWholeWordDateAlphabetically(searchQuery, "u"))
+	            .thenReturn(Collections.emptyList());
+	    
+	    mvc.perform(get("/events").param("search", searchQuery).accept(MediaType.TEXT_HTML))
+	            .andExpect(status().isOk())
+	            .andExpect(view().name("events/index"))
+	            .andExpect(model().attributeExists("previousEvents"))
+	            .andExpect(model().attributeExists("upcomingEvents"))
+	            .andExpect(model().attribute("previousEvents", Collections.singletonList(event1)))
+	            .andExpect(model().attribute("upcomingEvents", Collections.emptyList()))
+	            .andExpect(model().attribute("search", searchQuery));
+	}
+
 }
