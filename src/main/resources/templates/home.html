@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+
+<head>
+    <title>Welcome to EventLite</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <h1>Welcome to EventLite</h1>
+        <p>events!</p>
+
+        <!-- Next 3 upcoming events-->
+        <div th:if="${upcomingEvents.size() > 0}">
+            <h2>Latest events</h2>
+            <p>Check out our next 3 upcoming events!</p>
+            <div>
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th><i class="fa-solid fa-bolt"></i> Event</th>
+                            <th><i class="fa-solid fa-map-marker-alt"></i> Venue</th>
+                            <th><i class="fa-solid fa-calendar"></i> Date</th>
+                            <th><i class="fa-solid fa-clock"></i> Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="e : ${upcomingEvents}">
+                            <td> <a th:href="@{/events/{id}(id=${e.id})}" th:text="${e.name}">My Event</a> </td>
+                            <td th:text="${e.venue.name}">Event Venue</td>
+                            <td th:text="${{e.date}}">Event Date</td>
+                            <td th:text="${{e.time}}">Event Time</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Browse Events</h5>
+                        <p class="card-text">Check out all upcoming events.</p>
+                        <a th:href="@{/events}" class="btn btn-primary">View All Events</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3 most popular venues-->
+        <div th:if="${venues.size() > 0}">
+            <h2>Most popular venues</h2>
+            <p>These are our most popular venues!</p>
+            <div>
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th><i class="fa-solid fa-bolt"></i> Event</th>
+                            <th>Capacity</th>
+                            <th>Address</th>
+                            <th>Postcode</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="e : ${venues}">
+                            <td> <a th:href="@{/venues/{id}(id=${e.id})}" th:text="${e.getName()}">My Venue </a> </td>
+                            <td th:text="${e.getCapacity()}">Capacity</td>
+                            <td th:text="${e.getStreet()}"> Street</td>
+                            <td th:text="${e.getPostcode()}">Postcode</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div>
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Venues</h5>
+                        <p class="card-text">Check out all our exciting venues.</p>
+                        <a th:href="@{/venues}" class="btn btn-primary">View All Venues</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-package uk.ac.man.cs.eventlite.controllers;
+	package uk.ac.man.cs.eventlite.controllers;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;

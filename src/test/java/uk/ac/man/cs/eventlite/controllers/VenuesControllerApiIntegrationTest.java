@@ -4,7 +4,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -38,4 +40,134 @@ public class VenuesControllerApiIntegrationTest extends AbstractTransactionalJUn
         logger.info("current rows: " + currentRows);
         client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port + "/api").build();
     }
+    
+    @Test
+    public void updateVenueWithUser() {
+    	String venueJson = """
+    			{
+    				"name" : "Venue 1",
+    				"capacity" : 100,
+    				"street" : null,
+    				"postcode" : "M13 9PL"
+    			}
+    		""";
+    	client.mutate().filter(basicAuthentication("Rob", "Haines"))
+				.build()
+				.put()
+				.uri("/venues/1")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(venueJson)
+				.exchange()
+				.expectStatus()
+				.isNoContent()
+				.expectBody()
+				.isEmpty();
+    	
+    	assertThat(currentRows, equalTo(countRowsInTable("venues")));
+    }
+    
+    @Test
+    public void updateVenueNotFound() {
+    	String venueJson = """
+    			{
+    				"name" : "Venue 1",
+    				"capacity" : 100,
+    				"street" : null,
+    				"postcode" : "M13 9PL"
+    			}
+    		""";
+    	client.mutate().filter(basicAuthentication("Rob", "Haines"))
+				.build()
+				.put()
+				.uri("/venues/99")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(venueJson)
+				.exchange()
+				.expectStatus()
+				.isNotFound();
+    	
+    	assertThat(currentRows, equalTo(countRowsInTable("venues")));
+    }
+    
+    @Test
+    public void updateVenueNoUser() {
+    	String venueJson = """
+    			{
+    				"name" : "Venue 1",
+    				"capacity" : 100,
+    				"street" : null,
+    				"postcode" : "M13 9PL"
+    			}
+    		""";
+    	client.mutate()
+				.build()
+				.put()
+				.uri("/venues/1")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(venueJson)
+				.exchange()
+				.expectStatus()
+				.isUnauthorized();
+    	
+    	assertThat(currentRows, equalTo(countRowsInTable("venues")));
+    }
+    
+    @Test
+    public void updateVenueBadUser() {
+    	String venueJson = """
+    			{
+    				"name" : "Venue 1",
+    				"capacity" : 100,
+    				"street" : null,
+    				"postcode" : "M13 9PL"
+    			}
+    		""";
+    	client.mutate().filter(basicAuthentication("Bad", "User"))
+				.build()
+				.put()
+				.uri("/venues/1")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(venueJson)
+				.exchange()
+				.expectStatus()
+				.isUnauthorized();
+    	
+    	assertThat(currentRows, equalTo(countRowsInTable("venues")));
+    }
+    
+    @Test
+    public void updateVenueAsForbiddenRole() {
+    	String venueJson = """
+    			{
+    				"name" : "Venue 1",
+    				"capacity" : 100,
+    				"street" : null,
+    				"postcode" : "M13 9PL"
+    			}
+    		""";
+    	client.mutate().filter(basicAuthentication("Tom", "Carroll"))
+				.build()
+				.put()
+				.uri("/venues/1")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(venueJson)
+				.exchange()
+				.expectStatus()
+				.isForbidden();
+    	
+    	assertThat(currentRows, equalTo(countRowsInTable("venues")));
+    }
+
+    
+	@Test
+	public void testGetAllVenues() {
+		client.get().uri("/venues").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
+				.contentType(MediaType.APPLICATION_JSON).expectBody().jsonPath("$._embedded.venues.length()").isEqualTo(currentRows);
+	}
+
 }
