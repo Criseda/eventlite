@@ -65,7 +65,7 @@ public class VenuesController {
 		if (!venueService.existsById(id)) {
 			throw new VenueNotFoundException(id);
 		}
-		model.addAttribute("e", venueService.findById(id).get());
+		model.addAttribute("v", venueService.findById(id).get());
 		return "venues/details";
 	}
 	
