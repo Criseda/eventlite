@@ -46,7 +46,7 @@ public class VenuesControllerApi {
 	
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> updateEvent(@PathVariable("id") long id, @RequestBody Venue newVenue) {
+	public ResponseEntity<?> updateVenue(@PathVariable("id") long id, @RequestBody Venue newVenue) {
 		if (!venueService.existsById(id)) {
 			throw new VenueNotFoundException(id);
 		}
