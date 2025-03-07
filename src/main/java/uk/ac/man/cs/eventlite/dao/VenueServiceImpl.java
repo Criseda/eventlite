@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
 @Service
@@ -50,8 +51,8 @@ public class VenueServiceImpl implements VenueService {
 	}
 	
 	@Override
-	public Object findByNameContainingIgnoreCase(String search) {
-		// TODO: SEARCH TEAM TO IMPLEMENT
-		return null;
+	public Iterable<Venue> findByNameContainingIgnoreCase(String name) {
+	    return venueRepository.findByNameContainingIgnoreCase(name);
 	}
+
 }
