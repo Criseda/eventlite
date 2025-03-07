@@ -54,7 +54,7 @@ public class VenuesController {
 			return "venues/new"; 
 		}
 		
-		venue.setName(venue.getName().toUpperCase());
+		venue.setPostcode(venue.getPostcode().toUpperCase());
 		venueService.save(venue);
 		redirectAttrs.addFlashAttribute("ok_message", "Venue created successfully.");
 		return "redirect:/venues"; // Redirect to event list

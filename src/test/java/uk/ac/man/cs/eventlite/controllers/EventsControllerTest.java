@@ -212,7 +212,7 @@ public class EventsControllerTest {
 		event.setDate(LocalDate.of(2025,05,06));
 		event.setTime(LocalTime.of(13, 0));
 		event.setName("Showcase 1");
-		eventService.save(event);
+		eventService.save(event1);
 		
 		Event event2 = new Event();
 		event1.setVenue(venue);
@@ -220,6 +220,8 @@ public class EventsControllerTest {
 		event1.setTime(LocalTime.of(13, 8));
 		event1.setName("Display");
 		event1.setDescription("Description example");
+		eventService.save(event2);
+
 		
 	    when(eventService.findByWholeWordDateAlphabetically(searchQuery, "p"))
 	            .thenReturn(Collections.singletonList(event1));
