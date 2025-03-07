@@ -47,7 +47,6 @@ public class VenueServiceImpl implements VenueService {
 		return venueRepository.findById(id);
 	}
 	
-<<<<<<< src/main/java/uk/ac/man/cs/eventlite/dao/VenueServiceImpl.java
 	//Finds the venues with the most events happening (top 3)
 	public Iterable<Venue> findTopThree(){
 		Iterable<Venue> allVenues = venueRepository.findAll();
@@ -69,18 +68,5 @@ public class VenueServiceImpl implements VenueService {
 		// TODO: SEARCH TEAM TO IMPLEMENT
 		return null;
 	}
-	
-	
-=======
-	@Override
-	public boolean existsById(long id) {
-		return venueRepository.existsById(id);
-	}
-	
-	@Override
-	public Object findByNameContainingIgnoreCase(String search) {
-		// TODO: SEARCH TEAM TO IMPLEMENT
-		return null;
-	}
->>>>>>> src/main/java/uk/ac/man/cs/eventlite/dao/VenueServiceImpl.java
 }
+
