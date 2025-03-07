@@ -15,6 +15,15 @@ public interface VenueService {
 	public Optional<Venue> findById(long id);
 	
 	public Venue save(Venue venue);
+<<<<<<< src/main/java/uk/ac/man/cs/eventlite/dao/VenueService.java
 	
 	public Iterable<Venue> findTopThree();
+=======
+
+	public boolean existsById(long id);
+
+	public Object findByNameContainingIgnoreCase(String search);
+
+	public Iterable<Venue> findTopThree();
+>>>>>>> src/main/java/uk/ac/man/cs/eventlite/dao/VenueService.java
 }

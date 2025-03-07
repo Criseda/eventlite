@@ -24,51 +24,30 @@ public class VenueServiceImpl implements VenueService {
 
 	private final static Logger log = LoggerFactory.getLogger(VenueServiceImpl.class);
 
-	private final static String DATA = "data/venues.json";
-
 	@Autowired
 	private VenueRepository venueRepository;
 	
 	@Override
 	public long count() {
-//		long count = 0;
-//		Iterator<Venue> i = findAll().iterator();
-//
-//		for (; i.hasNext(); count++) {
-//			i.next();
-//		}
-//
-//		return count;
 		return venueRepository.count();
 	}
 
 	@Override
 	public Iterable<Venue> findAll() {
-//		Iterable<Venue> venues;
-//
-//		try {
-//			ObjectMapper mapper = new ObjectMapper();
-//			InputStream in = new ClassPathResource(DATA).getInputStream();
-//
-//			venues = mapper.readValue(in, mapper.getTypeFactory().constructCollectionType(List.class, Venue.class));
-//		} catch (Exception e) {
-//			// If we can't read the file, then the event list is empty...
-//			log.error("Exception while reading file '" + DATA + "': " + e);
-//			venues = Collections.emptyList();
-//		}
-//
-//		return venues;
 		return venueRepository.findAll();
 	}
 	
+	@Override
 	public Venue save(Venue venue) {
 		return venueRepository.save(venue);
 	}
 	
+	@Override
 	public Optional<Venue> findById(long id) {
 		return venueRepository.findById(id);
 	}
 	
+<<<<<<< src/main/java/uk/ac/man/cs/eventlite/dao/VenueServiceImpl.java
 	//Finds the venues with the most events happening (top 3)
 	public Iterable<Venue> findTopThree(){
 		Iterable<Venue> allVenues = venueRepository.findAll();
@@ -80,6 +59,28 @@ public class VenueServiceImpl implements VenueService {
 			    .collect(Collectors.toList());
 		return sortedVenues;
 	}
+	@Override
+	public boolean existsById(long id) {
+		return venueRepository.existsById(id);
+	}
+	
+	@Override
+	public Object findByNameContainingIgnoreCase(String search) {
+		// TODO: SEARCH TEAM TO IMPLEMENT
+		return null;
+	}
 	
 	
+=======
+	@Override
+	public boolean existsById(long id) {
+		return venueRepository.existsById(id);
+	}
+	
+	@Override
+	public Object findByNameContainingIgnoreCase(String search) {
+		// TODO: SEARCH TEAM TO IMPLEMENT
+		return null;
+	}
+>>>>>>> src/main/java/uk/ac/man/cs/eventlite/dao/VenueServiceImpl.java
 }
