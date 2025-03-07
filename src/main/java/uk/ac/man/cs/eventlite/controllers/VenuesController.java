@@ -26,7 +26,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import jakarta.validation.Valid;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
+
+
 import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
 @Controller
@@ -36,6 +39,19 @@ public class VenuesController {
 	@Autowired
 	private VenueService venueService;
 	
+
+	@PutMapping("/update_venue/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
+	public String updateEvent(@PathVariable("id") long id, @ModelAttribute("v") Venue venue,
+			@RequestParam("_method") String method, RedirectAttributes redirectAttrs) {
+		if (!venueService.existsById(id)) {
+			throw new VenueNotFoundException(id);
+		}
+		venueService.update(id, venue);
+		redirectAttrs.addFlashAttribute("ok_message", "Venue updated successfully.");
+		return "redirect:/events";
+	}
+
 	@ExceptionHandler(VenueNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public String venueNotFoundHandler(VenueNotFoundException ex, Model model) {
@@ -66,5 +82,5 @@ public class VenuesController {
         
         return "venues/index";
     }
-    
+
 };

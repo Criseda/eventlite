@@ -14,9 +14,16 @@ public interface VenueService {
 	
 	public Optional<Venue> findById(long id);
 	
-	public Venue save(Venue venue);
-
 	public boolean existsById(long id);
+	
+	public Venue update(long id, Venue venue);
+	
+	public Venue save(Venue venue);
+	
+	public Iterable<Venue> findTopThree();
 
 	public Object findByNameContainingIgnoreCase(String search);
+
+
+
 }
