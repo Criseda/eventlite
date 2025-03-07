@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import jakarta.validation.Valid;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
 @Controller
@@ -48,7 +49,7 @@ public class VenuesController {
 		if (!venueService.existsById(id)) {
 			throw new VenueNotFoundException(id);
 		}
-		model.addAttribute("e", venueService.findById(id).get());
+		model.addAttribute("v", venueService.findById(id).get());
 		return "venues/details";
 	}
 	
@@ -65,4 +66,5 @@ public class VenuesController {
         
         return "venues/index";
     }
+    
 };

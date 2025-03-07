@@ -101,6 +101,13 @@ public class InitialDataLoader {
 					event3.setTime(LocalTime.of(17, 0));
 					event3.setName("Mummy Pig's Due Date");
 					eventService.save(event3);
+					
+					Event event4 = new Event();
+					event4.setVenue(venue.get());
+					event4.setDate(LocalDate.of(2025,1,28));
+					event4.setTime(LocalTime.of(17, 0));
+					event4.setName("Past Event");
+					eventService.save(event4);
 				}
 			}
 		};
