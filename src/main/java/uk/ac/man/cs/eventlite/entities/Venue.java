@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -28,6 +29,7 @@ public class Venue {
 	private String name;
 
 	@NotNull(message = "Venue must inlcude a capacity")
+	@Min(value = 1, message = "Venue must have a capacity of at least 1")
 	private int capacity;
 	
 	@OneToMany(mappedBy = "venue", cascade = CascadeType.ALL)

@@ -42,16 +42,17 @@ public class VenuesController {
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
 	public String showCreateVenuePage(Model model) {
 		model.addAttribute("venue", new Venue());
-		return "venues/new_venue";
+		return "venues/new";
 	}
 	
 	@PostMapping("/save")
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
 	public String createVenue(@Valid @ModelAttribute("venue") Venue venue, BindingResult result, Model model, RedirectAttributes redirectAttrs) {
 		if (result.hasErrors()) {
-			return "venues/new_venue"; 
+			return "venues/new"; 
 		}
-
+		
+		venue.setName(venue.getName().toUpperCase());
 		venueService.save(venue);
 		redirectAttrs.addFlashAttribute("ok_message", "Venue created successfully.");
 		return "redirect:/venues"; // Redirect to event list
