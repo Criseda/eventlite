@@ -26,11 +26,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import jakarta.validation.Valid;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
-<<<<<<< src/main/java/uk/ac/man/cs/eventlite/controllers/VenuesController.java
 import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
-=======
->>>>>>> src/main/java/uk/ac/man/cs/eventlite/controllers/VenuesController.java
+
+
 import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
 @Controller

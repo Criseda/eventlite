@@ -37,11 +37,6 @@ public class VenueServiceImpl implements VenueService {
 	public Iterable<Venue> findAll() {
 		return venueRepository.findAll();
 	}
-	
-	
-	public boolean existsById(long id) {
-		return venueRepository.existsById(id);
-	}
 
 	@Override
 	public Venue update(long id, Venue newVenue) {

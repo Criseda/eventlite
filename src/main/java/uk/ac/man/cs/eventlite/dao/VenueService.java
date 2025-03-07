@@ -22,8 +22,6 @@ public interface VenueService {
 	
 	public Iterable<Venue> findTopThree();
 
-	public boolean existsById(long id);
-
 	public Object findByNameContainingIgnoreCase(String search);
 
 

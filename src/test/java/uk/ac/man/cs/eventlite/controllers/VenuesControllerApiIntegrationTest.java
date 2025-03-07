@@ -4,10 +4,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 
-<<<<<<< src/test/java/uk/ac/man/cs/eventlite/controllers/VenuesControllerApiIntegrationTest.java
-=======
 import org.junit.jupiter.api.BeforeAll;
->>>>>>> src/test/java/uk/ac/man/cs/eventlite/controllers/VenuesControllerApiIntegrationTest.java
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

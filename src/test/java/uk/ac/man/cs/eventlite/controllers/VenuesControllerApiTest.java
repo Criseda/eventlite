@@ -29,10 +29,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import uk.ac.man.cs.eventlite.assemblers.VenueModelAssembler;
 import uk.ac.man.cs.eventlite.config.Security;
-<<<<<<< src/test/java/uk/ac/man/cs/eventlite/controllers/VenuesControllerApiTest.java
-=======
 import uk.ac.man.cs.eventlite.dao.EventService;
->>>>>>> src/test/java/uk/ac/man/cs/eventlite/controllers/VenuesControllerApiTest.java
+
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
