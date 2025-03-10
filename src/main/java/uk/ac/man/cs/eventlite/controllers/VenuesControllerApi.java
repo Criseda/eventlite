@@ -71,4 +71,14 @@ public class VenuesControllerApi {
 		return venueAssembler.toCollectionModel(venueService.findAll())
 				.add(linkTo(methodOn(VenuesControllerApi.class).getAllVenues()).withSelfRel());
 	}
+	
+	@DeleteMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> deleteVenue(@PathVariable("id") long id){
+		if(!venueService.existsById(id)) {
+			throw new VenueNotFoundException(id);
+		}
+		venueService.deleteById(id);
+		return ResponseEntity.noContent().build();
+	}
 };

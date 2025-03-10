@@ -20,6 +20,10 @@ public interface VenueService {
 	
 	public Venue save(Venue venue);
 	
+	public void delete (Venue venue);
+	
+	public void deleteById(long id);
+	
 	public Iterable<Venue> findTopThree();
 
 	public Object findByNameContainingIgnoreCase(String search);
