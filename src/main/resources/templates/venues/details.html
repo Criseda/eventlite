@@ -38,9 +38,9 @@
 
         <p th:if="${#lists.size(v.events) < 1}" th:text="'No upcoming events for this venue.'"></p>
 
-        <ul class="list-group" th:if="${v.events != null}">
+        <ul class="list-group" th:if="${v.getEvents() != null}">
             <li class="list-group-item" 
-            th:each="e : ${v.events}" 
+            th:each="e : ${v.getEvents()}" 
             th:if="${e.date != null and e.date.isAfter(#temporals.createNow().toLocalDate())}"
             >
                 <a th:href="@{/events/{id}(id=${e.id})}" th:text="${e.name}" target="_blank"></a>

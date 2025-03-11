@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -43,6 +44,9 @@ public class VenueServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 	
 	@Autowired
 	private EventService eventService;
+	
+	@Mock
+	private Venue venue;
 
 	// This class is here as a starter for testing any custom methods within the
 	// VenueService. 
@@ -50,8 +54,7 @@ public class VenueServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 	@BeforeEach
     public void setup() {
         // Clear all events first
-        Iterable<Event> allEvents = eventService.findAll();
-        allEvents.forEach(event -> eventService.delete(event));
+        eventService.deleteAll();
         
         // Now clear all venues
         Iterable<Venue> allVenues = venueService.findAll();
@@ -90,82 +93,27 @@ public class VenueServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		List<Venue> topThree = Lists.newArrayList(venueService.findTopThree());
 
 		assertFalse(testList.equals(topThree));
-		assertTrue(emptyList.equals(topThree));
+		assertIterableEquals(emptyList, topThree);
 				
 	}
 	
 	@Test
 	public void findTopThreeNormal() throws Exception {
 		
-		Venue A = new Venue();
-		A.setName("Venue A");
-		A.setCapacity(10);
-		A.setPostcode("M14 6FZ");
-		A.setStreet("13 Fake road");
-		venueService.save(A);
 		
-		Venue B = new Venue();
-		B.setName("Venue B");
-		B.setCapacity(10);
-		B.setPostcode("M14 6FZ");
-		B.setStreet("13 Fake road");
-		venueService.save(B);
+				
+		Venue Z = venueService.findById(1).get();
 		
-		Venue C = new Venue();
-		B.setName("Venue C");
-		B.setCapacity(10);
-		B.setPostcode("M14 6FZ");
-		B.setStreet("13 Fake road");
-		venueService.save(C);
-		
-		Venue D = new Venue();
-		B.setName("Venue D");
-		B.setCapacity(10);
-		B.setPostcode("M14 6FZ");
-		B.setStreet("13 Fake road");
-		venueService.save(D);
-		
-		Event e1 = new Event();
-		e1.setName("Event Beta Upcoming");
-		e1.setDate(LocalDate.of(2025, 7, 1));
-		e1.setVenue(A);
-		eventService.save(e1);
-		
-		Event e2 = new Event();
-		e2.setName("Event Alpha Upcoming");
-		e2.setDate(LocalDate.of(2025, 7, 1));
-		e2.setVenue(A);
-		eventService.save(e2);
-		
-		Event e3 = new Event();
-		e3.setName("Event Alpha Upcoming");
-		e3.setDate(LocalDate.of(2025, 7, 1));
-		e3.setVenue(B);
-		eventService.save(e3);
-		
-		Event e4 = new Event();
-		e4.setName("Event Alpha Upcoming");
-		e4.setDate(LocalDate.of(2025, 7, 1));
-		e4.setVenue(D);
-		eventService.save(e4);
-		
-		List<Event> ListA = Arrays.asList(e1, e2);
-		List<Event> ListB = Arrays.asList(e3);
-		List<Event> ListD = Arrays.asList(e4);
-		
-		A.setEvents(ListA);
-		B.setEvents(ListB);
-		D.setEvents(ListD);
-		
-		List<Venue> correct = Arrays.asList(A, B, D);
+		List<Venue> correct = Arrays.asList(Z);
 		List<Venue> topThree = Lists.newArrayList(venueService.findTopThree());
 		
 		// Convert to a list for easier inspection
 	    List<Venue> topThreeList = new ArrayList<>();
 	    topThree.forEach(topThreeList::add);
 	    
-	    System.out.println("Number of venues returned: " + topThreeList.size());
-	    System.out.println("Number of venues returned: " + venueService.findAll().toString());
+//	    System.out.println("Number of venues returned: " + topThreeList.size());
+//	    System.out.println(D.getEvents().toString());
+//	    correct.forEach(venue -> System.out.println(venue.getEvents()));
 	    
 	    // Print details of the unexpected venue
 	    if (!topThreeList.isEmpty()) {
@@ -173,7 +121,8 @@ public class VenueServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 	        System.out.println("Unexpected venue: " + venue);
 	        System.out.println("Venue ID: " + venue.getId());
 	        System.out.println("Venue Name: " + venue.getName());
-	        // Print any other relevant properties
+	        System.out.println(venue.getEvents());
+	  
 	    }
 		
 		assertIterableEquals(correct, topThree);

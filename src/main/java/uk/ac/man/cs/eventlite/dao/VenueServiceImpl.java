@@ -74,6 +74,7 @@ public class VenueServiceImpl implements VenueService {
 			    .collect(Collectors.toList());
 		return sortedVenues;
 	}
+	
 	@Override
 	public boolean existsById(long id) {
 		return venueRepository.existsById(id);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,7 +34,7 @@ public class Venue {
 	@Min(value = 1, message = "Venue must have a capacity of at least 1")
 	private int capacity;
 	
-	@OneToMany(mappedBy = "venue", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
 	private List<Event> events;
 
 	@NotBlank(message = "Venue needs a street name")
