@@ -4,6 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +39,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
+import uk.ac.man.cs.eventlite.assemblers.VenueModelAssembler;
 import uk.ac.man.cs.eventlite.config.Security;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
@@ -45,7 +48,7 @@ import uk.ac.man.cs.eventlite.entities.Venue;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(EventsControllerApi.class)
-@Import({ Security.class, EventModelAssembler.class })
+@Import({ Security.class, EventModelAssembler.class, VenueModelAssembler.class })
 public class EventsControllerApiTest {
 
 	@Autowired
@@ -73,21 +76,35 @@ public class EventsControllerApiTest {
 
 	@Test
 	public void getIndexWithEvents() throws Exception {
-		Event e = new Event();
-		e.setName("Event");
-		e.setDate(LocalDate.now());
-		e.setTime(LocalTime.now());
-		when(venueService.findById(1)).thenReturn(Optional.of(venue));
-		Optional<Venue> venue = venueService.findById(1);
-		e.setVenue(venue.get());
-		when(eventService.findAll()).thenReturn(Collections.<Event>singletonList(e));
-
-		mvc.perform(get("/api/events").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(handler().methodName("getAllEvents")).andExpect(jsonPath("$.length()", equalTo(2)))
-				.andExpect(jsonPath("$._links.self.href", endsWith("/api/events")))
-				.andExpect(jsonPath("$._embedded.events.length()", equalTo(1)));
-
-		verify(eventService).findAll();
+	    // Create and properly initialize venue with ID=1
+	    Venue venue = new Venue();
+	    venue.setId(1);
+	    
+	    // Create event and set the venue
+	    Event e = new Event();
+	    e.setId(1);
+	    e.setName("Event");
+	    e.setDate(LocalDate.now());
+	    e.setTime(LocalTime.now());
+	    e.setVenue(venue);
+	    
+	    // Mock the venueService findById
+	    when(venueService.findById(1)).thenReturn(Optional.of(venue));
+	    
+	    // Mock the eventService findAll
+	    when(eventService.findAll()).thenReturn(Collections.singletonList(e));
+	    
+	    // Perform test
+	    mvc.perform(get("/api/events").accept(MediaType.APPLICATION_JSON))
+	       .andExpect(status().isOk())
+	       .andExpect(handler().methodName("getAllEvents"))
+	       .andExpect(jsonPath("$.length()", equalTo(2)))
+	       .andExpect(jsonPath("$._links.self.href", endsWith("/api/events")))
+	       .andExpect(jsonPath("$._embedded.events.length()", equalTo(1)))
+	       .andExpect(jsonPath("$._embedded.events[0]._links.venue.href", not(empty())))
+	       .andExpect(jsonPath("$._embedded.events[0]._links.venue.href", endsWith("events/1/venue")));
+	    
+	    verify(eventService).findAll();
 	}
 	
 	@Test

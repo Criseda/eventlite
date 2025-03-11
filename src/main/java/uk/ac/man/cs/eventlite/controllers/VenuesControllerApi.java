@@ -42,7 +42,7 @@ public class VenuesControllerApi {
 	private VenueModelAssembler venueAssembler;
 	
 	@PutMapping("/{id}")
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
 	public ResponseEntity<?> updateVenue(@PathVariable("id") long id, @RequestBody Venue newVenue) {
 		if (!venueService.existsById(id)) {
 			throw new VenueNotFoundException(id);
@@ -73,7 +73,7 @@ public class VenuesControllerApi {
 	}
 	
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
 	public ResponseEntity<?> deleteVenue(@PathVariable("id") long id){
 		if(!venueService.existsById(id)) {
 			throw new VenueNotFoundException(id);
