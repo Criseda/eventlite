@@ -43,7 +43,7 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 	@Autowired
 	private VenueService venueService;
 	// This class is here as a starter for testing any custom methods within the
-	// EventService. Note: It is currently @Disabled!
+	// EventService.
 	
 	@Test
 	public void orderingSameDateUpcoming() throws Exception {
