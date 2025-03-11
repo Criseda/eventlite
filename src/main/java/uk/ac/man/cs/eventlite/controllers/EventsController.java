@@ -76,6 +76,7 @@ public class EventsController {
 	}
 
 	@GetMapping("/update/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
 	public String updateEventForm(@PathVariable("id") long id, Model model) {
 		if (!eventService.existsById(id)) {
 			throw new EventNotFoundException(id);
