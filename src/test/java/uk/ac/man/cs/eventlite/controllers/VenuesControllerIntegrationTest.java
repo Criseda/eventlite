@@ -3,6 +3,10 @@ package uk.ac.man.cs.eventlite.controllers;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -11,12 +15,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -29,6 +36,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import uk.ac.man.cs.eventlite.EventLite;
+import uk.ac.man.cs.eventlite.config.Security;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Venue;
@@ -45,9 +53,11 @@ public class VenuesControllerIntegrationTest extends AbstractTransactionalJUnit4
     private MockMvc mvc;
 
     @Autowired
+    @MockBean
     private VenueService venueService;
 
     @Autowired
+    @MockBean
     private EventService eventService;
 
     @BeforeEach
@@ -75,4 +85,30 @@ public class VenuesControllerIntegrationTest extends AbstractTransactionalJUnit4
 //        
 //        assertThat(result.getResponse().getContentAsString(), containsString("99"));
 //    }
+    
+
+    @Test
+    void testDeleteVenue_WhenVenueExists() throws Exception {
+        long venueId = 1L;
+        when(venueService.existsById(venueId)).thenReturn(true);
+
+        mvc.perform(delete("/venues/{id}", venueId).with(user("Rob").roles(Security.ADMIN))
+        		.accept(MediaType.TEXT_HTML).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/venues"));
+
+        verify(venueService).deleteById(venueId);
+    }
+
+    @Test
+    void testDeleteVenue_WhenVenueDoesNotExist() throws Exception {
+        long venueId = 1L;
+        when(venueService.existsById(venueId)).thenReturn(false);
+
+        mvc.perform(delete("/venues/{id}", venueId).with(user("Rob").roles(Security.ADMIN))
+        		.accept(MediaType.TEXT_HTML).with(csrf()))
+                .andExpect(status().isNotFound());
+
+        verify(venueService, never()).deleteById(anyLong());
+    }
 }

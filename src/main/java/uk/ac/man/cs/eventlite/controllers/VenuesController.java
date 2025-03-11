@@ -90,6 +90,19 @@ public class VenuesController {
 		return "venues/details";
 	}
 	
+	@DeleteMapping("{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
+	public String deleteVenue(@PathVariable("id") long id, RedirectAttributes redirectAttrs) {
+		if(!venueService.existsById(id)) {
+			throw new VenueNotFoundException(id);
+		}
+		
+		venueService.deleteById(id);
+		redirectAttrs.addFlashAttribute("ok_message", "Venue deleted.");
+		
+		return "redirect:/venues";
+	}
+	
     @GetMapping
     public String getAllVenues(@RequestParam(value = "search", required = false) String search, Model model) {
         if (search != null && !search.isEmpty()) {

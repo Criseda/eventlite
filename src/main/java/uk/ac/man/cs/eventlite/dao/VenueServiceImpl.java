@@ -83,6 +83,16 @@ public class VenueServiceImpl implements VenueService {
 	public Iterable<Venue> findByNameContainingIgnoreCase(String name) {
 	    return venueRepository.findByNameContainingIgnoreCase(name);
 	}
+	
+	@Override
+	public void delete(Venue venue) {
+		venueRepository.delete(venue);
+	}
+	
+	@Override
+	public void deleteById(long id) {
+		venueRepository.deleteById(id);
+	}
 
 }
 
