@@ -52,7 +52,6 @@ public class VenuesControllerApi {
 		return ResponseEntity.noContent().build();
 	}
 
-
 	@ExceptionHandler(VenueNotFoundException.class)
 	public ResponseEntity<?> VenueNotFoundHandler(VenueNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -70,5 +69,15 @@ public class VenuesControllerApi {
 	public CollectionModel<EntityModel<Venue>> getAllVenues() {
 		return venueAssembler.toCollectionModel(venueService.findAll())
 				.add(linkTo(methodOn(VenuesControllerApi.class).getAllVenues()).withSelfRel());
+	}
+	
+	@DeleteMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> deleteVenue(@PathVariable("id") long id){
+		if(!venueService.existsById(id)) {
+			throw new VenueNotFoundException(id);
+		}
+		venueService.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
 };

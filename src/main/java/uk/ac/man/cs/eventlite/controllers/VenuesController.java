@@ -61,16 +61,26 @@ public class VenuesController {
 	}
 
 
-	@PutMapping("/update_venue/{id}")
+	@PutMapping("/update/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
-	public String updateEvent(@PathVariable("id") long id, @ModelAttribute("v") Venue venue,
+	public String updateVenue(@PathVariable("id") long id, @ModelAttribute("v") Venue venue,
 			@RequestParam("_method") String method, RedirectAttributes redirectAttrs) {
 		if (!venueService.existsById(id)) {
 			throw new VenueNotFoundException(id);
 		}
 		venueService.update(id, venue);
 		redirectAttrs.addFlashAttribute("ok_message", "Venue updated successfully.");
-		return "redirect:/events";
+		return "redirect:/venues";
+	}
+	
+	@GetMapping("/update/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
+	public String updateVenueForm(@PathVariable("id") long id, Model model) {
+		if (!venueService.existsById(id)) {
+			throw new EventNotFoundException(id);
+		}
+		model.addAttribute("v", venueService.findById(id).get());
+		return "venues/update";
 	}
 
 	@ExceptionHandler(VenueNotFoundException.class)
@@ -88,6 +98,19 @@ public class VenuesController {
 		}
 		model.addAttribute("v", venueService.findById(id).get());
 		return "venues/details";
+	}
+	
+	@DeleteMapping("{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
+	public String deleteVenue(@PathVariable("id") long id, RedirectAttributes redirectAttrs) {
+		if(!venueService.existsById(id)) {
+			throw new VenueNotFoundException(id);
+		}
+		
+		venueService.deleteById(id);
+		redirectAttrs.addFlashAttribute("ok_message", "Venue deleted.");
+		
+		return "redirect:/venues";
 	}
 	
     @GetMapping

@@ -68,12 +68,13 @@ public class VenueServiceImpl implements VenueService {
 		Iterable<Venue> allVenues = venueRepository.findAll();
 		// uses stream to split the iterator and then filters empty venues out, and only gives 3
 		List<Venue> sortedVenues = StreamSupport.stream(allVenues.spliterator(), false)
-				.filter(venue -> venue.getEvents().size() > 0)
+				.filter(venue -> venue.getEvents() != null && venue.getEvents().size() > 0)
 			    .sorted(Comparator.comparing(venue -> venue.getEvents().size(), Comparator.reverseOrder()))
 			    .limit(3)
 			    .collect(Collectors.toList());
 		return sortedVenues;
 	}
+	
 	@Override
 	public boolean existsById(long id) {
 		return venueRepository.existsById(id);
@@ -82,6 +83,16 @@ public class VenueServiceImpl implements VenueService {
 	@Override
 	public Iterable<Venue> findByNameContainingIgnoreCase(String name) {
 	    return venueRepository.findByNameContainingIgnoreCase(name);
+	}
+	
+	@Override
+	public void delete(Venue venue) {
+		venueRepository.delete(venue);
+	}
+	
+	@Override
+	public void deleteById(long id) {
+		venueRepository.deleteById(id);
 	}
 
 }
