@@ -2,6 +2,7 @@ package uk.ac.man.cs.eventlite.entities;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
