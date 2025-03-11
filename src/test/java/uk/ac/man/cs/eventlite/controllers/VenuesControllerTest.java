@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -199,6 +200,28 @@ public class VenuesControllerTest {
 	public void getVenueNotFound() throws Exception {
 		mvc.perform(get("/venues/99").accept(MediaType.TEXT_HTML)).andExpect(status().isNotFound())
 				.andExpect(view().name("venues/not_found")).andExpect(handler().methodName("getVenue"));
+	}
+	
+	@Test
+	public void getAllVenuesWithSearchQuery() throws Exception {
+	    String searchQuery = "Kilburn";
+	    String searchQuery2 = "James";
+
+	    Venue venue1 = new Venue();
+	    venue.setId(1);
+	    venue.setName("Kilburn Building");
+
+	    when(venueService.findByNameContainingIgnoreCase(searchQuery))
+	            .thenReturn(Collections.singletonList(venue1));
+	    when(venueService.findByNameContainingIgnoreCase(searchQuery2))
+	            .thenReturn(Collections.emptyList());
+	    
+	    mvc.perform(get("/venues").param("search", searchQuery).accept(MediaType.TEXT_HTML))
+        .andExpect(status().isOk())
+        .andExpect(view().name("venues/index"))
+        .andExpect(model().attributeExists("venues"))
+        .andExpect(model().attribute("venues", Collections.singletonList(venue1)))
+        .andExpect(model().attribute("search", searchQuery));
 	}
 
 }

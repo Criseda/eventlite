@@ -52,7 +52,6 @@ public class VenuesControllerApi {
 		return ResponseEntity.noContent().build();
 	}
 
-
 	@ExceptionHandler(VenueNotFoundException.class)
 	public ResponseEntity<?> VenueNotFoundHandler(VenueNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
