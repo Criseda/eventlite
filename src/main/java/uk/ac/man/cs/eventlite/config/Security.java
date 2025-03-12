@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -77,7 +78,7 @@ public class Security {
 	            // Disable CSRF for API endpoints and the H2 console.
 	            .csrf(csrf -> csrf.ignoringRequestMatchers(antMatcher("/api/**"), H2_CONSOLE))
 	            // Disable frame options to allow the H2 console to display.
-	            .headers(headers -> headers.frameOptions(frameOpts -> frameOpts.disable()));
+	            .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
 		return http.build();
 	}
