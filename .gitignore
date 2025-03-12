@@ -2,3 +2,6 @@
 .settings/
 /db/
 .idea/
+*.iws
+*.iml
+.vscode/
