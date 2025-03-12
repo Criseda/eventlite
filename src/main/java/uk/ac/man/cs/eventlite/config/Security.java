@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -49,11 +50,17 @@ public class Security {
 		                .requestMatchers(HttpMethod.DELETE, "/events").hasAnyRole(ADMIN, ORGANIZER) // Restrict deleting events
 		
 		                // API-based endpoints (/api/events)
+						.requestMatchers(HttpMethod.GET, "/api").permitAll() // Allow anyone to view API home page
 		                .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll() // Allow anyone to view events via API
+						.requestMatchers(HttpMethod.GET, "/api/venues/**").permitAll() // Allow anyone to view venues via API
 		                .requestMatchers(HttpMethod.POST, "/api/events").hasAnyRole(ADMIN, ORGANIZER) // Restrict creating events via API
+						.requestMatchers(HttpMethod.POST, "/api/venues").hasAnyRole(ADMIN, ORGANIZER) // Restrict creating venues via API
 		                .requestMatchers(HttpMethod.PUT, "/api/events/**").hasAnyRole(ADMIN, ORGANIZER) // Restrict updating events via API
+						.requestMatchers(HttpMethod.PUT, "/api/venues/**").hasAnyRole(ADMIN, ORGANIZER) // Restrict updating venues via API
 		                .requestMatchers(HttpMethod.DELETE, "/api/events/**").hasAnyRole(ADMIN, ORGANIZER) // Restrict deleting events via API
+						.requestMatchers(HttpMethod.DELETE, "/api/venues/**").hasAnyRole(ADMIN, ORGANIZER) // Restrict deleting venues via API
 		                .requestMatchers(HttpMethod.DELETE, "/api/events").hasAnyRole(ADMIN, ORGANIZER) // Restrict deleting events
+						.requestMatchers(HttpMethod.DELETE, "/api/venues").hasAnyRole(ADMIN, ORGANIZER) // Restrict deleting venues
 		
 		                // All other requests require authentication
 		                .anyRequest().authenticated()
@@ -71,7 +78,7 @@ public class Security {
 	            // Disable CSRF for API endpoints and the H2 console.
 	            .csrf(csrf -> csrf.ignoringRequestMatchers(antMatcher("/api/**"), H2_CONSOLE))
 	            // Disable frame options to allow the H2 console to display.
-	            .headers(headers -> headers.frameOptions(frameOpts -> frameOpts.disable()));
+	            .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
 		return http.build();
 	}
