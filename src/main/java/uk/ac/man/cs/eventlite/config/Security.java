@@ -50,10 +50,10 @@ public class Security {
 		
 		                // API-based endpoints (/api/events)
 		                .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll() // Allow anyone to view events via API
-		                .requestMatchers(HttpMethod.POST, "/api/events").hasRole(ADMIN) // Restrict creating events via API
-		                .requestMatchers(HttpMethod.PUT, "/api/events/**").hasRole(ADMIN) // Restrict updating events via API
-		                .requestMatchers(HttpMethod.DELETE, "/api/events/**").hasRole(ADMIN) // Restrict deleting events via API
-		                .requestMatchers(HttpMethod.DELETE, "/events").hasAnyRole(ADMIN) // Restrict deleting events
+		                .requestMatchers(HttpMethod.POST, "/api/events").hasAnyRole(ADMIN, ORGANIZER) // Restrict creating events via API
+		                .requestMatchers(HttpMethod.PUT, "/api/events/**").hasAnyRole(ADMIN, ORGANIZER) // Restrict updating events via API
+		                .requestMatchers(HttpMethod.DELETE, "/api/events/**").hasAnyRole(ADMIN, ORGANIZER) // Restrict deleting events via API
+		                .requestMatchers(HttpMethod.DELETE, "/api/events").hasAnyRole(ADMIN, ORGANIZER) // Restrict deleting events
 		
 		                // All other requests require authentication
 		                .anyRequest().authenticated()

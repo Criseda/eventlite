@@ -16,6 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -24,6 +29,7 @@ import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 @Service
+@Transactional
 public class EventServiceImpl implements EventService {
 
 	private final static Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
@@ -32,6 +38,9 @@ public class EventServiceImpl implements EventService {
 	
 	@Autowired
 	private EventRepository eventRepository;
+	
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	public long count() {
@@ -65,26 +74,67 @@ public class EventServiceImpl implements EventService {
 	}
 	
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED)
 	public void delete(Event event) {
-		eventRepository.delete(event);
+		try {
+			log.info("Attempting to delete event: {}", event.getId());
+			// First detach from venue if necessary
+			if (event.getVenue() != null) {
+				log.info("Detaching event from venue");
+				event.setVenue(null);
+				eventRepository.save(event);
+				entityManager.flush(); // Force flush changes
+			}
+			eventRepository.delete(event);
+			entityManager.flush(); // Force flush changes
+			log.info("Event deleted successfully");
+		} catch (Exception e) {
+			log.error("Error deleting event: {}", e.getMessage(), e);
+			throw e;
+		}
 	}
 	
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED)
 	public void deleteById(long id) {
-		eventRepository.deleteById(id);
+		try {
+			log.info("Attempting to delete event with ID: {}", id);
+			// Try using native SQL as a fallback if JPA is having issues
+			int rowsAffected = entityManager.createNativeQuery("DELETE FROM events WHERE id = :id")
+				.setParameter("id", id)
+				.executeUpdate();
+			entityManager.flush();
+			log.info("Event deletion complete. Rows affected: {}", rowsAffected);
+		} catch (Exception e) {
+			log.error("Error deleting event by ID: {}", e.getMessage(), e);
+			throw e;
+		}
 	}
 	
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED)
 	public void deleteAll() {
-		eventRepository.deleteAll();
+		try {
+			log.info("Attempting to delete all events");
+			// Try using native SQL to delete all events
+			int rowsAffected = entityManager.createNativeQuery("DELETE FROM events")
+				.executeUpdate();
+			entityManager.flush();
+			log.info("All events deleted. Rows affected: {}", rowsAffected);
+		} catch (Exception e) {
+			log.error("Error deleting all events: {}", e.getMessage(), e);
+			throw e;
+		}
 	}
 	
 	@Override
+	@Transactional
 	public void deleteAll(Iterable<Event> events) {
 		eventRepository.deleteAll(events);
 	}
 	
 	@Override
+	@Transactional
 	public void deleteAllById(Iterable<Long> ids) {
 		eventRepository.deleteAllById(ids);
 	}

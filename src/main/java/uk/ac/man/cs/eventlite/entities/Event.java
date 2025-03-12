@@ -20,10 +20,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-
-
-
-
 @Entity
 @Table(name = "events")
 public class Event {
@@ -46,9 +42,8 @@ public class Event {
 	@Size(max = 256, message = "Name must be less than 256 characters")
 	private String name;
 	
-	@NotNull(message = "Venue is required")
-	@ManyToOne
-	@JoinColumn(name = "venue_id", referencedColumnName = "id")
+	@ManyToOne(optional = true)  // Make the relationship optional
+	@JoinColumn(name = "venue_id", referencedColumnName = "id", nullable = true)  // Allow null values
 	private Venue venue;
 
 	@Size(max = 500, message = "Description must be less than 500 characters")
