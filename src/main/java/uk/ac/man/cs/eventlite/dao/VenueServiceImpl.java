@@ -1,6 +1,7 @@
 package uk.ac.man.cs.eventlite.dao;
 
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -73,6 +74,21 @@ public class VenueServiceImpl implements VenueService {
 			    .limit(3)
 			    .collect(Collectors.toList());
 		return sortedVenues;
+	}
+	
+	public List<Event> findNextThreeUpcoming(long venueId) {
+	    Venue venue = venueRepository.findById(venueId)
+	        .orElseThrow(() -> new VenueNotFoundException(venueId)); // Throw exception if venue not found
+
+	    LocalDateTime currentDateTime = LocalDateTime.now();
+
+	    List<Event> upcomingEvents = venue.getEvents().stream()
+	        .filter(event -> event.getDate().atTime(event.getTime()).isAfter(currentDateTime))
+	        .sorted(Comparator.comparing(event -> event.getDate().atTime(event.getTime())))
+	        .limit(3)
+	        .collect(Collectors.toList());
+
+	    return upcomingEvents;
 	}
 	
 	@Override
