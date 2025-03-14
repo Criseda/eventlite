@@ -93,7 +93,8 @@ public class VenuesControllerApi {
 	@GetMapping
 	public CollectionModel<EntityModel<Venue>> getAllVenues() {
 		return venueAssembler.toCollectionModel(venueService.findAll())
-				.add(linkTo(methodOn(VenuesControllerApi.class).getAllVenues()).withSelfRel());
+				.add(linkTo(methodOn(VenuesControllerApi.class).getAllVenues()).withSelfRel())
+				.add(linkTo(HomeControllerApi.class).slash("profile").slash("venues").withRel("profile"));
 	}
 	
 	@DeleteMapping("/{id}")
