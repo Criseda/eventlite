@@ -29,6 +29,7 @@ import uk.ac.man.cs.eventlite.assemblers.VenueModelAssembler;
 import uk.ac.man.cs.eventlite.config.Security;
 
 import uk.ac.man.cs.eventlite.dao.VenueService;
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
 @ExtendWith(SpringExtension.class)
@@ -107,4 +108,18 @@ public class VenuesControllerApiTest {
     
         verify(venueService).findAll();
     }
+    
+    @Test
+	public void getAllVenues() throws Exception {
+		when(venueService.findAll()).thenReturn(Collections.<Venue>emptyList());
+		
+		mvc.perform(get("/api/venues").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(handler().methodName("getAllVenues"))
+				.andExpect(jsonPath("$.length()", equalTo(1)))
+				.andExpect(jsonPath("$._links.self.href", endsWith("/api/venues")));
+  
+
+
+		verify(venueService).findAll();
+	}
 }
