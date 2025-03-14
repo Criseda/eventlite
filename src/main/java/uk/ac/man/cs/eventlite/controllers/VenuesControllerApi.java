@@ -3,6 +3,9 @@ package uk.ac.man.cs.eventlite.controllers;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -24,8 +27,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
 import uk.ac.man.cs.eventlite.assemblers.VenueModelAssembler;
 import uk.ac.man.cs.eventlite.dao.VenueService;
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
@@ -40,6 +45,9 @@ public class VenuesControllerApi {
 	
 	@Autowired
 	private VenueModelAssembler venueAssembler;
+	
+	@Autowired
+	private EventModelAssembler eventAssembler;
 	
 	@PutMapping("/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
@@ -63,6 +71,23 @@ public class VenuesControllerApi {
 	    Venue venue = venueService.findById(id)
 	        .orElseThrow(() -> new VenueNotFoundException(id));
 	    return venueAssembler.toModel(venue);
+	}
+	
+	@GetMapping("/{id}/events")
+	public CollectionModel<EntityModel<Event>> getEventsByVenue(@PathVariable("id") long id) {
+	    Venue venue = venueService.findById(id)
+	        .orElseThrow(() -> new VenueNotFoundException(id)); 
+
+	    List<Event> events = venue.getEvents(); 
+	    return eventAssembler.toCollectionModel(events)
+	    		.add(linkTo(methodOn(VenuesControllerApi.class).getEventsByVenue(id)).withSelfRel());   
+	}
+	
+	@GetMapping("/{id}/next3events")
+	public CollectionModel<EntityModel<Event>> getNext3EventsByVenue(@PathVariable("id") long id) {
+	    List<Event> events = venueService.findNextThreeUpcoming(id); 
+	    return eventAssembler.toCollectionModel(events)
+	    		.add(linkTo(methodOn(VenuesControllerApi.class).getNext3EventsByVenue(id)).withSelfRel());   
 	}
 	
 	@GetMapping

@@ -1,7 +1,9 @@
 package uk.ac.man.cs.eventlite.dao;
 
+import java.util.List;
 import java.util.Optional;
 
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
 
@@ -27,6 +29,8 @@ public interface VenueService {
 	public Iterable<Venue> findTopThree();
 
 	public Object findByNameContainingIgnoreCase(String search);
+	
+	public List<Event> findNextThreeUpcoming(long venueId);
 
 
 
