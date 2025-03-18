@@ -5,3 +5,4 @@
 *.iws
 *.iml
 .vscode/
+.env

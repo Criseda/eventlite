@@ -130,6 +130,15 @@
       <artifactId>reactor-test</artifactId>
       <scope>test</scope>
     </dependency>
+     <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+  	</dependency>
+	<dependency>
+      <groupId>com.mapbox.mapboxsdk</groupId>
+      <artifactId>mapbox-sdk-services</artifactId>
+      <version>5.0.0</version>
+  </dependency>
   </dependencies>
 
   <build>
