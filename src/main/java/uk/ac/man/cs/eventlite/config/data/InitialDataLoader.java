@@ -40,7 +40,9 @@ public class InitialDataLoader {
 				venue.setName("Venue 1");
 				venue.setCapacity(100);
 				venue.setPostcode("M14 6FZ");
-				venue.setStreet("13 Fake road");
+				venue.setStreet("Unsworth Park");
+				venue.setLongitude(53.44498161799664);
+				venue.setLatitude(-2.2120819122803033);
 				venueService.save(venue);
 				
 				Venue venue2 = new Venue();
