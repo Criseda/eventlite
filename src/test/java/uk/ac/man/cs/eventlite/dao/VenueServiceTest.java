@@ -51,18 +51,22 @@ public class VenueServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 	// This class is here as a starter for testing any custom methods within the
 	// VenueService. 
 	
-	@BeforeEach
-    public void setup() {
-        // Clear all events first
-        eventService.deleteAll();
-        
-        // Now clear all venues
-        Iterable<Venue> allVenues = venueService.findAll();
-       // allVenues.forEach(venue -> venueService.delete(venue)); //delete functionality needs to be implemented
-    }
+//	@BeforeEach
+//    public void setup() {
+//        // Clear all events first
+//        eventService.deleteAll();
+//        
+//        // Now clear all venues
+//        Iterable<Venue> allVenues = venueService.findAll();
+//        allVenues.forEach(venue -> venueService.delete(venue)); //delete functionality needs to be implemented
+//    }
 	
 	@Test
 	public void findTopThreeNoVenues() throws Exception {
+		//clears venues to test when no venues
+		Iterable<Venue> allVenues = venueService.findAll();
+		allVenues.forEach(venue -> venueService.delete(venue)); //delete functionality needs to be implemented
+		
 		List<Venue> emptyList = new ArrayList<Venue>();
 		Iterable<Venue> topThree = venueService.findTopThree();
 				
@@ -72,6 +76,10 @@ public class VenueServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 	//Venues with no event should not be returned by this function.
 	@Test
 	public void findTopThreeUnpopularVenues() throws Exception {
+		
+		//clears venues to test venues without an event
+		Iterable<Venue> allVenues = venueService.findAll();
+		allVenues.forEach(venue -> venueService.delete(venue)); //delete functionality needs to be implemented
 		
 		Venue A = new Venue();
 		A.setName("Venue A");
@@ -101,30 +109,13 @@ public class VenueServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 	public void findTopThreeNormal() throws Exception {
 		
 		
-				
+		//Gets venue 1 from initial data loader
+		
 		Venue Z = venueService.findById(1).get();
 		
 		List<Venue> correct = Arrays.asList(Z);
 		List<Venue> topThree = Lists.newArrayList(venueService.findTopThree());
-		
-		// Convert to a list for easier inspection
-	    List<Venue> topThreeList = new ArrayList<>();
-	    topThree.forEach(topThreeList::add);
-	    
-//	    System.out.println("Number of venues returned: " + topThreeList.size());
-//	    System.out.println(D.getEvents().toString());
-//	    correct.forEach(venue -> System.out.println(venue.getEvents()));
-	    
-	    // Print details of the unexpected venue
-	    if (!topThreeList.isEmpty()) {
-	        Venue venue = topThreeList.get(0);
-	        System.out.println("Unexpected venue: " + venue);
-	        System.out.println("Venue ID: " + venue.getId());
-	        System.out.println("Venue Name: " + venue.getName());
-	        System.out.println(venue.getEvents());
-	  
-	    }
-		
+	
 		assertIterableEquals(correct, topThree);
 		 
 	}
