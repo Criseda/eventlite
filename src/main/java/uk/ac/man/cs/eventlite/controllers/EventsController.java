@@ -1,6 +1,7 @@
 package uk.ac.man.cs.eventlite.controllers;
 
 import java.time.LocalDate;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -71,6 +72,9 @@ public class EventsController {
 		model.addAttribute("previousEvents", previousEvents);
 		model.addAttribute("upcomingEvents", upcomingEvents);
 		model.addAttribute("search", search);
+		String apiKey = Dotenv.load().get("MAPBOX_API_KEY");
+		model.addAttribute("MAPBOX_API_KEY",apiKey);
+		
 
 		return "events/index";
 	}
