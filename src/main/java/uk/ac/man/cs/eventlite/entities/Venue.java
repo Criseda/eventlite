@@ -113,7 +113,7 @@ public class Venue {
 	}
 	
 	public void setLongitude(double lon) {
-		this.latitude = lon;
+		this.longitude = lon;
 	}
 	
 }

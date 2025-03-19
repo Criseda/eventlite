@@ -63,8 +63,7 @@ public class VenuesController {
 		venue.setPostcode(venue.getPostcode().toUpperCase());
 		
 		// Retrieve API key
-		Dotenv dotenv = Dotenv.load(); // Loads the .env file
-		String apiKey = dotenv.get("MAPBOX_API_KEY"); // Retrieve the API key
+		String apiKey = Dotenv.load().get("MAPBOX_API_KEY"); 
 		
 		//Build a request for the API
 		MapboxGeocoding mapboxGeocoding = MapboxGeocoding.builder()
@@ -78,8 +77,8 @@ public class VenuesController {
 			
 			// Gets the co-ords of the closest building if there is one
 			List<Double> coords = response.body().features().get(0).center().coordinates();
-			venue.setLatitude(coords.get(0));
-			venue.setLongitude(coords.get(1));
+			venue.setLatitude(coords.get(1));
+			venue.setLongitude(coords.get(0));
 		} catch (IOException e) {
 			// TODO: handle exception
 		}
