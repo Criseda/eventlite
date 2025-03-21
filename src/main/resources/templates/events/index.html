@@ -141,11 +141,16 @@
 	  		});
 			
 			var markers = [];
+			var venueIds = [];
 			/*[# th:each="event : ${upcomingEvents}"]*/
-			markers.push(new mapboxgl.Marker().setLngLat([-2.2356388, 53.4778586]).addTo(map)); // need to change to [[${event.getVenue().getLongitude()}]]
+			if(!venueIds.includes([[${event.getVenue().getId()}]])){
+				markers.push([-2.2356388, 53.4778586]);
+				venueIds.push([[${event.getVenue().getId()}]]);
+				new mapboxgl.Marker().setLngLat([-2.2356388, 53.4778586]).addTo(map); 
+			}
 			/*[/]*/
 			var bounds = new mapboxgl.LngLatBounds();
-			markers.forEach(marker => bounds.extend(marker.getLngLat()));
+			markers.forEach(marker => bounds.extend(marker));
 			map.fitBounds(bounds);
 	  	</script>
 	    </div>
