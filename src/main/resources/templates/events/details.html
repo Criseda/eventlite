@@ -83,7 +83,7 @@
   
                 var bounds = new mapboxgl.LngLatBounds();
                 bounds.extend([longitude, latitude]);
-                map.fitBounds(bounds, { padding: 50 });
+                map.fitBounds(bounds, { padding: 100, maxZoom: 17 });
                 
                 setTimeout(() => {
                     map.resize();
