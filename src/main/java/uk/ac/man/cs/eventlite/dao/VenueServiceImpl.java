@@ -1,5 +1,6 @@
 package uk.ac.man.cs.eventlite.dao;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -10,6 +11,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +21,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mapbox.api.geocoding.v5.MapboxGeocoding;
+import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 
+import io.github.cdimascio.dotenv.Dotenv;
+import retrofit2.Response;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
@@ -49,6 +57,27 @@ public class VenueServiceImpl implements VenueService {
 		oldVenue.setPostcode(newVenue.getPostcode());
 		oldVenue.setStreet(newVenue.getStreet());	
 		oldVenue.setEvents(newVenue.getEvents());
+		
+		//Find new longitude and latitude
+		String apiKey = Dotenv.load().get("MAPBOX_API_KEY"); 
+				
+		//Build a request for the API	
+		MapboxGeocoding mapboxGeocoding = MapboxGeocoding.builder()
+				.accessToken(apiKey)
+				.query(newVenue.getStreet() + " " + newVenue.getPostcode())
+				.build();
+				
+		try {
+		// Get a response by executing the call
+			Response<GeocodingResponse> response = mapboxGeocoding.executeCall();
+					
+		// Gets the co-ords of the closest building if there is one
+			List<Double> coords = response.body().features().get(0).center().coordinates();
+			oldVenue.setLatitude(coords.get(1));
+			oldVenue.setLongitude(coords.get(0));
+		} catch (IOException e) {
+					// TODO: handle exception
+		}
 		
 		return venueRepository.save(oldVenue);
 	}
