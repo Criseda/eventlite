@@ -143,10 +143,10 @@
 			var markers = [];
 			var venueIds = [];
 			/*[# th:each="event : ${upcomingEvents}"]*/
-			if(!venueIds.includes([[${event.getVenue().getId()}]])){
-				markers.push([-2.2356388, 53.4778586]);
-				venueIds.push([[${event.getVenue().getId()}]]);
-				new mapboxgl.Marker().setLngLat([-2.2356388, 53.4778586]).addTo(map); 
+			if(!venueIds.includes( [[${event.getVenue().getId()}]] )){
+				markers.push([ [[${event.getVenue().getLongitude()}]] , [[${event.getVenue().getLatitude()}]] ]);
+				venueIds.push( [[${event.getVenue().getId()}]] );
+				new mapboxgl.Marker().setLngLat( [[${event.getVenue().getLongitude()}]] , [[${event.getVenue().getLatitude()}]] ).addTo(map); 
 			}
 			/*[/]*/
 			var bounds = new mapboxgl.LngLatBounds();
