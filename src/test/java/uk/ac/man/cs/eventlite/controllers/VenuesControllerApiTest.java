@@ -11,7 +11,11 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -118,8 +122,32 @@ public class VenuesControllerApiTest {
 				.andExpect(jsonPath("$.length()", equalTo(1)))
 				.andExpect(jsonPath("$._links.self.href", endsWith("/api/venues")));
   
-
-
 		verify(venueService).findAll();
 	}
+    
+    @Test
+    public void getNext3EventsByVenue() throws Exception {
+        Venue venue = new Venue();
+        Event event1 = new Event();
+        Event event2 = new Event();
+        Event event3 = new Event();
+        event1.setDate(LocalDate.now().plusDays(1));
+        event1.setTime(LocalTime.of(18, 0));
+        event2.setDate(LocalDate.now().plusDays(2));
+        event2.setTime(LocalTime.of(19, 0));
+        event3.setDate(LocalDate.now().plusDays(3));
+        event3.setTime(LocalTime.of(20, 0));
+        
+        List<Event> eventsList = Arrays.asList(event1, event2, event3);
+        
+        when(venueService.findNextThreeUpcoming(venue.getId())).thenReturn(eventsList);
+        mvc.perform(get("/api/venues/" + venue.getId() + "/next3events")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", equalTo(2)))
+                .andExpect(jsonPath("$._links.self.href", endsWith("/api/venues/" + venue.getId() + "/next3events")));
+        
+        verify(venueService).findNextThreeUpcoming(venue.getId());
+    }
+
 }
