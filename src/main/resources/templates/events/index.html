@@ -6,9 +6,11 @@
 >
   <head>
     <title>All events</title>
+	<link href="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css" rel="stylesheet">
+	<script src="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js"></script>
   </head>
   <body>
-    <div layout:fragment="content">
+    <div layout:fragment="content" style="padding-bottom:5vh;">
       <h1>All events</h1>
 
       <!-- Search Form -->
@@ -131,6 +133,27 @@
         </tbody>
       </table>
 	  </div>
+	    <div th:if="${upcomingEvents.size() != 0}" id="map" style="width:100%;height:30vh;">
+	  	<script th:inline="javascript">
+	  		mapboxgl.accessToken = [[${apiKey}]]
+	  		const map = new mapboxgl.Map({
+	  		       container: 'map',  
+	  		});
+			
+			var markers = [];
+			var venueIds = [];
+			/*[# th:each="event : ${upcomingEvents}"]*/
+			if(!venueIds.includes( [[${event.getVenue().getId()}]] )){
+				markers.push([ [[${event.getVenue().getLongitude()}]] , [[${event.getVenue().getLatitude()}]] ]);
+				venueIds.push( [[${event.getVenue().getId()}]] );
+				new mapboxgl.Marker().setLngLat([ [[${event.getVenue().getLongitude()}]] , [[${event.getVenue().getLatitude()}]] ]).addTo(map); 
+			}
+			/*[/]*/
+			var bounds = new mapboxgl.LngLatBounds();
+			markers.forEach(marker => bounds.extend(marker));
+			map.fitBounds(bounds, {padding: 100});
+	  	</script>
+	    </div>
     </div>
   </body>
 </html>
