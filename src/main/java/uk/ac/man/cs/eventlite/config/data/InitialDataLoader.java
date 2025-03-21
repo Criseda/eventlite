@@ -36,11 +36,18 @@ public class InitialDataLoader {
 				log.info("Database already populated with venues. Skipping venue initialization.");
 			} else {
 				// Build and save initial venues here.
+				
+				// Venues set here need their longitude and latitude set manually,
+				// this is done automatically by the api when creating or updating an event
+				// but needs to be done here manually (5 decimals)
+				
 				Venue venue = new Venue();
 				venue.setName("Venue 1");
 				venue.setCapacity(100);
 				venue.setPostcode("M14 6FZ");
-				venue.setStreet("13 Fake road");
+				venue.setStreet("Unsworth Park");
+				venue.setLatitude(53.44498);
+				venue.setLongitude(-2.21208);
 				venueService.save(venue);
 				
 				Venue venue2 = new Venue();
@@ -48,6 +55,8 @@ public class InitialDataLoader {
 				venue2.setCapacity(20000);
 				venue2.setPostcode("SE10 0DX");
 				venue2.setStreet("Peninsula Square");
+				venue2.setLatitude(51.56805);
+				venue2.setLongitude(0.01600);
 				venueService.save(venue2);
 				
 				Venue venue3 = new Venue();
@@ -55,6 +64,8 @@ public class InitialDataLoader {
 				venue3.setCapacity(61276);
 				venue3.setPostcode("L4 0TH");
 				venue3.setStreet("Anfield Road");
+				venue3.setLatitude(53.43100);
+				venue3.setLongitude(-2.96077);
 				venueService.save(venue3);
 				
 				Venue venue4 = new Venue();
@@ -62,6 +73,8 @@ public class InitialDataLoader {
 				venue4.setCapacity(21000);
 				venue4.setPostcode("M3 1AR");
 				venue4.setStreet("Hunts Bank");
+				venue4.setLatitude(53.48823);
+				venue4.setLongitude(-2.24361);
 				venueService.save(venue4);
 			}
 

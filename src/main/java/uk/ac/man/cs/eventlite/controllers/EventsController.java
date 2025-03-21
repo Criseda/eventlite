@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import io.github.cdimascio.dotenv.Dotenv;
+
 import org.springframework.web.bind.annotation.ResponseStatus;
 import jakarta.validation.Valid;
 import uk.ac.man.cs.eventlite.dao.EventService;
@@ -54,6 +57,10 @@ public class EventsController {
 			throw new EventNotFoundException(id);
 		}
 		model.addAttribute("e", eventService.findById(id).get());
+		
+		String apiKey = Dotenv.load().get("MAPBOX_API_KEY"); // Retrieve the API key
+		model.addAttribute("api", apiKey);
+		
 		return "events/details";
 	}
 
@@ -72,9 +79,9 @@ public class EventsController {
 		model.addAttribute("previousEvents", previousEvents);
 		model.addAttribute("upcomingEvents", upcomingEvents);
 		model.addAttribute("search", search);
-		String apiKey = Dotenv.load().get("MAPBOX_API_KEY");
-		model.addAttribute("MAPBOX_API_KEY",apiKey);
 		
+		String apiKey = Dotenv.load().get("MAPBOX_API_KEY"); // Retrieve the API key
+		model.addAttribute("apiKey", apiKey);
 
 		return "events/index";
 	}
@@ -132,6 +139,7 @@ public class EventsController {
 
 		eventService.deleteById(id);
 		redirectAttrs.addFlashAttribute("ok_message", "Greeting deleted.");
+		
 
 		return "redirect:/events";
 	}

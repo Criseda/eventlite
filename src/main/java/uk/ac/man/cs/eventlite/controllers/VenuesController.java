@@ -1,6 +1,8 @@
 package uk.ac.man.cs.eventlite.controllers;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,13 +26,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import jakarta.validation.Valid;
+import retrofit2.Response;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
-
-
 import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
+
+import io.github.cdimascio.dotenv.Dotenv;
+//for forward geocoding
+import com.mapbox.api.geocoding.v5.MapboxGeocoding;
+import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 
 @Controller
 @RequestMapping(value = "/venues", produces = { MediaType.TEXT_HTML_VALUE })
@@ -55,6 +61,28 @@ public class VenuesController {
 		}
 		
 		venue.setPostcode(venue.getPostcode().toUpperCase());
+		
+		// Retrieve API key
+		String apiKey = Dotenv.load().get("MAPBOX_API_KEY"); 
+		
+		//Build a request for the API
+		MapboxGeocoding mapboxGeocoding = MapboxGeocoding.builder()
+				.accessToken(apiKey)
+				.query(venue.getStreet() + " " + venue.getPostcode())
+				.build();
+		
+		try {
+			// Get a response by executing the call
+			Response<GeocodingResponse> response = mapboxGeocoding.executeCall();
+			
+			// Gets the co-ords of the closest building if there is one
+			List<Double> coords = response.body().features().get(0).center().coordinates();
+			venue.setLatitude(coords.get(1));
+			venue.setLongitude(coords.get(0));
+		} catch (IOException e) {
+			// TODO: handle exception
+		}
+		
 		venueService.save(venue);
 		redirectAttrs.addFlashAttribute("ok_message", "Venue created successfully.");
 		return "redirect:/venues"; // Redirect to event list

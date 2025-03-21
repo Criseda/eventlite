@@ -46,8 +46,11 @@ public class Venue {
 	@Pattern(regexp="([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\\s?[0-9][A-Za-z]{2})", message = "Invalid postcode")
 	private String postcode;
 	
-	public Venue() {
-	}
+//	@NotNull(message = "Longitude cannot be null")
+	private double longitude;
+	
+//	@NotNull(message = "Latitude cannot be null")
+	private double latitude; 
 
 	public long getId() {
 		return id;
@@ -96,4 +99,21 @@ public class Venue {
 	public void setEvents(List<Event> events) {
 		this.events = events;
 	}
+	
+	public double getLatitude() {
+		return this.latitude;
+	}
+	
+	public void setLatitude(double lat) {
+		this.latitude = lat;
+	}
+	
+	public double getLongitude() {
+		return this.longitude;
+	}
+	
+	public void setLongitude(double lon) {
+		this.longitude = lon;
+	}
+	
 }
