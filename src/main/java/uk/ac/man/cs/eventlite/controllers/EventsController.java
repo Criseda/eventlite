@@ -12,7 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,11 +19,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import io.github.cdimascio.dotenv.Dotenv;
 
 import org.springframework.web.bind.annotation.ResponseStatus;
 import jakarta.validation.Valid;
@@ -32,6 +30,9 @@ import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
+import uk.ac.man.cs.eventlite.services.MastodonService;
+
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
@@ -42,6 +43,9 @@ public class EventsController {
 
 	@Autowired
 	private VenueService venueService;
+
+	@Autowired
+	private MastodonService mastodonService;
 
 	@ExceptionHandler(EventNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
@@ -57,10 +61,13 @@ public class EventsController {
 			throw new EventNotFoundException(id);
 		}
 		model.addAttribute("e", eventService.findById(id).get());
-		
+
 		String apiKey = Dotenv.load().get("MAPBOX_API_KEY"); // Retrieve the API key
 		model.addAttribute("api", apiKey);
-		
+
+		List<Status> timeline = mastodonService.getTimeline();
+		model.addAttribute("timeline", timeline);
+
 		return "events/details";
 	}
 
@@ -69,7 +76,7 @@ public class EventsController {
 		Iterable<Event> previousEvents;
 		Iterable<Event> upcomingEvents;
 		if (search != null && !search.isEmpty()) {
-			//events = eventService.findByNameContainingIgnoreCase(search);
+			// events = eventService.findByNameContainingIgnoreCase(search);
 			previousEvents = eventService.findByWholeWordDateAlphabetically(search, "p");
 			upcomingEvents = eventService.findByWholeWordDateAlphabetically(search, "u");
 		} else {
@@ -79,9 +86,12 @@ public class EventsController {
 		model.addAttribute("previousEvents", previousEvents);
 		model.addAttribute("upcomingEvents", upcomingEvents);
 		model.addAttribute("search", search);
-		
+
 		String apiKey = Dotenv.load().get("MAPBOX_API_KEY"); // Retrieve the API key
 		model.addAttribute("apiKey", apiKey);
+
+		List<Status> timeline = mastodonService.getTimeline();
+        model.addAttribute("timeline", timeline);
 
 		return "events/index";
 	}
@@ -119,7 +129,8 @@ public class EventsController {
 
 	@PostMapping
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
-	public String createEvent(@Valid @ModelAttribute("event") Event event, BindingResult result, Model model, RedirectAttributes redirectAttrs) {
+	public String createEvent(@Valid @ModelAttribute("event") Event event, BindingResult result, Model model,
+			RedirectAttributes redirectAttrs) {
 		if (result.hasErrors()) {
 			model.addAttribute("venues", venueService.findAll());
 			return "events/new"; // Return form with validation errors
@@ -130,6 +141,21 @@ public class EventsController {
 		return "redirect:/events"; // Redirect to event list
 	}
 
+	@PostMapping("/{id}/share")
+    public String shareEvent(@PathVariable("id") long id, 
+                           @RequestParam("content") String content, 
+                           RedirectAttributes redirectAttrs) {
+        try {
+            Status status = mastodonService.postStatus(content);
+            redirectAttrs.addFlashAttribute("posted", true);
+            redirectAttrs.addFlashAttribute("statusContent", status.getContent());
+        } catch (Mastodon4jRequestException e) {
+            redirectAttrs.addFlashAttribute("error", "Failed to post: " + e.getMessage());
+        }
+        
+        return "redirect:/events/" + id;
+    }
+
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
 	public String deleteEvent(@PathVariable("id") long id, RedirectAttributes redirectAttrs) {
@@ -139,7 +165,6 @@ public class EventsController {
 
 		eventService.deleteById(id);
 		redirectAttrs.addFlashAttribute("ok_message", "Greeting deleted.");
-		
 
 		return "redirect:/events";
 	}
