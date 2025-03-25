@@ -6,8 +6,11 @@
 >
   <head>
     <title>Event Details</title>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css" rel="stylesheet">
-	  <script src="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js"></script>
     <style>
       #map {
         width: 100%;
@@ -27,81 +30,117 @@
         <tbody>
           <tr>
             <th width="150em"><i class="fa-solid fa-bolt"></i> Event name</th>
-            <td th:text="${e.name}"></td>
+            <td th:text="${event.name}"></td>
           </tr>
           <tr>
             <th><i class="fa-solid fa-calendar"></i> Start date</th>
             <td
-              th:text="${e.date.getDayOfMonth()} + '/' + ${e.date.getMonthValue()} + '/' + ${e.date.getYear()}"
+              th:text="${event.date.getDayOfMonth()} + '/' + ${event.date.getMonthValue()} + '/' + ${event.date.getYear()}"
             ></td>
           </tr>
-          <tr th:if="${e.time != null}">
+          <tr th:if="${event.time != null}">
             <th><i class="fa-solid fa-clock"></i> Start time</th>
-            <td th:text="${e.time.toString()}"></td>
+            <td th:text="${event.time.toString()}"></td>
           </tr>
           <tr>
             <th><i class="fa-solid fa-map-marker-alt"></i> Venue name</th>
-            <td th:text="${e.venue.name}"></td>
+            <td th:text="${event.venue.name}"></td>
           </tr>
 
           <tr>
             <th><i class="fa-solid fa-person"></i> Venue capacity</th>
-            <td th:text="${e.venue.capacity}"></td>
+            <td th:text="${event.venue.capacity}"></td>
           </tr>
-          <tr th:if="${e.description != null and (#strings.trim(e.description).length != 0)}">
+          <tr
+            th:if="${event.description != null and (#strings.trim(event.description).length != 0)}"
+          >
             <th><i class="fa-solid fa-circle-info"></i> Description</th>
-            <td th:text="${e.description}"></td>
+            <td th:text="${event.description}"></td>
           </tr>
         </tbody>
       </table>
+
+      <div class="card mt-4">
+        <div class="card-header">Share on Mastodon</div>
+        <div class="card-body">
+          <!-- Show confirmation message if post was successful -->
+          <div th:if="${posted}" class="alert alert-success">
+            <strong>Successfully posted to Mastodon!</strong>
+            <div th:utext="${statusContent}"></div>
+          </div>
+
+          <!-- Show error message if post failed -->
+          <div
+            th:if="${error}"
+            class="alert alert-danger"
+            th:text="${error}"
+          ></div>
+
+          <form th:action="@{/events/{id}/share(id=${event.id})}" method="post">
+            <div class="form-group">
+              <label for="content">Post Content</label>
+              <textarea
+                id="content"
+                name="content"
+                class="form-control"
+                th:placeholder="${'Check out this event: ' + event.name}"
+                rows="3"
+              ></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Share</button>
+          </form>
+        </div>
+      </div>
 
       <div id="map"></div>
 
       <script th:inline="javascript">
         document.addEventListener("DOMContentLoaded", function () {
+          mapboxgl.accessToken = /*[[${api}]]*/ "";
 
-            mapboxgl.accessToken = /*[[${api}]]*/ '';
-  
-            var longitude = /*[[${e.getVenue().getLongitude()}]]*/ 0;
-            var latitude = /*[[${e.getVenue().getLatitude()}]]*/ 0;
-  
-            console.log("Longitude:", longitude);
-            console.log("Latitude:", latitude);
-            console.log(mapboxgl.accessToken)
-  
-            if (longitude !== 0 && latitude !== 0) {
-                const map = new mapboxgl.Map({
-                    container: 'map',
-                    style: 'mapbox://styles/mapbox/streets-v11',
-                    center: [longitude, latitude],
-                    zoom: 17
-                });
-  
-				var eventDetails = `
-				    <strong>Event:</strong> [[${e.getName()}]]<br>
-				    <strong>Date:</strong> [[${e.date}]]<br>
-				    <strong>Venue:</strong> [[${e.getVenue().getName()}]]<br>
-				`;
-				
-                new mapboxgl.Marker()
-                    .setLngLat([longitude, latitude])
-					.setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(eventDetails)) // Add popup
-                    .addTo(map);
-  
-                var bounds = new mapboxgl.LngLatBounds();
-                bounds.extend([longitude, latitude]);
-                map.fitBounds(bounds, { padding: 100, maxZoom: 17 });
-                
-                setTimeout(() => {
-                    map.resize();
-                }, 500);
+          var longitude = /*[[${event.getVenue().getLongitude()}]]*/ 0;
+          var latitude = /*[[${event.getVenue().getLatitude()}]]*/ 0;
 
-            } else {
-                console.warn("Invalid coordinates");
-            }
+          console.log("Longitude:", longitude);
+          console.log("Latitude:", latitude);
+          console.log(mapboxgl.accessToken);
+
+          if (longitude !== 0 && latitude !== 0) {
+            const map = new mapboxgl.Map({
+              container: "map",
+              style: "mapbox://styles/mapbox/streets-v11",
+              center: [longitude, latitude],
+              zoom: 17,
+            });
+
+            var eventDetails = `
+                    <strong>Event:</strong> [[${event.getName()}]]<br>
+                    <strong>Date:</strong> [[${event.date}]]<br>
+                    <strong>Venue:</strong> [[${event
+                      .getVenue()
+                      .getName()}]]<br>
+                `;
+
+            new mapboxgl.Marker()
+              .setLngLat([longitude, latitude])
+              .setPopup(
+                new mapboxgl.Popup({ offset: 25 }).setHTML(eventDetails)
+              ) // Add popup
+              .addTo(map);
+
+            var bounds = new mapboxgl.LngLatBounds();
+            bounds.extend([longitude, latitude]);
+            map.fitBounds(bounds, { padding: 100, maxZoom: 17 });
+
+            setTimeout(() => {
+              map.resize();
+            }, 500);
+          } else {
+            console.warn("Invalid coordinates");
+          }
         });
       </script>
-      
+
       <div class="d-flex justify-content-between mb-3">
         <p>
           <a class="btn btn-secondary" role="button" th:href="@{/events}"
@@ -110,7 +149,7 @@
           >
         </p>
         <form
-          th:action="@{/events/{id}(id=${e.id})}"
+          th:action="@{/events/{id}(id=${event.id})}"
           th:method="delete"
           sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
         >
@@ -118,7 +157,7 @@
             <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete
           </button>
         </form>
-      </div>  
-    </div> 
+      </div>
+    </div>
   </body>
 </html>

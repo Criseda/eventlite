@@ -6,11 +6,44 @@
 >
   <head>
     <title>All events</title>
-	<link href="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css" rel="stylesheet">
-	<script src="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js"></script>
   </head>
   <body>
-    <div layout:fragment="content" style="padding-bottom:5vh;">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">Mastodon Timeline</div>
+        <div class="card-body">
+          <ul class="list-group">
+            <li th:each="status : ${timeline}" class="list-group-item">
+              <div th:utext="${status.content}"></div>
+              <small class="text-muted">
+                <span
+                  th:text="${#temporals.format(status.createdAt, 'dd MMM yyyy')}"
+                ></span>
+                at
+                <span
+                  th:text="${#temporals.format(status.createdAt, 'HH:mm')}"
+                ></span>
+                <a
+                  th:href="${status.url}"
+                  target="_blank"
+                  class="btn btn-sm btn-link"
+                  >View on Mastodon</a
+                >
+              </small>
+            </li>
+            <li th:if="${timeline.empty}" class="list-group-item">
+              No recent posts
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div layout:fragment="content" style="padding-bottom: 5vh">
       <h1>All events</h1>
 
       <!-- Search Form -->
@@ -33,7 +66,7 @@
       </div>
 
       <!-- Upcoming Events Section -->
-	  
+
       <h2>Upcoming Events</h2>
       <table class="table table-striped table-hover">
         <thead>
@@ -55,7 +88,7 @@
             <td th:text="${e.venue.name}">Event Venue</td>
             <td th:text="${{e.date}}">Event Date</td>
             <td th:text="${{e.time}}">Event Time</td>
-            <td >
+            <td>
               <a
                 class="btn btn-primary"
                 sec:authorize="hasRole('ATTENDEE')"
@@ -79,106 +112,109 @@
       </table>
 
       <!-- Previous Events Section -->
-	  <div th:if="${previousEvents.size() != 0}">
-      <h2>Previous Events</h2>
-      <table class="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th><i class="fa-solid fa-bolt"></i> Event</th>
-            <th><i class="fa-solid fa-map-marker-alt"></i> Venue</th>
-            <th><i class="fa-solid fa-calendar"></i> Date</th>
-            <th><i class="fa-solid fa-clock"></i> Time</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="e : ${previousEvents}">
-            <td>
-              <a th:href="@{/events/{id}(id=${e.id})}" th:text="${e.name}"
-                >My Event</a
-              >
-            </td>
-            <td th:text="${e.venue.name}">Event Venue</td>
-            <td th:text="${{e.date}}">Event Date</td>
-            <td th:text="${{e.time}}">Event Time</td>
-            <td>
-              <a
-                class="btn btn-primary"
-                role="button"
-                th:href="@{/events/{id}(id=${e.id})}"
-              >
-                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-                Details
-              </a>
-              <a
-                class="btn btn-primary"
-                sec:authorize="hasRole('ATTENDEE')"
-                role="button"
-                th:href="@{/events/{id}(id=${e.id})}"
-              >
-                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-                Register
-              </a>
-              <a
-                class="btn btn-primary"
-                sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
-                role="button"
-                th:href="@{/events/update/{id}(id=${e.id})}"
-              >
-                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-                Update
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-	  </div>
-	    <div th:if="${upcomingEvents.size() != 0}" id="map" style="width:100%;height:30vh;">
-			<script th:inline="javascript">
-			    mapboxgl.accessToken = [[${apiKey}]];
-			    const map = new mapboxgl.Map({
-			        container: 'map',
-			        style: 'mapbox://styles/mapbox/streets-v11',
-			        center: [0, 0],
-			        zoom: 2
-			    });
+      <div th:if="${previousEvents.size() != 0}">
+        <h2>Previous Events</h2>
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th><i class="fa-solid fa-bolt"></i> Event</th>
+              <th><i class="fa-solid fa-map-marker-alt"></i> Venue</th>
+              <th><i class="fa-solid fa-calendar"></i> Date</th>
+              <th><i class="fa-solid fa-clock"></i> Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="e : ${previousEvents}">
+              <td>
+                <a th:href="@{/events/{id}(id=${e.id})}" th:text="${e.name}"
+                  >My Event</a
+                >
+              </td>
+              <td th:text="${e.venue.name}">Event Venue</td>
+              <td th:text="${{e.date}}">Event Date</td>
+              <td th:text="${{e.time}}">Event Time</td>
+              <td>
+                <a
+                  class="btn btn-primary"
+                  role="button"
+                  th:href="@{/events/{id}(id=${e.id})}"
+                >
+                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                  Details
+                </a>
+                <a
+                  class="btn btn-primary"
+                  sec:authorize="hasRole('ATTENDEE')"
+                  role="button"
+                  th:href="@{/events/{id}(id=${e.id})}"
+                >
+                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                  Register
+                </a>
+                <a
+                  class="btn btn-primary"
+                  sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
+                  role="button"
+                  th:href="@{/events/update/{id}(id=${e.id})}"
+                >
+                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                  Update
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div
+        th:if="${upcomingEvents.size() != 0}"
+        id="map"
+        style="width: 100%; height: 30vh"
+      >
+        <script th:inline="javascript">
+          mapboxgl.accessToken = [[${apiKey}]];
+          const map = new mapboxgl.Map({
+              container: 'map',
+              style: 'mapbox://styles/mapbox/streets-v11',
+              center: [0, 0],
+              zoom: 2
+          });
 
-			    var markers = [];
-			    var venueIds = [];
-			    
-			    /*[# th:each="event : ${upcomingEvents}"]*/
-			    if (!venueIds.includes([[${event.getVenue().getId()}]])) {
-			        var longitude = [[${event.getVenue().getLongitude()}]];
-			        var latitude = [[${event.getVenue().getLatitude()}]];
-			        var venueId = [[${event.getVenue().getId()}]];
-			        
-			        // Event details for the popup
-			        var eventDetails = `
-			            <strong>Event:</strong> [[${event.getName()}]]<br>
-			            <strong>Date:</strong> [[${event.date}]]<br>
-			            <strong>Venue:</strong> [[${event.getVenue().getName()}]]<br>
-			        `;
+          var markers = [];
+          var venueIds = [];
 
-			        // Add marker to the map
-			        var marker = new mapboxgl.Marker()
-			            .setLngLat([longitude, latitude])
-			            .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(eventDetails)) // Add popup
-			            .addTo(map);
+          /*[# th:each="event : ${upcomingEvents}"]*/
+          if (!venueIds.includes([[${event.getVenue().getId()}]])) {
+              var longitude = [[${event.getVenue().getLongitude()}]];
+              var latitude = [[${event.getVenue().getLatitude()}]];
+              var venueId = [[${event.getVenue().getId()}]];
 
-			        markers.push([longitude, latitude]);
-			        venueIds.push(venueId);
-			    }
-			    /*[/]*/
+              // Event details for the popup
+              var eventDetails = `
+                  <strong>Event:</strong> [[${event.getName()}]]<br>
+                  <strong>Date:</strong> [[${event.date}]]<br>
+                  <strong>Venue:</strong> [[${event.getVenue().getName()}]]<br>
+              `;
 
-			    // Fit map bounds to markers
-			    if (markers.length > 0) {
-			        var bounds = new mapboxgl.LngLatBounds();
-			        markers.forEach(marker => bounds.extend(marker));
-			        map.fitBounds(bounds, { padding: 100 });
-			    }
-			</script>
+              // Add marker to the map
+              var marker = new mapboxgl.Marker()
+                  .setLngLat([longitude, latitude])
+                  .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(eventDetails)) // Add popup
+                  .addTo(map);
 
-	    </div>
+              markers.push([longitude, latitude]);
+              venueIds.push(venueId);
+          }
+          /*[/]*/
+
+          // Fit map bounds to markers
+          if (markers.length > 0) {
+              var bounds = new mapboxgl.LngLatBounds();
+              markers.forEach(marker => bounds.extend(marker));
+              map.fitBounds(bounds, { padding: 100 });
+          }
+        </script>
+      </div>
     </div>
   </body>
 </html>
