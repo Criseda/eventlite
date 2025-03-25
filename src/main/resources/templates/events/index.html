@@ -44,6 +44,40 @@
       </div>
     </div>
     <div layout:fragment="content" style="padding-bottom: 5vh">
+      <!-- Mastodon Timeline Table -->
+      <div class="card mb-4">
+        <div class="card-header">Mastodon Timeline</div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Content</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Link</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="status : ${timeline}">
+                <td th:utext="${status.content}"></td>
+                <td th:text="${status.createdAt != null ? #strings.substring(status.createdAt.toString(), 0, 10) : ''}"></td>
+                <td th:text="${status.createdAt != null ? #strings.substring(status.createdAt.toString(), 11, 16) : ''}"></td>
+                <td>
+                  <a
+                    th:href="${status.url}"
+                    target="_blank"
+                    class="btn btn-sm btn-primary"
+                    >View on Mastodon</a
+                  >
+                </td>
+              </tr>
+              <tr th:if="${timeline == null || timeline.empty}">
+                <td colspan="4" class="text-center">No recent posts</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
       <h1>All events</h1>
 
       <!-- Search Form -->
