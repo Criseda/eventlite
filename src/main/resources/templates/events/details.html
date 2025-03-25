@@ -30,32 +30,32 @@
         <tbody>
           <tr>
             <th width="150em"><i class="fa-solid fa-bolt"></i> Event name</th>
-            <td th:text="${event.name}"></td>
+            <td th:text="${e.name}"></td>
           </tr>
           <tr>
             <th><i class="fa-solid fa-calendar"></i> Start date</th>
             <td
-              th:text="${event.date.getDayOfMonth()} + '/' + ${event.date.getMonthValue()} + '/' + ${event.date.getYear()}"
+              th:text="${e.date.getDayOfMonth()} + '/' + ${e.date.getMonthValue()} + '/' + ${e.date.getYear()}"
             ></td>
           </tr>
-          <tr th:if="${event.time != null}">
+          <tr th:if="${e.time != null}">
             <th><i class="fa-solid fa-clock"></i> Start time</th>
-            <td th:text="${event.time.toString()}"></td>
+            <td th:text="${e.time.toString()}"></td>
           </tr>
           <tr>
             <th><i class="fa-solid fa-map-marker-alt"></i> Venue name</th>
-            <td th:text="${event.venue.name}"></td>
+            <td th:text="${e.venue.name}"></td>
           </tr>
 
           <tr>
             <th><i class="fa-solid fa-person"></i> Venue capacity</th>
-            <td th:text="${event.venue.capacity}"></td>
+            <td th:text="${e.venue.capacity}"></td>
           </tr>
           <tr
-            th:if="${event.description != null and (#strings.trim(event.description).length != 0)}"
+            th:if="${e.description != null and (#strings.trim(e.description).length != 0)}"
           >
             <th><i class="fa-solid fa-circle-info"></i> Description</th>
-            <td th:text="${event.description}"></td>
+            <td th:text="${e.description}"></td>
           </tr>
         </tbody>
       </table>
@@ -76,14 +76,14 @@
             th:text="${error}"
           ></div>
 
-          <form th:action="@{/events/{id}/share(id=${event.id})}" method="post">
+          <form th:action="@{/events/{id}/share(id=${e.id})}" method="post">
             <div class="form-group">
               <label for="content">Post Content</label>
               <textarea
                 id="content"
                 name="content"
                 class="form-control"
-                th:placeholder="${'Check out this event: ' + event.name}"
+                th:placeholder="${'Check out this event: ' + e.name}"
                 rows="3"
               ></textarea>
             </div>
@@ -98,8 +98,8 @@
         document.addEventListener("DOMContentLoaded", function () {
           mapboxgl.accessToken = /*[[${api}]]*/ "";
 
-          var longitude = /*[[${event.getVenue().getLongitude()}]]*/ 0;
-          var latitude = /*[[${event.getVenue().getLatitude()}]]*/ 0;
+          var longitude = /*[[${e.getVenue().getLongitude()}]]*/ 0;
+          var latitude = /*[[${e.getVenue().getLatitude()}]]*/ 0;
 
           console.log("Longitude:", longitude);
           console.log("Latitude:", latitude);
@@ -114,18 +114,16 @@
             });
 
             var eventDetails = `
-                    <strong>Event:</strong> [[${event.getName()}]]<br>
-                    <strong>Date:</strong> [[${event.date}]]<br>
-                    <strong>Venue:</strong> [[${event
-                      .getVenue()
-                      .getName()}]]<br>
+                    <strong>Event:</strong> [[${e.getName()}]]<br>
+                    <strong>Date:</strong> [[${e.date}]]<br>
+                    <strong>Venue:</strong> [[${e.getVenue().getName()}]]<br>
                 `;
 
             new mapboxgl.Marker()
               .setLngLat([longitude, latitude])
               .setPopup(
                 new mapboxgl.Popup({ offset: 25 }).setHTML(eventDetails)
-              ) // Add popup
+              )
               .addTo(map);
 
             var bounds = new mapboxgl.LngLatBounds();
@@ -149,7 +147,7 @@
           >
         </p>
         <form
-          th:action="@{/events/{id}(id=${event.id})}"
+          th:action="@{/events/{id}(id=${e.id})}"
           th:method="delete"
           sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
         >
