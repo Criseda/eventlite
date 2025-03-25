@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
+import com.sys1yagi.mastodon4j.api.Range;
 import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.api.entity.Status.Visibility;
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
@@ -42,8 +43,10 @@ public class MastodonService {
 			MastodonClient client = createClient();
 			Timelines timeline = new Timelines(client);
 
+			Range range = new Range(null, null, 3);
+
 			// Get home timeline
-			return timeline.getHome().execute().getPart();
+			return timeline.getHome(range).execute().getPart();
 		} catch (Mastodon4jRequestException e) {
 			e.printStackTrace();
 			return Collections.emptyList();
