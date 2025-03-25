@@ -77,8 +77,15 @@
                     zoom: 17
                 });
   
+				var eventDetails = `
+				    <strong>Event:</strong> [[${e.getName()}]]<br>
+				    <strong>Date:</strong> [[${e.date}]]<br>
+				    <strong>Venue:</strong> [[${e.getVenue().getName()}]]<br>
+				`;
+				
                 new mapboxgl.Marker()
                     .setLngLat([longitude, latitude])
+					.setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(eventDetails)) // Add popup
                     .addTo(map);
   
                 var bounds = new mapboxgl.LngLatBounds();
