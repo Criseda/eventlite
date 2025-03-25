@@ -22,6 +22,7 @@ import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -59,6 +60,14 @@ public class EventsControllerTest {
 
 	@MockBean
 	private VenueService venueService;
+
+	@MockBean
+    private uk.ac.man.cs.eventlite.services.MastodonService mastodonService;
+
+	@BeforeEach
+    public void setup() {
+        when(mastodonService.getTimeline()).thenReturn(Collections.emptyList());
+    }
 
 	@Test
 	public void getIndexWhenNoEvents() throws Exception {
