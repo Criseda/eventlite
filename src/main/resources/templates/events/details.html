@@ -59,14 +59,30 @@
           </tr>
         </tbody>
       </table>
-
-      <div class="card mt-4">
-        <div class="card-header">Share on Mastodon</div>
-        <div class="card-body">
+	  <div class="d-flex justify-content-between mb-3">
+	         <p>
+	           <a class="btn btn-secondary" role="button" th:href="@{/events}"
+	             ><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to
+	             Events</a
+	           >
+	         </p>
+	         <form
+	           th:action="@{/events/{id}(id=${e.id})}"
+	           th:method="delete"
+	           sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
+	         >
+	           <button type="submit" class="btn btn-danger">
+	             <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete
+	           </button>
+	         </form>
+	       </div>
+		   
+      
+        <div><b>Share the event on Mastodon!</b></div>
           <!-- Show confirmation message if post was successful -->
           <div th:if="${posted}" class="alert alert-success">
             <strong>Successfully posted to Mastodon!</strong>
-            <div th:utext="${statusContent}"></div>
+            <div th:utext="${'Your post: ' + statusContent}"></div>
           </div>
 
           <!-- Show error message if post failed -->
@@ -78,7 +94,6 @@
 
           <form th:action="@{/events/{id}/share(id=${e.id})}" method="post">
             <div class="form-group">
-              <label for="content">Post Content</label>
               <textarea
                 id="content"
                 name="content"
@@ -87,10 +102,13 @@
                 rows="3"
               ></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Share</button>
+            <button 
+				id="submitButton" 
+				type="submit" 
+				class="btn btn-dark" 
+				th:if="${posted == null || !posted}">Submit Post</button>
           </form>
-        </div>
-      </div>
+        
 
       <div id="map"></div>
 
@@ -138,24 +156,6 @@
           }
         });
       </script>
-
-      <div class="d-flex justify-content-between mb-3">
-        <p>
-          <a class="btn btn-secondary" role="button" th:href="@{/events}"
-            ><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to
-            Events</a
-          >
-        </p>
-        <form
-          th:action="@{/events/{id}(id=${e.id})}"
-          th:method="delete"
-          sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
-        >
-          <button type="submit" class="btn btn-danger">
-            <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete
-          </button>
-        </form>
-      </div>
     </div>
   </body>
 </html>
