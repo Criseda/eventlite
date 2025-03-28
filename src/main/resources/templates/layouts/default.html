@@ -9,11 +9,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
   <link rel="stylesheet" href="/webjars/font-awesome/css/all.min.css" />
+  <style>
+  	.flash{
+  		position: fixed;
+  		top: 5vh;
+  		right: 20vw; 
+  		width: 60vw; 
+  		z-index: 1;
+  		text-align: center;
+  	}
+  </style>
+  <script>
+  	//Code to display the popup temporarily instead of permanentaly
+  	document.addEventListener("DOMContentLoaded", function (){ 
+  		let flash = document.getElementById("flash");
+  		if(flash){
+  			setTimeout(function () {
+  				flash.style.transition = "opacity 0.5s";
+  				flash.style.opacity = "0";
+  				setTimeout(() => flash.remove(), 700);
+  			}, 5000);
+  		}
+  	});
+  </script>
 </head>
 <body>
 
   <div class="container">
-	<div class="d-flex justify-content-between align-items-center mb-3">
+	<div class="d-flex justify-content-between align-items-center my-1">
 		<a class="btn btn-outline-secondary me-2" th:href="@{/home}">
 				   <i class="fa-solid fa-house" aria-hidden="true"></i> Home
 		</a>
@@ -31,6 +54,7 @@
       </form>
     </div>
 	</div>
+	<p th:if="${ok_message} "th:text="${ok_message}" class="alert alert-success flash" id="flash"></p> <!--Code for displaying flash pop ups-->
     <div layout:fragment="content">
       Main page body goes here...
     </div>

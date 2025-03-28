@@ -56,6 +56,7 @@
               th:each="v : ${v}"
               th:value="${v.id}"
               th:text="${v.name}"
+			  th:selected="${v.id==e.venue.id}"
             ></option>
           </select>
         </div>

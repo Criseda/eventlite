@@ -84,7 +84,7 @@ public class VenuesController {
 		}
 		
 		venueService.save(venue);
-		redirectAttrs.addFlashAttribute("ok_message", "Venue created successfully.");
+		redirectAttrs.addFlashAttribute("ok_message", "Venue created successfully");
 		return "redirect:/venues"; // Redirect to event list
 	}
 
@@ -97,7 +97,7 @@ public class VenuesController {
 			throw new VenueNotFoundException(id);
 		}
 		venueService.update(id, venue);
-		redirectAttrs.addFlashAttribute("ok_message", "Venue updated successfully.");
+		redirectAttrs.addFlashAttribute("ok_message", "Venue updated successfully");
 		return "redirect:/venues";
 	}
 	
@@ -136,7 +136,7 @@ public class VenuesController {
 		}
 		
 		venueService.deleteById(id);
-		redirectAttrs.addFlashAttribute("ok_message", "Venue deleted.");
+		redirectAttrs.addFlashAttribute("ok_message", "Venue deleted successfully");
 		
 		return "redirect:/venues";
 	}
