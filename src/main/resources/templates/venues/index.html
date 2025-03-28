@@ -7,35 +7,10 @@
 >
   <head>
     <title>All Venues</title>
-	<style>
-		.flash{
-			position: fixed;
-			top: 5vh;
-			right: 20vw; 
-			width: 60vw; 
-			z-index: 1;
-			text-align: center;
-		}
-	</style>
-	<script>
-		//Code to display the popup temporarily instead of permanentaly
-		document.addEventListener("DOMContentLoaded", function (){ 
-			let flash = document.getElementById("flash");
-			if(flash){
-				setTimeout(function () {
-					flash.style.transition = "opacity 0.5s";
-					flash.style.opacity = "0";
-					setTimeout(() => flash.remove(), 700);
-				}, 5000);
-			}
-		});
-	</script>
   </head>
   
   <body>
     <div layout:fragment="content">
-	  <p th:if="${ok_message} "th:text="${ok_message}" class="alert alert-success flash" id="flash"></p>
-
       <h1>All Venues</h1>
 
       <!-- Search Form -->
