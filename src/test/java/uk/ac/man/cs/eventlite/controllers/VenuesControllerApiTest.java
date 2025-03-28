@@ -1,9 +1,11 @@
 package uk.ac.man.cs.eventlite.controllers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
-
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -16,6 +18,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -150,4 +153,107 @@ public class VenuesControllerApiTest {
         verify(venueService).findNextThreeUpcoming(venue.getId());
     }
 
+    @Test
+    public void getIndexWithVenuesDetailed() throws Exception {
+        // Create mock venues with complete data
+        Venue venue1 = new Venue();
+        venue1.setId(1L);
+        venue1.setName("Venue 1");
+        venue1.setCapacity(100);
+        venue1.setStreet("Unsworth Park");
+        venue1.setPostcode("M14 6FZ");
+        venue1.setLongitude(-2.21208);
+        venue1.setLatitude(53.44498);
+        
+        Venue venue2 = new Venue();
+        venue2.setId(2L);
+        venue2.setName("O2 Arena");
+        venue2.setCapacity(20000);
+        venue2.setStreet("Peninsula Square");
+        venue2.setPostcode("SE10 0DX");
+        venue2.setLongitude(0.016);
+        venue2.setLatitude(51.56805);
+        
+        // Mock the venueService.findAll() to return the created venues
+        when(venueService.findAll()).thenReturn(Arrays.asList(venue1, venue2));
+        
+        mvc.perform(get("/api/venues").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(handler().methodName("getAllVenues"))
+                // Check overall structure
+                .andExpect(jsonPath("$._embedded.venues", not(empty())))
+                .andExpect(jsonPath("$._embedded.venues.length()", equalTo(2)))
+                .andExpect(jsonPath("$._links.self.href", endsWith("/api/venues")))
+                .andExpect(jsonPath("$._links.profile.href", endsWith("/api/profile/venues")))
+                
+                // Verify first venue properties and links
+                .andExpect(jsonPath("$._embedded.venues[0].name", equalTo("Venue 1")))
+                .andExpect(jsonPath("$._embedded.venues[0].capacity", equalTo(100)))
+                .andExpect(jsonPath("$._embedded.venues[0].street", equalTo("Unsworth Park")))
+                .andExpect(jsonPath("$._embedded.venues[0].postcode", equalTo("M14 6FZ")))
+                .andExpect(jsonPath("$._embedded.venues[0].longitude", equalTo(-2.21208)))
+                .andExpect(jsonPath("$._embedded.venues[0].latitude", equalTo(53.44498)))
+                .andExpect(jsonPath("$._embedded.venues[0]._links.self.href", endsWith("/api/venues/1")))
+                .andExpect(jsonPath("$._embedded.venues[0]._links.venues.href", endsWith("/api/venues")))
+                .andExpect(jsonPath("$._embedded.venues[0]._links.events.href", endsWith("/api/venues/1/events")))
+                .andExpect(jsonPath("$._embedded.venues[0]._links.upcomingEvents.href", endsWith("/api/venues/1/next3events")))
+                
+                // Verify second venue properties and links
+                .andExpect(jsonPath("$._embedded.venues[1].name", equalTo("O2 Arena")))
+                .andExpect(jsonPath("$._embedded.venues[1].capacity", equalTo(20000)))
+                .andExpect(jsonPath("$._embedded.venues[1].street", equalTo("Peninsula Square")))
+                .andExpect(jsonPath("$._embedded.venues[1].postcode", equalTo("SE10 0DX")))
+                .andExpect(jsonPath("$._embedded.venues[1].longitude", equalTo(0.016)))
+                .andExpect(jsonPath("$._embedded.venues[1].latitude", equalTo(51.56805)))
+                .andExpect(jsonPath("$._embedded.venues[1]._links.self.href", endsWith("/api/venues/2")))
+                .andExpect(jsonPath("$._embedded.venues[1]._links.venues.href", endsWith("/api/venues")))
+                .andExpect(jsonPath("$._embedded.venues[1]._links.events.href", endsWith("/api/venues/2/events")))
+                .andExpect(jsonPath("$._embedded.venues[1]._links.upcomingEvents.href", endsWith("/api/venues/2/next3events")));
+        
+        verify(venueService).findAll();
+    }
+
+    @Test
+    public void getVenueFound() throws Exception {
+        // Create a venue with complete information
+        Venue venue = new Venue();
+        venue.setId(1L);
+        venue.setName("Venue 1");
+        venue.setCapacity(100);
+        venue.setStreet("Unsworth Park");
+        venue.setPostcode("M14 6FZ");
+        venue.setLongitude(-2.21208);
+        venue.setLatitude(53.44498);
+        
+        when(venueService.findById(1L)).thenReturn(Optional.of(venue));
+        
+        mvc.perform(get("/api/venues/1").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(handler().methodName("getVenue"))
+                // Check venue properties
+                .andExpect(jsonPath("$.name", equalTo("Venue 1")))
+                .andExpect(jsonPath("$.capacity", equalTo(100)))
+                .andExpect(jsonPath("$.street", equalTo("Unsworth Park")))
+                .andExpect(jsonPath("$.postcode", equalTo("M14 6FZ")))
+                .andExpect(jsonPath("$.longitude", equalTo(-2.21208)))
+                .andExpect(jsonPath("$.latitude", equalTo(53.44498)))
+                // Check links
+                .andExpect(jsonPath("$._links.self.href", endsWith("/api/venues/1")))
+                .andExpect(jsonPath("$._links.venues.href", endsWith("/api/venues")))
+                .andExpect(jsonPath("$._links.events.href", endsWith("/api/venues/1/events")))
+                .andExpect(jsonPath("$._links.upcomingEvents.href", endsWith("/api/venues/1/next3events")));
+        
+        verify(venueService).findById(1L);
+    }
+
+    @Test
+    public void getVenueNotFound() throws Exception {
+        when(venueService.findById(99L)).thenReturn(Optional.empty());
+        
+        mvc.perform(get("/api/venues/99").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error", containsString("venue 99")))
+                .andExpect(jsonPath("$.id", equalTo(99)))
+                .andExpect(handler().methodName("getVenue"));
+    }
 }
