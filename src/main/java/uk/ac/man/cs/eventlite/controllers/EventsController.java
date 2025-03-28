@@ -72,7 +72,7 @@ public class EventsController {
 	}
 
 	@GetMapping
-	public String getAllEvents(@RequestParam(value = "search", required = false) String search, Model model) {
+	public String getAllEvents(@RequestParam(value = "search", required = false) String search, Model model, RedirectAttributes redirectAttrs) {
 		Iterable<Event> previousEvents;
 		Iterable<Event> upcomingEvents;
 		if (search != null && !search.isEmpty()) {
@@ -164,7 +164,7 @@ public class EventsController {
 		}
 
 		eventService.deleteById(id);
-		redirectAttrs.addFlashAttribute("ok_message", "Greeting deleted.");
+		redirectAttrs.addFlashAttribute("ok_message", "Event successfully deleted");
 
 		return "redirect:/events";
 	}
@@ -173,7 +173,7 @@ public class EventsController {
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
 	public String deleteAllEvents(RedirectAttributes redirectAttrs) {
 		eventService.deleteAll();
-		redirectAttrs.addFlashAttribute("ok_message", "All greetings deleted.");
+		redirectAttrs.addFlashAttribute("ok_message", "All events deleted");
 
 		return "redirect:/events";
 	}
