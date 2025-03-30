@@ -44,7 +44,7 @@
           </tr>
           <tr>
             <th><i class="fa-solid fa-map-marker-alt"></i> Venue name</th>
-            <td th:text="${e.venue.name}"></td>
+            <td><a th:href="@{/venues/{id}(id=${e.getVenue().getId()})}" th:text="${e.getVenue().getName()}"></a></td>
           </tr>
 
           <tr>
