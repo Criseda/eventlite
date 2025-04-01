@@ -109,9 +109,13 @@ public class EventsController {
 
 	@PutMapping("/update/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
-	public String updateEvent(@PathVariable("id") long id, @ModelAttribute("e") Event event, RedirectAttributes redirectAttrs) {
+	public String updateEvent(@PathVariable("id") long id, @Valid @ModelAttribute("e") Event event, BindingResult result, RedirectAttributes redirectAttrs, Model model) {
 		if (!eventService.existsById(id)) {
 			throw new EventNotFoundException(id);
+		}
+		if(result.hasErrors()) {
+			model.addAttribute("v", venueService.findAll());
+			return "events/update"; // Return form with validation errors
 		}
 		eventService.update(id, event);
 		redirectAttrs.addFlashAttribute("ok_message", "Event updated successfully.");
