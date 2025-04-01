@@ -124,9 +124,37 @@ public class EventsControllerTest {
 			.andExpect(handler().methodName("getEvent"));
 	}
 
+	@Test
+	@DirtiesContext
+	public void deleteEventFound() throws Exception {
+		
+		Venue venue = new Venue();
+	    venue.setId(1);
+	    venue.setName("Kilburn Building");
+	    
+	    Event event1 = new Event();
+		event1.setVenue(venue);
+		event1.setId(1);
+		event1.setDate(LocalDate.of(2025,05,06));
+		event1.setTime(LocalTime.of(13, 0));
+		event1.setName("Showcase 1");
+		eventService.save(event1);
+		
+		when(eventService.existsById(1)).thenReturn(true);
+		
+		mvc.perform(delete("/events/1").with(user("Rob").roles(Security.ADMIN)).accept(MediaType.TEXT_HTML)
+				.with(csrf())).andExpect(status().isFound()).andExpect(view().name("redirect:/events"))
+				.andExpect(handler().methodName("deleteEvent")).andExpect(flash().attributeExists("ok_message"));
+
+		
+		
+        verify(eventService).existsById(1);
+        verify(eventService).deleteById(1);
+        
+	}
 	
 	@Test
-	public void deleteGreetingNotFound() throws Exception {
+	public void deleteEventNotFound() throws Exception {
 		when(eventService.existsById(1)).thenReturn(false);
 
 		mvc.perform(delete("/events/1").with(user("Rob").roles(Security.ADMIN)).accept(MediaType.TEXT_HTML)
@@ -138,7 +166,7 @@ public class EventsControllerTest {
 
 	@Test
 	@DirtiesContext
-	public void deleteAllGreetings() throws Exception {
+	public void deleteAllEvents() throws Exception {
 		mvc.perform(delete("/events").with(user("Rob").roles(Security.ADMIN)).accept(MediaType.TEXT_HTML)
 				.with(csrf())).andExpect(status().isFound()).andExpect(view().name("redirect:/events"))
 				.andExpect(handler().methodName("deleteAllEvents")).andExpect(flash().attributeExists("ok_message"));
