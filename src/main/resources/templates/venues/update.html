@@ -18,7 +18,8 @@
         method="post"
       >
         <input type="hidden" name="_method" value="put" />
-        <div class="mb-3">
+		
+        <div class="mb-3"> <!-- Name div -->
           <label for="name" class="form-label">Name</label>
           <input
             type="text"
@@ -26,17 +27,14 @@
             id="name"
             th:field="*{name}"
           />
+		  <p
+		    th:if="${#fields.hasErrors('name')}"
+		    th:errors="*{name}"
+		    class="error text-danger"
+		  ></p>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Capacity</label>
-		  <input
-              type="text"
-              class="form-control"
-              id="capacity"
-              th:field="*{capacity}"
-		   />
-        </div>
-		<div class="mb-3">
+		
+		<div class="mb-3"> <!-- Street div -->
 		  <label class="form-label">Street</label>
 		  <input
 		      type="text"
@@ -44,8 +42,14 @@
 		      id="street"
 		      th:field="*{street}"
 		   />
+		   <p
+		     th:if="${#fields.hasErrors('street')}"
+		     th:errors="*{street}"
+		     class="error text-danger"
+		   ></p>
 		</div>
-		<div class="mb-3">
+		
+		<div class="mb-3"> <!-- Postcode div -->
 		  <label class="form-label">Postcode</label>
 		  <input
 		      type="text"
@@ -53,7 +57,28 @@
 		      id="postcode"
 		      th:field="*{postcode}"
 		   />
+		   <p
+		     th:if="${#fields.hasErrors('postcode')}"
+		     th:errors="*{postcode}"
+		     class="error text-danger"
+		   ></p>
 		</div>
+		
+        <div class="mb-3"> <!-- Capcity div -->
+          <label class="form-label">Capacity</label>
+		  <input
+              type="text"
+              class="form-control"
+              id="capacity"
+              th:field="*{capacity}"
+		   />
+		   <p
+		     th:if="${#fields.hasErrors('capacity')}"
+		     th:errors="*{capacity}"
+		     class="error text-danger"
+		   ></p>
+        </div>
+		
         <div class="d-flex justify-content-between mb-3">
           <a href="/venues" class="btn btn-secondary">
             <i class="fa-solid fa-arrow-left"></i> Back to Venues
