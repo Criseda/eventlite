@@ -109,8 +109,7 @@ public class EventsController {
 
 	@PutMapping("/update/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
-	public String updateEvent(@PathVariable("id") long id, @ModelAttribute("e") Event event,
-			@RequestParam("_method") String method, RedirectAttributes redirectAttrs) {
+	public String updateEvent(@PathVariable("id") long id, @ModelAttribute("e") Event event, RedirectAttributes redirectAttrs) {
 		if (!eventService.existsById(id)) {
 			throw new EventNotFoundException(id);
 		}
