@@ -276,6 +276,16 @@ public class EventsControllerTest {
 	}
 	
 	@Test
+	public void updateEventFormEventNotFound() throws Exception {
+		when(eventService.existsById(99)).thenReturn(false);
+
+		mvc.perform(get("/events/update/99")
+				.with(user("Rob").roles(Security.ADMIN)))
+				.andExpect(status().isNotFound())
+				.andExpect(handler().methodName("updateEventForm"));
+	}
+	
+	@Test
 	public void deleteEventForbiddenForAttendee() throws Exception {
 	    when(eventService.existsById(1)).thenReturn(true);
 	    mvc.perform(delete("/events/1")
