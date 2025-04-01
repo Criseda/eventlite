@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -32,6 +34,7 @@ public class Event {
 	@NotNull(message = "Date is required")
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Future(message = "Date must be in the future")
 	private LocalDate date;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -42,10 +45,12 @@ public class Event {
 	@Size(max = 256, message = "Name must be less than 256 characters")
 	private String name;
 	
-	@ManyToOne(optional = true)  // Make the relationship optional
-	@JoinColumn(name = "venue_id", referencedColumnName = "id", nullable = true)  // Allow null values
+	@ManyToOne(optional = false)  // Make the relationship optional
+	@JoinColumn(name = "venue_id", referencedColumnName = "id", nullable = false)
+	@NotNull
 	private Venue venue;
 
+	@Column(length = 500)
 	@Size(max = 500, message = "Description must be less than 500 characters")
     private String description;
 
