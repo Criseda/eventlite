@@ -76,7 +76,7 @@ public class VenueServiceImpl implements VenueService {
 			oldVenue.setLatitude(coords.get(1));
 			oldVenue.setLongitude(coords.get(0));
 		} catch (IOException e) {
-					// TODO: handle exception
+			throw new RuntimeException("Error getting coordinates from Mapbox API", e);
 		}
 		
 		return venueRepository.save(oldVenue);
