@@ -348,5 +348,6 @@ public class EventsControllerTest {
 	            .andExpect(model().attribute("upcomingEvents", Collections.emptyList()))
 	            .andExpect(model().attribute("search", searchQuery));
 	}
+	
 
 }

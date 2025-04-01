@@ -25,7 +25,12 @@
             class="form-control"
             id="name"
             th:field="*{name}"
+			
           />
+		  <p th:if="${#fields.hasErrors('name')}"
+  		    th:errors="*{name}"
+  		    class="error">
+		  </p>
         </div>
         <div class="mb-3">
           <label class="form-label">Capacity</label>

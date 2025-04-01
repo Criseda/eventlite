@@ -86,11 +86,15 @@ public class VenuesController {
 
 	@PutMapping("/update/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
-	public String updateVenue(@PathVariable("id") long id, @ModelAttribute("v") Venue venue,
-			@RequestParam("_method") String method, RedirectAttributes redirectAttrs) {
+	public String updateVenue(@PathVariable("id") long id,@Valid @ModelAttribute("v")  Venue venue, BindingResult result,
+			@RequestParam("_method") String method,RedirectAttributes redirectAttrs) {
 		if (!venueService.existsById(id)) {
 			throw new VenueNotFoundException(id);
 		}
+		if (result.hasErrors()) {
+			return "venues/update"; 
+		}
+		
 		venueService.update(id, venue);
 		redirectAttrs.addFlashAttribute("ok_message", "Venue updated successfully");
 		return "redirect:/venues";
