@@ -28,7 +28,7 @@ public interface VenueService {
 	
 	public Iterable<Venue> findTopThree();
 
-	public Object findByNameContainingIgnoreCase(String search);
+	public Iterable<Venue> findByNameContainingIgnoreCase(String search);
 	
 	public List<Event> findNextThreeUpcoming(long venueId);
 
