@@ -100,6 +100,29 @@ public class EventsControllerTest {
 				.andExpect(view().name("events/not_found")).andExpect(handler().methodName("getEvent"));
 	}
 	
+	@Test
+	public void getEventFound() throws Exception {
+		Venue venue = new Venue();
+	    venue.setId(1);
+	    venue.setName("Kilburn Building");
+	    
+	    Event event1 = new Event();
+		event1.setVenue(venue);
+		event1.setId(1);
+		event1.setDate(LocalDate.of(2025,05,06));
+		event1.setTime(LocalTime.of(13, 0));
+		event1.setName("Showcase 1");
+		eventService.save(event1);
+		
+		when(eventService.existsById(1L)).thenReturn(true);
+	    when(eventService.findById(1L)).thenReturn(Optional.of(event1));
+	    
+		mvc.perform(get("/events/1").accept(MediaType.TEXT_HTML))
+			.andExpect(status().isOk())
+			.andExpect(view().name("events/details"))
+			.andExpect(handler().methodName("getEvent"));
+	}
+
 	
 	@Test
 	public void deleteGreetingNotFound() throws Exception {
@@ -217,18 +240,18 @@ public class EventsControllerTest {
 	    venue.setName("Kilburn Building");
 	    
 	    Event event1 = new Event();
-		event.setVenue(venue);
-		event.setDate(LocalDate.of(2025,05,06));
-		event.setTime(LocalTime.of(13, 0));
-		event.setName("Showcase 1");
+		event1.setVenue(venue);
+		event1.setDate(LocalDate.of(2025,05,06));
+		event1.setTime(LocalTime.of(13, 0));
+		event1.setName("Showcase 1");
 		eventService.save(event1);
 		
 		Event event2 = new Event();
-		event1.setVenue(venue);
-		event1.setDate(LocalDate.of(2025,05,06));
-		event1.setTime(LocalTime.of(13, 8));
-		event1.setName("Display");
-		event1.setDescription("Description example");
+		event2.setVenue(venue);
+		event2.setDate(LocalDate.of(2025,05,06));
+		event2.setTime(LocalTime.of(13, 8));
+		event2.setName("Display");
+		event2.setDescription("Description example");
 		eventService.save(event2);
 
 		
