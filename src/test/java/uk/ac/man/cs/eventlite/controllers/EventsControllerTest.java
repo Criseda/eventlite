@@ -1,6 +1,7 @@
 package uk.ac.man.cs.eventlite.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -123,9 +124,37 @@ public class EventsControllerTest {
 			.andExpect(handler().methodName("getEvent"));
 	}
 
+	@Test
+	@DirtiesContext
+	public void deleteEventFound() throws Exception {
+		
+		Venue venue = new Venue();
+	    venue.setId(1);
+	    venue.setName("Kilburn Building");
+	    
+	    Event event1 = new Event();
+		event1.setVenue(venue);
+		event1.setId(1);
+		event1.setDate(LocalDate.of(2025,05,06));
+		event1.setTime(LocalTime.of(13, 0));
+		event1.setName("Showcase 1");
+		eventService.save(event1);
+		
+		when(eventService.existsById(1)).thenReturn(true);
+		
+		mvc.perform(delete("/events/1").with(user("Rob").roles(Security.ADMIN)).accept(MediaType.TEXT_HTML)
+				.with(csrf())).andExpect(status().isFound()).andExpect(view().name("redirect:/events"))
+				.andExpect(handler().methodName("deleteEvent")).andExpect(flash().attributeExists("ok_message"));
+
+		
+		
+        verify(eventService).existsById(1);
+        verify(eventService).deleteById(1);
+        
+	}
 	
 	@Test
-	public void deleteGreetingNotFound() throws Exception {
+	public void deleteEventNotFound() throws Exception {
 		when(eventService.existsById(1)).thenReturn(false);
 
 		mvc.perform(delete("/events/1").with(user("Rob").roles(Security.ADMIN)).accept(MediaType.TEXT_HTML)
@@ -137,7 +166,7 @@ public class EventsControllerTest {
 
 	@Test
 	@DirtiesContext
-	public void deleteAllGreetings() throws Exception {
+	public void deleteAllEvents() throws Exception {
 		mvc.perform(delete("/events").with(user("Rob").roles(Security.ADMIN)).accept(MediaType.TEXT_HTML)
 				.with(csrf())).andExpect(status().isFound()).andExpect(view().name("redirect:/events"))
 				.andExpect(handler().methodName("deleteAllEvents")).andExpect(flash().attributeExists("ok_message"));
@@ -204,6 +233,46 @@ public class EventsControllerTest {
 	        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
 	        .param("name", "Updated Event"))
 	        .andExpect(status().isForbidden());
+	}
+	
+	@Test
+	@DirtiesContext
+	public void updateEventSuccess() throws Exception {
+	    when(eventService.existsById(1)).thenReturn(true);
+	    mvc.perform(put("/events/update/1")
+	    	.with(user("Rob").roles(Security.ADMIN))
+	    	.with(csrf())
+	    	.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	    	.param("name", "Updated Event")
+	        .param("date", "2025-05-05")
+	        .param("time", "17:00")
+	        .param("description", "Updated description"))
+	    	.andExpect(status().is3xxRedirection())
+	    	.andExpect(view().name("redirect:/events"))
+	    	.andExpect(flash().attributeExists("ok_message"));
+	
+	    verify(eventService).update(anyLong(), any(Event.class));
+	}
+	
+	@Test
+	public void updateEventFormSuccess() throws Exception {
+		when(eventService.existsById(1)).thenReturn(true);
+		when(eventService.findById(1)).thenReturn(Optional.of(new Event()));
+		
+		mvc.perform(get("/events/update/1")
+				.with(user("Rob").roles(Security.ADMIN)))
+				.andExpect(status().isOk())
+				.andExpect(view().name("events/update"))
+				.andExpect(model().attributeExists("e"))
+				.andExpect(model().attributeExists("v"))
+				.andExpect(handler().methodName("updateEventForm"));
+	}
+	
+	@Test
+	public void updateEventFormForbidden() throws Exception {
+		mvc.perform(get("/events/update/1")
+				.with(user("Tom").roles(Security.ATTENDEE)))
+				.andExpect(status().isForbidden());
 	}
 	
 	@Test
