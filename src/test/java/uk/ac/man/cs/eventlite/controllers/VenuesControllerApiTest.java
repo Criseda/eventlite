@@ -129,6 +129,32 @@ public class VenuesControllerApiTest {
 	}
     
     @Test
+    public void getEventsByVenue() throws Exception {
+        // Setup test data
+        long venueId = 1L;
+        Venue venue = new Venue();
+        venue.setId(venueId);
+        
+        List<Event> events = Arrays.asList(new Event(), new Event(), new Event());
+        venue.setEvents(events);
+        
+        // Mock service behavior
+        when(venueService.findById(venueId)).thenReturn(Optional.of(venue));
+        
+        // Perform test
+        mvc.perform(get("/api/venues/" + venueId + "/events")
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(handler().methodName("getEventsByVenue"))
+            .andExpect(jsonPath("$.length()", equalTo(2)))
+            .andExpect(jsonPath("$._links.self.href", endsWith("/api/venues/" + venueId + "/events")));
+        
+        verify(venueService).findById(venueId);
+    }
+    
+    
+    
+    @Test
     public void getNext3EventsByVenue() throws Exception {
         Venue venue = new Venue();
         Event event1 = new Event();
@@ -255,5 +281,55 @@ public class VenuesControllerApiTest {
                 .andExpect(jsonPath("$.error", containsString("venue 99")))
                 .andExpect(jsonPath("$.id", equalTo(99)))
                 .andExpect(handler().methodName("getVenue"));
+    }
+    
+    @Test
+    public void deleteVenue() throws Exception {
+
+        long venueId = 1L;
+        when(venueService.existsById(venueId)).thenReturn(true);
+        doNothing().when(venueService).deleteById(venueId);
+        
+        mvc.perform(delete("/api/venues/" + venueId)
+            .with(user("Admin").roles(Security.ADMIN))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNoContent())
+            .andExpect(handler().methodName("deleteVenue"));
+ 
+        verify(venueService).existsById(venueId);
+        verify(venueService).deleteById(venueId);
+    }
+    
+    @Test
+    public void deleteNonExistentVenue() throws Exception {
+        long venueId = 99L;
+        when(venueService.existsById(venueId)).thenReturn(false);
+        
+        // Test with non-existent venue
+        mvc.perform(delete("/api/venues/" + venueId)
+            .with(user("Admin").roles(Security.ADMIN))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.error", containsString("venue 99")))
+            .andExpect(handler().methodName("deleteVenue"));
+        
+    
+        verify(venueService).existsById(venueId);
+        verify(venueService, never()).deleteById(venueId);
+    }
+
+    @Test
+    public void deleteVenueUnauthorized() throws Exception {
+        long venueId = 1L;
+        
+        // Test with regular user (no admin or organiser role)
+        mvc.perform(delete("/api/venues/" + venueId)
+            .with(user("User").roles("USER"))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
+        
+        // Verify no service methods were called
+        verify(venueService, never()).existsById(anyLong());
+        verify(venueService, never()).deleteById(anyLong());
     }
 }
