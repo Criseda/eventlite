@@ -1,6 +1,7 @@
 package uk.ac.man.cs.eventlite.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -181,6 +182,46 @@ public class EventsControllerTest {
 	        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
 	        .param("name", "Updated Event"))
 	        .andExpect(status().isForbidden());
+	}
+	
+	@Test
+	@DirtiesContext
+	public void updateEventSuccess() throws Exception {
+	    when(eventService.existsById(1)).thenReturn(true);
+	    mvc.perform(put("/events/update/1")
+	    	.with(user("Rob").roles(Security.ADMIN))
+	    	.with(csrf())
+	    	.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	    	.param("name", "Updated Event")
+	        .param("date", "2025-05-05")
+	        .param("time", "17:00")
+	        .param("description", "Updated description"))
+	    	.andExpect(status().is3xxRedirection())
+	    	.andExpect(view().name("redirect:/events"))
+	    	.andExpect(flash().attributeExists("ok_message"));
+	
+	    verify(eventService).update(anyLong(), any(Event.class));
+	}
+	
+	@Test
+	public void updateEventFormSuccess() throws Exception {
+		when(eventService.existsById(1)).thenReturn(true);
+		when(eventService.findById(1)).thenReturn(Optional.of(new Event()));
+		
+		mvc.perform(get("/events/update/1")
+				.with(user("Rob").roles(Security.ADMIN)))
+				.andExpect(status().isOk())
+				.andExpect(view().name("events/update"))
+				.andExpect(model().attributeExists("e"))
+				.andExpect(model().attributeExists("v"))
+				.andExpect(handler().methodName("updateEventForm"));
+	}
+	
+	@Test
+	public void updateEventFormForbidden() throws Exception {
+		mvc.perform(get("/events/update/1")
+				.with(user("Tom").roles(Security.ATTENDEE)))
+				.andExpect(status().isForbidden());
 	}
 	
 	@Test
