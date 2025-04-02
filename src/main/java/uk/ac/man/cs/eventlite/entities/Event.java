@@ -45,8 +45,8 @@ public class Event {
 	@Size(max = 256, message = "Name must be less than 256 characters")
 	private String name;
 	
-	@ManyToOne(optional = false)  // Make the relationship optional
-	@JoinColumn(name = "venue_id", referencedColumnName = "id", nullable = false)
+	@ManyToOne(optional = true)  // Make the relationship optional
+	@JoinColumn(name = "venue_id", referencedColumnName = "id", nullable = true)
 	@NotNull
 	private Venue venue;
 
