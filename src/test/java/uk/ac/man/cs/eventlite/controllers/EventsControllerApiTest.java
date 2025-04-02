@@ -266,7 +266,7 @@ public class EventsControllerApiTest {
 	    Event validEvent = new Event();
 	    validEvent.setId(1L);
 	    validEvent.setName("Test Event");
-	    validEvent.setDate(LocalDate.of(2025, 4, 1));
+	    validEvent.setDate(LocalDate.of(2025, 12, 1));
 	    validEvent.setTime(LocalTime.of(18, 30));
 	    validEvent.setVenue(new Venue());
 
@@ -304,7 +304,7 @@ public class EventsControllerApiTest {
 		Event validEvent = new Event();
 		validEvent.setId(1L);
         validEvent.setName("Test Event");
-        validEvent.setDate(LocalDate.of(2025, 4, 1));
+        validEvent.setDate(LocalDate.of(2025, 12, 1));
         validEvent.setTime(LocalTime.of(18, 30));
         validEvent.setVenue(new Venue());
 		
