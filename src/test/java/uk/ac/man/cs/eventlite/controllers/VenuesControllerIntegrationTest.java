@@ -16,6 +16,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import java.util.Collections;
+import java.util.Optional;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -89,15 +93,18 @@ public class VenuesControllerIntegrationTest extends AbstractTransactionalJUnit4
 
     @Test
     void testDeleteVenue_WhenVenueExists() throws Exception {
-        long venueId = 1L;
-        when(venueService.existsById(venueId)).thenReturn(true);
+        Venue testVen = new Venue();
+        testVen.setId(1);
+        testVen.setEvents(Collections.emptyList());
+        when(venueService.existsById(testVen.getId())).thenReturn(true);
+        when(venueService.findById(testVen.getId())).thenReturn(Optional.of(testVen));
 
-        mvc.perform(delete("/venues/{id}", venueId).with(user("Rob").roles(Security.ADMIN))
+        mvc.perform(delete("/venues/{id}", testVen.getId()).with(user("Rob").roles(Security.ADMIN))
         		.accept(MediaType.TEXT_HTML).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/venues"));
 
-        verify(venueService).deleteById(venueId);
+        verify(venueService).deleteById(testVen.getId());
     }
 
     @Test
