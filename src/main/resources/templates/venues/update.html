@@ -68,7 +68,9 @@
         <div class="mb-3"> <!-- Capcity div -->
           <label class="form-label">Capacity</label>
 		  <input
-              type="text"
+              type="number"
+			  min="1"
+			  step="1"
               class="form-control"
               id="capacity"
               th:field="*{capacity}"
