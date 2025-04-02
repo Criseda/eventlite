@@ -38,7 +38,7 @@ public class Venue {
 	@NotNull(message = "Capacity cannot be empty")
 	@Digits(integer = 10,fraction = 0, message="Number must be whole")
 	@Min(value = 1, message = "Capacity must be at least 1")
-	private int capacity;
+	private Integer capacity;
 	
 	@OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
 	private List<Event> events;
@@ -75,11 +75,11 @@ public class Venue {
 		this.name = name;
 	}
 
-	public int getCapacity() {
+	public Integer getCapacity() {
 		return capacity;
 	}	
 	
-	public void setCapacity(int capacity) {
+	public void setCapacity(Integer capacity) {
 		this.capacity = capacity;
 	}
 	
