@@ -74,8 +74,9 @@ public class VenuesController {
 			List<Double> coords = response.body().features().get(0).center().coordinates();
 			venue.setLatitude(coords.get(1));
 			venue.setLongitude(coords.get(0));
-		} catch (IOException e) {
-			// TODO: handle exception
+		} catch (Exception e) {
+			model.addAttribute("error_message", "An error has occured, please check fields");
+			return "venues/new";
 		}
 		
 		venueService.save(venue);
@@ -86,13 +87,13 @@ public class VenuesController {
 
 	@PutMapping("/update/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
-	public String updateVenue(@PathVariable("id") long id,@Valid @ModelAttribute("v")  Venue venue, BindingResult result,
-			@RequestParam("_method") String method,RedirectAttributes redirectAttrs) {
+	public String updateVenue(@PathVariable("id") long id, @Valid @ModelAttribute("v") Venue venue, BindingResult result,
+			@RequestParam("_method") String method, RedirectAttributes redirectAttrs) {
 		if (!venueService.existsById(id)) {
 			throw new VenueNotFoundException(id);
 		}
-		if (result.hasErrors()) {
-			return "venues/update"; 
+		if(result.hasErrors()) {
+			return "venues/update";
 		}
 		
 		venueService.update(id, venue);
@@ -132,6 +133,10 @@ public class VenuesController {
 	public String deleteVenue(@PathVariable("id") long id, RedirectAttributes redirectAttrs) {
 		if(!venueService.existsById(id)) {
 			throw new VenueNotFoundException(id);
+		}
+		if(venueService.findById(id).get().getEvents().size() != 0) {
+			redirectAttrs.addFlashAttribute("error_message", "Venue can't be deleted as it still has events");
+			return "redirect:/venues";
 		}
 		
 		venueService.deleteById(id);

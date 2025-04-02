@@ -213,7 +213,7 @@ public class EventsControllerTest {
 	        .with(csrf())
 	        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
 	        .param("name", "New Event")
-	        .param("date", "2023-12-31")
+	        .param("date", "2100-12-31")
 	        .param("time", "13:00") 
 	        .param("venue.id", "1")
 			.param("description", "Description example"))
@@ -238,14 +238,30 @@ public class EventsControllerTest {
 	@Test
 	@DirtiesContext
 	public void updateEventSuccess() throws Exception {
-	    when(eventService.existsById(1)).thenReturn(true);
+		Venue ven = new Venue();
+		ven.setCapacity(100);
+		ven.setLongitude(0);
+		ven.setLatitude(0);
+		ven.setId(1);
+		ven.setName("Testing venue");
+		
+		Event test = new Event();
+		test.setName("Testing this");
+		test.setDate(LocalDate.parse("3000-11-11"));
+		test.setVenue(ven);
+		test.setId(1);
+		
+		when(eventService.existsById(1)).thenReturn(true);
+		when(eventService.findAll()).thenReturn(Collections.singleton(test));
+	    
 	    mvc.perform(put("/events/update/1")
 	    	.with(user("Rob").roles(Security.ADMIN))
 	    	.with(csrf())
 	    	.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 	    	.param("name", "Updated Event")
-	        .param("date", "2025-05-05")
+	        .param("date", "2070-05-05")
 	        .param("time", "17:00")
+	        .param("venue.id", Long.toString(ven.getId()))
 	        .param("description", "Updated description"))
 	    	.andExpect(status().is3xxRedirection())
 	    	.andExpect(view().name("redirect:/events"))

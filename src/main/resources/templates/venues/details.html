@@ -71,7 +71,7 @@
             th:method="delete"
             sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
           >
-            <button type="submit" class="btn btn-danger">
+            <button type="submit" class="btn btn-danger" th:disabled="${!#lists.isEmpty(v.getEvents())}">
               <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete
             </button>
           </form>

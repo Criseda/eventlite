@@ -60,22 +60,29 @@
         </tbody>
       </table>
 	  <div class="d-flex justify-content-between mb-3">
-	         <p>
-	           <a class="btn btn-secondary" role="button" th:href="@{/events}"
-	             ><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to
-	             Events</a
-	           >
-	         </p>
-	         <form
-	           th:action="@{/events/{id}(id=${e.id})}"
-	           th:method="delete"
-	           sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
-	         >
-	           <button type="submit" class="btn btn-danger">
-	             <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete
-	           </button>
-	         </form>
-	       </div>
+           <a class="btn btn-secondary" role="button" th:href="@{/events}"
+             ><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to
+             Events</a
+           >
+			 
+			 <div class="d-flex justify-content-right gap-2">
+				<a class="btn btn-warning" 
+				role="button" 
+				th:href="@{/events/update/{id}(id=${e.id})}"
+				sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')">
+					<i class="fa-solid fa-pen-to-square"></i>Edit Event
+				</a>
+		         <form
+		           th:action="@{/events/{id}(id=${e.id})}"
+		           th:method="delete"
+		           sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
+		         >
+		           <button type="submit" class="btn btn-danger">
+		             <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete
+		           </button>
+		         </form>
+			</div>
+	    </div>
 		   
       
         <div><b>Share the event on Mastodon!</b></div>
@@ -102,15 +109,17 @@
                 rows="3"
               ></textarea>
             </div>
-            <button 
-				id="submitButton" 
-				type="submit" 
-				class="btn btn-dark" 
-				th:if="${posted == null || !posted}">Submit Post</button>
+			<div class="my-2">
+	            <button 
+					id="submitButton" 
+					type="submit" 
+					class="btn btn-dark" 
+					th:if="${posted == null || !posted}">Submit Post</button>
+			</div>
           </form>
         
 
-      <div id="map"></div>
+      <div id="map" class="mb-5"></div>
 
       <script th:inline="javascript">
         document.addEventListener("DOMContentLoaded", function () {

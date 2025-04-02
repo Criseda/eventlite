@@ -55,6 +55,8 @@
     </div>
 	</div>
 	<p th:if="${ok_message} "th:text="${ok_message}" class="alert alert-success flash" id="flash"></p> <!--Code for displaying flash pop ups-->
+	<p th:if="${error_message} "th:text="${error_message}" class="alert alert-danger flash" id="flash"></p> <!--Code for displaying error flash pop ups-->
+
     <div layout:fragment="content">
       Main page body goes here...
     </div>

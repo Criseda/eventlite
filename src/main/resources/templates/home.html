@@ -25,7 +25,7 @@
                     <tbody>
                         <tr th:each="e : ${upcomingEvents}">
                             <td> <a th:href="@{/events/{id}(id=${e.id})}" th:text="${e.name}">My Event</a> </td>
-                            <td th:text="${e.venue.name}">Event Venue</td>
+                            <td> <a th:href="@{/venues/{id}(id=${e.venue.id})}" th:text="${e.venue.name}">Event Venue</a></td>
                             <td th:text="${{e.date}}">Event Date</td>
                             <td th:text="${{e.time}}">Event Time</td>
                         </tr>

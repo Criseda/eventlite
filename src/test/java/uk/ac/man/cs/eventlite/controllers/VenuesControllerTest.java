@@ -355,6 +355,10 @@ public class VenuesControllerTest {
 
     @Test
     public void deleteVenueSuccess() throws Exception {
+    	
+    	Venue temp = new Venue();
+    	temp.setEvents(Collections.emptyList());
+    	when(venueService.findById(1)).thenReturn(Optional.of(temp));
         when(venueService.existsById(1)).thenReturn(true);
 
         mvc.perform(delete("/venues/1").with(user("Rob").roles(Security.ADMIN))
