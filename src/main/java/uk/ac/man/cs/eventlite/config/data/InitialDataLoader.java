@@ -55,8 +55,8 @@ public class InitialDataLoader {
 				venue2.setCapacity(20000);
 				venue2.setPostcode("SE10 0DX");
 				venue2.setStreet("Peninsula Square");
-				venue2.setLatitude(51.56805);
-				venue2.setLongitude(0.01600);
+				venue2.setLatitude(51.502528);
+				venue2.setLongitude(-0.0012068);
 				venueService.save(venue2);
 				
 				Venue venue3 = new Venue();
