@@ -271,6 +271,35 @@ public class EventsControllerTest {
 	}
 	
 	@Test
+	public void updateEventHasErrors() throws Exception {
+		Venue ven = new Venue();
+		ven.setCapacity(100);
+		ven.setLongitude(0);
+		ven.setLatitude(0);
+		ven.setId(1);
+		ven.setName("Testing venue");
+		
+		when(eventService.existsById(1)).thenReturn(true);
+		
+		mvc.perform(put("/events/update/1")
+		    	.with(user("Rob").roles(Security.ADMIN))
+		    	.with(csrf())
+		    	.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+		    	.param("name", "") // Invalid name
+		        .param("date", "2070-05-05")
+		        .param("time", "17:00")
+		        .param("venue.id", Long.toString(ven.getId()))
+		        .param("description", "Updated description"))
+		    	.andExpect(status().isOk())
+		    	.andExpect(view().name("events/update"))
+		        .andExpect(model().attributeHasFieldErrors("e", "name"))
+		        .andExpect(model().attributeExists("v"))
+		        .andExpect(handler().methodName("updateEvent"));
+		
+		verify(eventService, never()).update(anyLong(), any());
+	}
+	
+	@Test
 	public void updateEventFormSuccess() throws Exception {
 		when(eventService.existsById(1)).thenReturn(true);
 		when(eventService.findById(1)).thenReturn(Optional.of(new Event()));
