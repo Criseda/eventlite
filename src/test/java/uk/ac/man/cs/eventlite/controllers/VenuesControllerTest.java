@@ -17,12 +17,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.argThat;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -39,6 +41,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.man.cs.eventlite.config.Security;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
 @ExtendWith(SpringExtension.class)
@@ -299,6 +302,25 @@ public class VenuesControllerTest {
                 "Updated Street".equals(venue.getStreet()) &&
                 "M1 1AA".equals(venue.getPostcode())));
     }
+    
+    @Test
+    public void updateVenueHasErrors() throws Exception {
+        when(venueService.existsById(1)).thenReturn(true);
+
+        mvc.perform(put("/venues/update/1").with(user("Rob").roles(Security.ADMIN))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("name", "") // Invalid venue name
+                .param("capacity", "500")
+                .param("street", "Updated Street")
+                .param("postcode", "M1 1AA")
+                .param("_method", "put"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/update"))
+                .andExpect(model().attributeHasFieldErrors("v", "name"));
+
+        verify(venueService, never()).update(anyLong(), any(Venue.class));
+    }
 
     @Test
     public void updateVenueNotFound() throws Exception {
@@ -370,6 +392,26 @@ public class VenuesControllerTest {
 
         verify(venueService).existsById(1);
         verify(venueService).deleteById(1);
+    }
+    
+    @Test
+    public void deleteVenueHasEvents() throws Exception {
+    	
+    	Venue temp = new Venue();
+    	temp.setId(1);
+    	Event event = new Event();
+    	temp.setEvents(List.of(event));
+
+    	when(venueService.findById(1)).thenReturn(Optional.of(temp));
+        when(venueService.existsById(1)).thenReturn(true);
+
+        mvc.perform(delete("/venues/1").with(user("Rob").roles(Security.ADMIN))
+        		.with(csrf()))
+        		.andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/venues"))
+                .andExpect(flash().attribute("error_message", "Venue can't be deleted as it still has events"));
+
+        verify(venueService, never()).deleteById(1);
     }
 
     @Test
