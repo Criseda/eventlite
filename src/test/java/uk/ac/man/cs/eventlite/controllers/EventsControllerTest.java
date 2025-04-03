@@ -2,6 +2,8 @@ package uk.ac.man.cs.eventlite.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -41,6 +43,10 @@ import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
+import uk.ac.man.cs.eventlite.services.MastodonService;
+
+import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(EventsController.class)
@@ -394,5 +400,29 @@ public class EventsControllerTest {
 	            .andExpect(model().attribute("search", searchQuery));
 	}
 	
-
+	@Test
+	public void shareEvent() throws Exception {
+		Status status = mock(Status.class);
+		when(status.getContent()).thenReturn("Posted");
+		when(mastodonService.postStatus("test")).thenReturn(status);
+		
+		mvc.perform(post("/events/1/share").with(user("Rob").roles(Security.ADMIN)).with(csrf()).param("content", "test"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/events/1"))
+			.andExpect(flash().attribute("posted", true))
+			.andExpect(flash().attribute("statusContent", "Posted"));
+	}
+	
+	@Test
+	public void shareEventRequestException() throws Exception {
+	    Mastodon4jRequestException mockException = mock(Mastodon4jRequestException.class);
+	    when(mockException.getMessage()).thenReturn("Test fail");
+		when(mastodonService.postStatus("test")).thenThrow(mockException);
+		
+		mvc.perform(post("/events/1/share").with(user("Rob").roles(Security.ADMIN)).with(csrf()).param("content", "test"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/events/1"))
+			.andExpect(flash().attributeExists("error"))
+			.andExpect(flash().attribute("error", containsString("Failed to post: Test fail")));
+	}
 }
