@@ -75,16 +75,6 @@
 				<a th:href="@{/venues/{id}(id=${e.getVenue.getId()})}" th:text="${e.getVenue().getName()}"
 				>Event Venue</a>
 			</td>
-            <td>
-              <a
-                class="btn btn-primary"
-                sec:authorize="hasRole('ATTENDEE')"
-                role="button"
-              >
-                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-                Register
-              </a>
-            </td>
           </tr>
         </tbody>
       </table>
