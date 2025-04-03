@@ -44,6 +44,7 @@ public class Security {
 		
 		                // Web-based endpoints (/events)
 		                .requestMatchers(HttpMethod.GET, "/events/**").permitAll() // Allow anyone to view events
+						.requestMatchers(HttpMethod.POST, "/events/{id}/share").permitAll() // Allow anyone to share events
 		                .requestMatchers(HttpMethod.POST, "/events").hasAnyRole(ADMIN, ORGANIZER) // Restrict creating events
 		                .requestMatchers(HttpMethod.PUT, "/events/**").hasAnyRole(ADMIN, ORGANIZER) // Restrict updating events
 		                .requestMatchers(HttpMethod.DELETE, "/events/**").hasAnyRole(ADMIN, ORGANIZER) // Restrict deleting events
