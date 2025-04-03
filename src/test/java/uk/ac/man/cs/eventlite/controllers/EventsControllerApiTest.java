@@ -312,22 +312,17 @@ public class EventsControllerApiTest {
 	            .contentType(MediaType.APPLICATION_JSON)
 	            .content(TestUtils.asJsonString(validEvent)))
 	            .andExpect(status().isForbidden());
-	}
-	
-	
-	
-	public class TestUtils {
-	    public static String asJsonString(final Object obj) {
-	        try {
-	            return new ObjectMapper()
-	                    .findAndRegisterModules()
-	                    .writeValueAsString(obj);
-	        } catch (Exception e) {
-	            throw new RuntimeException(e);
-	        }
-	    }
-	}
-	
-	
-	
+	}	
+}
+
+class TestUtils {
+    public static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper()
+                    .findAndRegisterModules()
+                    .writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
