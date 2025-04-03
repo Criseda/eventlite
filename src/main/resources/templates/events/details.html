@@ -59,7 +59,7 @@
       <div class="d-flex justify-content-right gap-2">
         <a class="btn btn-warning" role="button" th:href="@{/events/update/{id}(id=${e.id})}"
           sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')">
-          <i class="fa-solid fa-pen-to-square"></i>Update Event
+          <i class="fa-solid fa-pen-to-square"></i>Update
         </a>
         <form th:action="@{/events/{id}(id=${e.id})}" th:method="delete"
           sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')">
