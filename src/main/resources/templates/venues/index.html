@@ -40,7 +40,7 @@
             <th><i class="fa-solid fa-users"></i> Capacity</th>
             <th><i class="fa-solid fa-map-marker-alt"></i> Street Name</th>
             <th><i class="fa-solid fa-mail-bulk"></i> Postcode</th>
-            <th>Actions</th>
+            <th sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -51,7 +51,7 @@
             <td th:text="${v.capacity}">Capacity</td>
             <td th:text="${v.street}">Street Name</td>
             <td th:text="${v.postcode}">Postcode</td>
-            <td>
+            <td sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')">
               <a
                 class="btn btn-warning"
                 sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
