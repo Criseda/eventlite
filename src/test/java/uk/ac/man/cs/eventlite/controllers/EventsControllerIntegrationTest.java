@@ -67,6 +67,11 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isOk());
     }
+    
+    @Test
+    public void getEvent() {
+    	
+    }
 
     @Test
     public void getEventNotFound() throws Exception {
@@ -78,7 +83,7 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         
         assertThat(result.getResponse().getContentAsString(), containsString("99"));
     }
-
+// Create Tests
     @Test
     public void testCreateEvent() throws Exception {
         // Create a venue using VenueService
@@ -105,7 +110,44 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
 
         assertThat(eventService.count(), equalTo(currentCount + 1));
     }
-
+	
+	@Test
+	public void createEventMissing() {
+		
+	}
+	
+	@Test
+	public void createEventInvalid() {
+		
+	}
+	
+	@Test
+	public void createEventNoUser() {
+		
+	}
+	
+	
+    //Update Tests
+    @Test
+    public void updateEventSensible() {
+    	
+    }
+    
+    @Test
+    public void updateEventNoUser() {
+    	
+    }
+    
+    @Test
+    public void updateEventMissingData() {
+    	
+    }
+    
+    @Test
+    public void updateEventInvalidInput() {
+    	
+    }
+    
     @Test
     public void updateEventNotFound() throws Exception {
         // Create a venue using VenueService
@@ -140,4 +182,21 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
 
         assertThat(eventService.count(), equalTo(currentCount));
     }
+    
+    //Delete Tests
+	@Test
+	public void deleteEvent() {
+		
+	}
+	
+	@Test
+	public void deleteEventNotFound() {
+		
+	}
+	
+	@Test
+	public void deleteEventNoUser() {
+		
+	}
+    
 }
