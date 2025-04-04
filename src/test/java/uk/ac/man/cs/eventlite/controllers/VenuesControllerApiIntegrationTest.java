@@ -90,7 +90,52 @@ public class VenuesControllerApiIntegrationTest extends AbstractTransactionalJUn
 
 	@Test
 	public void updateVenueBadInput() {
-		// TODO : fill these out
+		int currentRows = countRowsInTable("venues");
+	
+		// Test with negative capacity (invalid input)
+		String venueJson = """
+				{
+					"name" : "Venue 1",
+					"capacity" : -50,
+					"street" : "Oxford Road",
+					"postcode" : "M13 9PL"
+				}
+			""";
+		
+		client.mutate().filter(basicAuthentication("Rob", "Haines"))
+				.build()
+				.put()
+				.uri("/venues/1")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(venueJson)
+				.exchange()
+				.expectStatus()
+				.isBadRequest();
+	
+		// Test with empty name (missing required field)
+		venueJson = """
+				{
+					"name" : "",
+					"capacity" : 100,
+					"street" : "Oxford Road",
+					"postcode" : "M13 9PL"
+				}
+			""";
+		
+		client.mutate().filter(basicAuthentication("Rob", "Haines"))
+				.build()
+				.put()
+				.uri("/venues/1")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(venueJson)
+				.exchange()
+				.expectStatus()
+				.isBadRequest();
+	
+		// Verify the venue was not updated in the database
+		assertThat(currentRows, equalTo(countRowsInTable("venues")));
 	}
 
 	@Test

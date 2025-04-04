@@ -50,13 +50,34 @@ public class VenuesControllerApi {
 
 	@PutMapping("/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
-	public ResponseEntity<?> updateVenue(@PathVariable("id") long id, @RequestBody Venue newVenue) {
+	public ResponseEntity<?> updateVenue(@PathVariable("id") long id, @RequestBody Venue newVenue,
+			BindingResult result) {
 		if (!venueService.existsById(id)) {
 			throw new VenueNotFoundException(id);
 		}
 
+		// Skip validation when updating - only validate custom rules
+		if (!isValidVenue(newVenue)) {
+			return ResponseEntity.badRequest().build();
+		}
+
 		venueService.update(id, newVenue);
 		return ResponseEntity.noContent().build();
+	}
+
+	// Helper method to perform additional validation
+	private boolean isValidVenue(Venue venue) {
+		// Check if name is empty or null
+		if (venue.getName() == null || venue.getName().trim().isEmpty()) {
+			return false;
+		}
+
+		// Check if capacity is negative
+		if (venue.getCapacity() < 0) {
+			return false;
+		}
+
+		return true;
 	}
 
 	@ExceptionHandler(VenueNotFoundException.class)
