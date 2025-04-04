@@ -333,4 +333,30 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 		//Check nothing is removed from the database
 		assertThat(currentRows, equalTo(countRowsInTable("events")));
 	}
+	
+	@Test
+	public void updateEventMissingName() {
+		
+	}
+	
+	@Test
+	public void createEventSensible() {
+		
+	}
+	
+	@Test
+	public void createEventMissing() {
+		
+	}
+	
+	@Test
+	public void createEventInvalid() {
+		
+	}
+	
+	@Test
+	public void createEventNoUser() {
+		
+	}
+		
 }
