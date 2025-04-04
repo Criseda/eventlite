@@ -60,21 +60,30 @@
         <br>
 
         <div class="d-flex justify-content-between mb-3">
-          <p>
-            <a class="btn btn-secondary" role="button" th:href="@{/venues}"
-              ><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to
-              Venues</a
+	        <a class="btn btn-secondary" role="button" th:href="@{/venues}"
+	          ><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to
+	          Venues</a
+	        >
+		  <div class="d-flex justify-content-right gap-2">
+			<a
+			  class="btn btn-warning"
+			  sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
+			  role="button"
+			  th:href="@{/venues/update/{id}(id=${v.id})}"
+			>
+			  <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+			  Update
+			</a>
+            <form
+              th:action="@{/venues/{id}(id=${v.id})}"
+              th:method="delete"
+              sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
             >
-          </p>
-          <form
-            th:action="@{/venues/{id}(id=${v.id})}"
-            th:method="delete"
-            sec:authorize="hasAnyRole('ORGANIZER', 'ADMIN')"
-          >
-            <button type="submit" class="btn btn-danger" th:disabled="${!#lists.isEmpty(v.getEvents())}">
-              <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete
-            </button>
-          </form>
+              <button type="submit" class="btn btn-danger" th:disabled="${!#lists.isEmpty(v.getEvents())}">
+                <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete
+              </button>
+            </form>
+		  </div>
         </div>
       </div>
 </body>
