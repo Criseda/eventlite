@@ -76,9 +76,13 @@ public class EventsControllerApi {
 	
 	@PutMapping("/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
-	public ResponseEntity<?> updateEvent(@PathVariable("id") long id, @RequestBody Event newEvent) {
+	public ResponseEntity<?> updateEvent(@PathVariable("id") long id, @Valid @RequestBody Event newEvent, BindingResult result) {
 		if (!eventService.existsById(id)) {
 			throw new EventNotFoundException(id);
+		}
+		
+		if (result.hasErrors()) {
+			return ResponseEntity.badRequest().body(result.getAllErrors());
 		}
 		
 		eventService.update(id, newEvent);
