@@ -46,8 +46,10 @@ import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = EventLite.class)
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class VenuesControllerIntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     @Autowired
@@ -78,6 +80,12 @@ public class VenuesControllerIntegrationTest extends AbstractTransactionalJUnit4
                 .andExpect(status().isOk());
     }
     
+
+    @Test
+    public void testGetVenue() throws Exception{
+    		
+    }
+    
 //    @Test
 //    public void getVenueNotFound() throws Exception {
 //        MvcResult result = mvc.perform(get("/venues/99")
@@ -91,7 +99,7 @@ public class VenuesControllerIntegrationTest extends AbstractTransactionalJUnit4
     
 
     @Test
-    void testDeleteVenue_WhenVenueExists() throws Exception {
+    public void testDeleteVenue_WhenVenueExists() throws Exception {
         Venue testVen = new Venue();
         testVen.setId(1);
         testVen.setEvents(Collections.emptyList());
@@ -107,7 +115,7 @@ public class VenuesControllerIntegrationTest extends AbstractTransactionalJUnit4
     }
 
     @Test
-    void testDeleteVenue_WhenVenueDoesNotExist() throws Exception {
+    public void testDeleteVenue_WhenVenueDoesNotExist() throws Exception {
         long venueId = 1L;
         when(venueService.existsById(venueId)).thenReturn(false);
 
@@ -117,4 +125,51 @@ public class VenuesControllerIntegrationTest extends AbstractTransactionalJUnit4
 
         verify(venueService, never()).deleteById(anyLong());
     }
+    
+    @Test
+    public void deleteVenueNoUser() {
+    	
+    }
+    //Update Tests
+    @Test
+	public void updateVenueSensible() {
+		
+	}
+	
+	@Test
+	public void updateVenueMissing() {
+		
+	}
+	
+	@Test
+	public void updateVenueInvalidInput() {
+		
+	}
+	
+	@Test
+	public void updateVenueNoUser() {
+		
+	}
+
+	//Create tests
+    @Test
+	public void createVenueSensible() {
+		
+	}
+	
+	@Test
+	public void createVenueMissing() {
+		
+	}
+	
+	@Test
+	public void createVenueInvalidInput() {
+		
+	}
+	
+	@Test
+	public void createVenueNoUser() {
+		
+	}
+	
 }
