@@ -15,14 +15,23 @@
 
       <!-- Search Form -->
       <form th:action="@{/venues}" method="get" class="mb-3">
-        <input
-          type="text"
-          name="search"
-          th:value="${search}"
-          placeholder="Enter venue name to search"
-          class="form-control"
-        />
-        <button type="submit" class="btn btn-primary mt-2">Search</button>
+		<div class="d-flex gap-2">
+	        <input
+	          type="text"
+	          name="search"
+			  id="search"
+	          th:value="${search}"
+	          placeholder="Enter venue name to search"
+	          class="form-control form-control-sm"
+	        />
+	        <button type="submit" class="btn btn-primary btn-sm"> <i class="fa-solid fa-search"></i> Search</button>
+			<button 
+				type="button" 
+				class="btn btn-secondary btn-sm"
+				onclick="document.getElementById('search').value = ''"
+				><i class="fa-solid fa-ban"></i> Clear
+			</button>
+		</div>
       </form>
 
       <!-- Create New Venue Button (Visible to Organizers and Admins) -->
