@@ -38,8 +38,10 @@ import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = EventLite.class)
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     @Autowired
