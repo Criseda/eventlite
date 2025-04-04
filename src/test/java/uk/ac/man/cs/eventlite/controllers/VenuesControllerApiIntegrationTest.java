@@ -37,6 +37,11 @@ public class VenuesControllerApiIntegrationTest extends AbstractTransactionalJUn
     }
     
     @Test
+    public void getVenue() {
+    	//TODO : fill these out
+    }
+    
+    @Test
     public void updateVenueAsForbiddenRole() {
     	// empty, fixes BAD SQL GRAMMAR error, forces db to reinit for next functions
     }
@@ -68,6 +73,12 @@ public class VenuesControllerApiIntegrationTest extends AbstractTransactionalJUn
     	
     	assertThat(currentRows, equalTo(countRowsInTable("venues")));
     }
+    
+    @Test
+    public void updateVenueBadInput() {
+    	//TODO : fill these out
+    }
+    
     
     @Test
     public void updateVenueNotFound() {
@@ -236,4 +247,25 @@ public class VenuesControllerApiIntegrationTest extends AbstractTransactionalJUn
 		//Check nothing is removed from the database
 		assertThat(currentRows, equalTo(countRowsInTable("venues")));
 	}
+
+	@Test
+	public void createVenueSensible() {
+		
+	}
+	
+	@Test
+	public void createVenueMissing() {
+		
+	}
+	
+	@Test
+	public void createVenueInvalidInput() {
+		
+	}
+	
+	@Test
+	public void createVenueNoUser() {
+		
+	}
+
 }
