@@ -1,24 +1,23 @@
 <!DOCTYPE html>
-<html
-  xmlns:th="http://www.thymeleaf.org"
-  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{layouts/default}"
->
-  <head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+
+<head>
     <title>Error</title>
-  </head>
-  <body>
-	<div layout:fragment="content">
-      <h1>An error occurred!</h1>
-	  <p th:text="${status} + ': ' + ${error}"></p>
-	  <p th:text="'Message: ' + ${message}"></p>
-	  <p th:text="'Timestamp: ' + ${timestamp}"></p>
-	  <p th:text="'Path: ' + ${path}"></p>
-	  <div class="d-flex justify-content-between mb-3">
-        <a href="/events" class="btn btn-secondary">
-          <i class="fa-solid fa-arrow-left"></i> Back to Events
-        </a>
-	   <div>
-	</div>
-  </body>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <h1>An error occurred!</h1>
+        <p th:text="${status} + ': ' + ${error}"></p>
+        <p th:text="'Message: ' + ${message}"></p>
+        <p th:text="'Timestamp: ' + ${timestamp}"></p>
+        <p th:text="'Path: ' + ${path}"></p>
+        <div class="d-flex justify-content-between mb-3">
+            <a href="/home" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Back to Home
+            </a>
+            <div>
+            </div>
+</body>
+
 </html>

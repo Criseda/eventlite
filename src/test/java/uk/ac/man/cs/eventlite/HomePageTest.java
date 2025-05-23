@@ -34,7 +34,7 @@ public class HomePageTest {
 
 	@Test
 	public void getRoot() throws Exception {
-		mvc.perform(get("/").accept(MediaType.TEXT_HTML)).andExpect(status().isOk());
+		mvc.perform(get("/").accept(MediaType.TEXT_HTML)).andExpect(status().isFound());
 	}
 
 	@Test

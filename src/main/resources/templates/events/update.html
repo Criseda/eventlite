@@ -18,7 +18,8 @@
         method="post"
       >
         <input type="hidden" name="_method" value="put" />
-        <div class="mb-3">
+		
+        <div class="mb-3"><!-- Name div -->
           <label for="name" class="form-label">Name</label>
           <input
             type="text"
@@ -26,12 +27,24 @@
             id="name"
             th:field="*{name}"
           />
+		  <p
+		    th:if="${#fields.hasErrors('name')}"
+		    th:errors="*{name}"
+		    class="error text-danger"
+		  ></p>
         </div>
-        <div class="mb-3">
+		
+        <div class="mb-3"><!-- Date div -->
           <label for="date" class="form-label">Date</label>
-          <input type="date" class="form-control" th:field="*{date}" />
+          <input type="date" class="form-control" th:field="*{date}" th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"/>
+		  <p
+		    th:if="${#fields.hasErrors('date')}"
+		    th:errors="*{date}"
+		    class="error text-danger"
+		  ></p>
         </div>
-        <div class="mb-3">
+		
+        <div class="mb-3"><!-- Time div -->
           <label for="time" class="form-label">Time</label>
           <div class="d-flex">
             <input
@@ -49,17 +62,25 @@
             </button>
           </div>
         </div>
-        <div class="mb-3">
+		
+        <div class="mb-3"> <!-- Venue div -->
           <label class="form-label">Venue</label>
           <select name="venue" id="venue" class="form-control">
             <option
               th:each="v : ${v}"
               th:value="${v.id}"
               th:text="${v.name}"
+			  th:selected="${v.id==e.venue.id}"
             ></option>
           </select>
+		  <p
+		    th:if="${#fields.hasErrors('venue')}"
+		    th:errors="*{venue}"
+		    class="error text-danger"
+		  ></p>
         </div>
-        <div class="mb-3">
+		
+        <div class="mb-3"> <!-- Description div -->
           <label for="description" class="form-label">Description</label>
           <textarea
             class="form-control"
@@ -76,8 +97,7 @@
             <button
               class="btn btn-secondary btn-sm"
               type="button"
-              onclick="document.getElementById('description').value = 'null'"
-            >
+              onclick="document.getElementById('description').value = ''">
               Clear Description
             </button>
           </div>
@@ -91,7 +111,7 @@
           <a href="/events" class="btn btn-secondary">
             <i class="fa-solid fa-arrow-left"></i> Back to Events
           </a>
-          <button type="reset" class="btn btn-danger">Undo changes</button>
+          <button type="button" class="btn btn-danger" onClick="window.location.href=window.location.href">Undo changes</button>
           <div>
             <button class="btn btn-primary" type="submit">
               <i class="fa-solid fa-bookmark" aria-hidden="true"></i> Save

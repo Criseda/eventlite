@@ -2,11 +2,13 @@ package uk.ac.man.cs.eventlite.entities;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,13 +17,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-
-
-
 
 @Entity
 @Table(name = "events")
@@ -35,6 +34,7 @@ public class Event {
 	@NotNull(message = "Date is required")
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Future(message = "Date must be in the future")
 	private LocalDate date;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -45,11 +45,12 @@ public class Event {
 	@Size(max = 256, message = "Name must be less than 256 characters")
 	private String name;
 	
-	@NotNull(message = "Venue is required")
-	@ManyToOne
-	@JoinColumn(name = "venue_id", referencedColumnName = "id")
+	@ManyToOne(optional = true)  // Make the relationship optional
+	@JoinColumn(name = "venue_id", referencedColumnName = "id", nullable = true)
+	@NotNull
 	private Venue venue;
 
+	@Column(length = 500)
 	@Size(max = 500, message = "Description must be less than 500 characters")
     private String description;
 

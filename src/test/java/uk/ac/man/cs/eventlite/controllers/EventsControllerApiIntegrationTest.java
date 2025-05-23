@@ -216,17 +216,21 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 		String eventJson = """
 				{
 			      "date" : "2025-05-05",
-			      "time" : "17:00:00",
+			      "time" : "17:00",
 			      "name" : "Updated Earliest Event",
-				  "description" : "Updated description"
+				  "description" : "Updated description",
+				  "venue" : {
+				    "id" : 1
+				  }
 			    }
 			""";
+		
 		client.mutate().filter(basicAuthentication("Rob", "Haines"))
 						.build()
 						.put()
 						.uri("/events/1")
-						.accept(MediaType.APPLICATION_JSON)
 						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON)
 						.bodyValue(eventJson)
 						.exchange()
 						.expectStatus()
@@ -315,7 +319,7 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 		String eventJson = """
 				{
 			      "date" : "2025-05-05",
-			      "time" : "17:00:00",
+			      "time" : "17:00",
 			      "name" : "Updated Earliest Event"
 			    }
 			""";
@@ -333,4 +337,139 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 		//Check nothing is removed from the database
 		assertThat(currentRows, equalTo(countRowsInTable("events")));
 	}
+	
+	@Test
+	public void updateEventMissingInput() {
+		String eventJson = """
+				{
+			      "date" : "2025-05-05",
+			      "time" : "17:00:00",
+				  "description" : "Updated description"
+			    }
+			""";
+		
+		client.mutate().filter(basicAuthentication("Rob", "Haines"))
+						.build()
+						.put()
+						.uri("/events/1")
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON)
+						.bodyValue(eventJson)
+						.exchange()
+						.expectStatus()
+						.isBadRequest() // Expect 400 Bad Request
+						.expectBody();
+		
+		//Check nothing is removed or added from the database
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+	
+	@Test
+	public void createEventSensible() {
+		String eventJson = """
+				{
+			      "date" : "2025-05-05",
+			      "time" : "17:00",
+			      "name" : "New Event",
+				  "description" : "New event description",
+				  "venue" : {
+				    "id" : 1
+				  }
+			    }
+			""";
+		
+		client.mutate().filter(basicAuthentication("Rob", "Haines"))
+						.build()
+						.post()
+						.uri("/events")
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON)
+						.bodyValue(eventJson)
+						.exchange()
+						.expectStatus()
+						.isCreated() // Expect 201 Created
+						.expectBody()
+						.jsonPath("$.name").isEqualTo("New Event")
+						.jsonPath("$.date").isEqualTo("2025-05-05")
+						.jsonPath("$.time").isEqualTo("17:00:00");
+		
+		//Check one row was added to the database
+		assertThat(currentRows + 1, equalTo(countRowsInTable("events")));
+	}
+	
+	@Test
+	public void createEventMissing() {
+		String eventJson = """
+				{
+			      "date" : "2025-05-05",
+			      "time" : "17:00:00",
+				  "description" : "New event description"
+			    }
+			""";
+		
+		client.mutate().filter(basicAuthentication("Rob", "Haines"))
+						.build()
+						.post()
+						.uri("/events")
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON)
+						.bodyValue(eventJson)
+						.exchange()
+						.expectStatus()
+						.isBadRequest(); // Expect 400 Bad Request
+		
+		//Check nothing was added to the database
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+	
+	@Test
+	public void createEventInvalid() {
+		String eventJson = """
+				{
+			      "date" : "invalid-date",
+			      "time" : "invalid-time",
+			      "name" : "New Event",
+				  "description" : "New event description"
+			    }
+			""";
+		
+		client.mutate().filter(basicAuthentication("Rob", "Haines"))
+						.build()
+						.post()
+						.uri("/events")
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON)
+						.bodyValue(eventJson)
+						.exchange()
+						.expectStatus()
+						.isBadRequest(); // Expect 400 Bad Request
+		
+		//Check nothing was added to the database
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+	
+	@Test
+	public void createEventNoUser() {
+		String eventJson = """
+				{
+			      "date" : "2025-05-05",
+			      "time" : "17:00",
+			      "name" : "New Event",
+				  "description" : "New event description"
+			    }
+			""";
+		
+		client.post()
+				.uri("/events")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.bodyValue(eventJson)
+				.exchange()
+				.expectStatus()
+				.isUnauthorized(); // Expect 401 Unauthorized
+		
+		//Check nothing was added to the database
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+		
 }

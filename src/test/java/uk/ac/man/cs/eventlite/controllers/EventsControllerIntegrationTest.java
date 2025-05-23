@@ -19,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -38,8 +39,8 @@ import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = EventLite.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@SpringBootTest(classes = EventLite.class)
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
 
@@ -68,6 +69,11 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isOk());
     }
+    
+    @Test
+    public void getEvent() {
+    	
+    }
 
     @Test
     public void getEventNotFound() throws Exception {
@@ -79,14 +85,15 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         
         assertThat(result.getResponse().getContentAsString(), containsString("99"));
     }
-
+// Create Tests
     @Test
-    @DirtiesContext
     public void testCreateEvent() throws Exception {
         // Create a venue using VenueService
         Venue venue = new Venue();
         venue.setName("Test Venue");
         venue.setCapacity(100);
+		venue.setPostcode("M14 6FZ");
+		venue.setStreet("13 Fake road");
         venueService.save(venue);
 
         long currentCount = eventService.count();
@@ -105,14 +112,52 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
 
         assertThat(eventService.count(), equalTo(currentCount + 1));
     }
-
+	
+	@Test
+	public void createEventMissing() {
+		
+	}
+	
+	@Test
+	public void createEventInvalid() {
+		
+	}
+	
+	@Test
+	public void createEventNoUser() {
+		
+	}
+	
+	
+    //Update Tests
     @Test
-    @DirtiesContext
+    public void updateEventSensible() {
+    	
+    }
+    
+    @Test
+    public void updateEventNoUser() {
+    	
+    }
+    
+    @Test
+    public void updateEventMissingData() {
+    	
+    }
+    
+    @Test
+    public void updateEventInvalidInput() {
+    	
+    }
+    
+    @Test
     public void updateEventNotFound() throws Exception {
         // Create a venue using VenueService
         Venue venue = new Venue();
         venue.setName("Test Venue");
         venue.setCapacity(100);
+		venue.setPostcode("M14 6FZ");
+		venue.setStreet("13 Fake road");
         venueService.save(venue);
 
         // Create an event using EventService
@@ -139,4 +184,21 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
 
         assertThat(eventService.count(), equalTo(currentCount));
     }
+    
+    //Delete Tests
+	@Test
+	public void deleteEvent() {
+		
+	}
+	
+	@Test
+	public void deleteEventNotFound() {
+		
+	}
+	
+	@Test
+	public void deleteEventNoUser() {
+		
+	}
+    
 }

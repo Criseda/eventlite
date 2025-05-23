@@ -19,14 +19,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
+import uk.ac.man.cs.eventlite.assemblers.VenueModelAssembler;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 @RestController
@@ -40,6 +41,9 @@ public class EventsControllerApi {
 
 	@Autowired
 	private EventModelAssembler eventAssembler;
+	
+	@Autowired
+	private VenueModelAssembler venueAssembler;
 
 	@ExceptionHandler(EventNotFoundException.class)
 	public ResponseEntity<?> eventNotFoundHandler(EventNotFoundException ex) {
@@ -49,7 +53,19 @@ public class EventsControllerApi {
 
 	@GetMapping("/{id}")
 	public EntityModel<Event> getEvent(@PathVariable("id") long id) {
-		throw new EventNotFoundException(id);
+	    Event event = eventService.findById(id)
+	        .orElseThrow(() -> new EventNotFoundException(id));
+	    return eventAssembler.toModel(event);
+	}
+	
+	@GetMapping("/{id}/venue")
+	public EntityModel<Venue> getEventVenue(@PathVariable("id") long id) {
+	    Event event = eventService.findById(id)
+	        .orElseThrow(() -> new EventNotFoundException(id));
+	    
+	    Venue venue = event.getVenue();
+	    
+	    return venueAssembler.toModel(venue);
 	}
 
 	@GetMapping
@@ -59,10 +75,14 @@ public class EventsControllerApi {
 	}
 	
 	@PutMapping("/{id}")
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> updateEvent(@PathVariable("id") long id, @RequestBody Event newEvent) {
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
+	public ResponseEntity<?> updateEvent(@PathVariable("id") long id, @Valid @RequestBody Event newEvent, BindingResult result) {
 		if (!eventService.existsById(id)) {
 			throw new EventNotFoundException(id);
+		}
+		
+		if (result.hasErrors()) {
+			return ResponseEntity.badRequest().body(result.getAllErrors());
 		}
 		
 		eventService.update(id, newEvent);
@@ -70,7 +90,7 @@ public class EventsControllerApi {
 	}
 	
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
 	public ResponseEntity<?> deleteEvent(@PathVariable("id") long id) {
 		if (!eventService.existsById(id)) {
 			throw new EventNotFoundException(id);
@@ -80,14 +100,14 @@ public class EventsControllerApi {
 	}
 	
     @DeleteMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
     public ResponseEntity<?> deleteAllEvents() {
         eventService.deleteAll();
         return ResponseEntity.noContent().build();
     }
     
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER')")
     public ResponseEntity<?> createEvent(@Valid @RequestBody Event event, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body(result.getAllErrors());

@@ -1,3 +1,8 @@
 /target/
 .settings/
 /db/
+.idea/
+*.iws
+*.iml
+.vscode/
+.env
